@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Cartesian Plane</title>
+
+        <script src="{{=URL('static','js/jquery.js')}}"></script>
+        <script src="{{=URL('static','js/web2py.js')}}"></script>
+
+    </head>
+    <body>
+        {{=applet}}
+        <div id="problem-desc">This is the current problem</div>
+        <script>
+            var olddata = "0";
+            var currentProblem;
+            $(document).ready(function(){
+                if(!web2py_websocket('ws://{{=ip}}:{{=port}}/realtime/{{=group_name}}',function(e){
+                    console.dir(e.data);
+                    incoming = JSON.parse(unescape(e.data));
+                    // TODO improve detection. Encapsulate the object and include a type property
+                    if(incoming instanceof Array){
+                        // Execute array of actions (replay steps)
+                        updateProblem();
+                        actions = [];
+                        for(var i = 0; i < incoming.length; i++){
+                            var action = incoming[i];
+                            actions.push(new Action(action.name, action.op));
+                        }
+                        primitiveActions.executeAction(actions);
+                    } else if(incoming.label !== undefined){
+                        console.dir("Execute action");
+                        olddata = incoming;
+                        // Execute action
+                        executeAction();    
+                    } else if(incoming.id !== undefined) {
+                        console.dir("Update problem info");
+                        // Update problem info
+                        currentProblem = incoming;
+                        updateProblem();
+                        $("#problem-desc").text(currentProblem.text);
+                    } else {
+                        alert("Fall through error...");
+                    }
+                    
+                })){
+                    alert("html5 websocket not supported by your browser, try Google Chrome");
+                }
+            });
+
+            function updateProblem(){
+                console.dir("Updating plane to problem ID #" + currentProblem.id +"...");
+                pF.appReady(currentProblem.points, currentProblem.lines);
+            }
+
+            function executeAction(){
+                console.log("EXECUTING CLICKLISTENER EVENT!!! " + olddata.name + " - " + olddata.op);
+                clickListener.executeEvent(new Action(olddata.name, olddata.op));
+            }
+
+        </script>
+    </body>
+</html>
+
+
