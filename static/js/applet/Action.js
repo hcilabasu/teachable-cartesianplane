@@ -127,7 +127,7 @@ primitiveActions.actions.moveDistance = {
           // Set current point
           primitiveActions.movingPoint.push({
             point: currPoint, 
-            orientation: r1.orientation
+            orientation: invertAngle(r1.orientation, dist)
           });
         }
       } else {

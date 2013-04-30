@@ -20,6 +20,17 @@ Point.prototype.equals = function(otherPoint)
   return this.x == otherPoint.x && this.y == otherPoint.y;
 }
 
+/*
+ * Inverts the angle if the invert param is < 0
+ */
+function invertAngle(angle, invert){
+  if(invert < 0) {
+    return angle - 180;
+  } else {
+    return angle;
+  }
+}
+
 function angle(point1, point2){
   var dX = point2.x - point1.x;
   var dY = point2.y - point1.y;
