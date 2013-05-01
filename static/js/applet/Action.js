@@ -59,10 +59,20 @@ primitiveActions.setVars = function()
       ex: controller.drawing.tempLine
     };
 
+    primitiveActions.actions.tempArc = {
+      label: "Draw a temporary arc",
+      ex: controller.drawing.tempArc
+    }
+
     primitiveActions.actions.deleteLine = {
       label: "Delete Line",
       ex: controller.drawing.deleteLine
     };
+
+    primitiveActions.actions.deleteArc = {
+      label: "Delete Arc",
+      ex: controller.drawing.deleteArc
+    }
 
     primitiveActions.actions.deletePoint = {
       label: "Delete Point",
@@ -144,32 +154,67 @@ primitiveActions.actions.moveDistance = {
 primitiveActions.actions.turnAngle = {
     label: "Turn",
     ex: function(params) {
-	controller.addAction(new Action("turn", params.angle));
+      if(primitiveActions.movingPoint !== undefined){
+        var prevPoint = primitiveActions.movingPoint[primitiveActions.movingPoint.length-1].point;
+        // // Creating new temp plot
+        
+        // // Create line between the previous and current temp points
+        // controller.addAction(new Action('tempLine', [prevPoint, currPoint]));
+        // Deleting line between previous point and movingPointBase
+        controller.addAction(new Action('deleteLine', prevPoint + primitiveActions.movingPointBase));
+
+        // Creating arc
+        if(params.angle > 0) {
+          var arcParams = ["R", prevPoint, primitiveActions.movingPointBase];
+          var i = 2; // i specifies which point will be replaced by the new temp point when the turn is finished
+        } else {
+          var arcParams = ["R", primitiveActions.movingPointBase, prevPoint];
+          var i = 1;
+        }
+        controller.addAction(new Action('tempArc', arcParams));
+        // Turning
+        controller.addAction(new Action('turn', params.angle));
+
+        // Creating new temp point
+        // I have to calculate where this point needs to be beforehand
+        r = controller.getPoint("R");
+        p = controller.getPoint(primitiveActions.movingPointBase);
+        ex = r1.getExtension(primitiveActions.movingPointBase);
+        dist = r.distanceTo(p);
+        orient = r1.orientation+ex.angleDelta+parseInt(params.angle);
+        orient = orient == 360 ? 0 : orient;
+        pointX = (r.x + xDist(dist, orient));
+        pointY = (r.y + yDist(dist, orient));
+
+        controller.addAction(new Action('tempPlot', new Point(r1.location.x, r1.location.y)));
+        var pivot = "P" + pF.currPointNum;
+        controller.addAction(new Action('tempPlot', new Point(pointX, pointY)));
+        var newPoint = "P" + (pF.currPointNum+1);
+
+
+        // Creating new arc between robot, movingPointBase and new point
+        var arcName = arcParams.join('');
+        var newArcParams = arcParams.slice(0); // Cloning previous array due to concurrency issues
+        newArcParams[0] = pivot;
+        newArcParams[i] = newPoint; // Uses i as defined a couple of lines above
+        controller.addAction(new Action('deleteArc', arcName));
+        controller.addAction(new Action('tempArc', newArcParams));
+
+        // Adding line between robot and new point
+        controller.addAction(new Action('tempLine', [newPoint, primitiveActions.movingPointBase]));
+        // Adding new point to list
+        primitiveActions.movingPoint.push({
+          point: newPoint, 
+          orientation: r1.orientation+parseInt(params.angle)+ex.angleDelta
+        });
+
+      } else {
+        // Turning while NOT dragging a point
+        controller.addAction(new Action('turn', params.angle));   
+      }
     }
-
-
 }
 
-/********************************************************************
-* function turnToAxis:
-*
-* parameters: the axis to orient along
-*
-*********************************************************************/
-
-primitiveActions.actions.turnToAxis = {
-  label: "Turn To Axis",
-  ex: function(axis) {
-    this.axes = {
-      X1: 0,
-      X2: 180,
-      Y1: 90,
-      Y2: 270
-    }
-    
-    controller.addAction(new Action("turn", this.axes[axis] - r1.orientation));
-  }
-}
 
 /********************************************************************
 * function turnCardinal:

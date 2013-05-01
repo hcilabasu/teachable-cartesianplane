@@ -210,6 +210,15 @@ var controller = (function() {
       pF.drawLine(pointList[0], pointList[1]);
       geoApp.evalCommand("SetLineStyle[" + pointList[0] + pointList[1] + ", 1]");
   },
+  tempArc: function(pointList){
+      console.log("In temp arc " + pointList[0] + ", " + pointList[1] + ", " + pointList[2]);
+      pF.drawArc(pointList[0], pointList[1], pointList[2]);
+      geoApp.evalCommand("SetLineStyle[" + pointList[0] + pointList[1] + pointList[2] + ", 1]");
+  },
+  deleteArc: function(arcName){
+    console.log("Deleting arc " + arcName);
+    pF.deleteObject(arcName);
+  },
   deleteLine: function(lineName)
   {
     console.log("Deleting line " + lineName);

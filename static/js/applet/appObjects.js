@@ -63,6 +63,10 @@ var createRobot = function() {
     return returnObject;
   }
 
+  var getExtension = function(pointName){
+    return extensions[pointName];
+  }
+
   var removeExtension = function(pointName){
     if(extensions[pointName]){
       delete extensions[pointName];
@@ -96,6 +100,7 @@ var createRobot = function() {
     makeEyes: makeEyes,
     makeCenter: makeCenter,
     makeExtensions : makeExtensions,
+    getExtension : getExtension,
     removeExtension : removeExtension,
 
     speed: function(name) {
@@ -135,6 +140,11 @@ var pF = (function() {
 	var lineName = point1 + point2;
 	geoApp.evalCommand(lineName + " = Segment[" + point1 + "," + point2 + "]");
   };
+
+  var drawArc = function(point1, point2, point3){
+    var arcName = point1 + point2 + point3;
+    geoApp.evalCommand(arcName + " = CircularArc[" + point1 + "," + point2 + "," + point3 + "]");
+  }
 
   var addClickListener = function(object, func) {
     geoApp.registerObjectClickListener(object, func);
@@ -303,6 +313,7 @@ var pF = (function() {
     createPoint: createPoint,
     forceCreatePoint: forceCreatePoint,
     drawLine: drawLine,
+    drawArc: drawArc,
     deleteObject: deletePoint,
 
     addClickListener: addClickListener,
