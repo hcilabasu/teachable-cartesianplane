@@ -3,3 +3,4 @@ sessions/*
 *.pyc
 *.py.bak
 *.log
+.DS_Store

@@ -114,7 +114,11 @@ primitiveActions.actions.moveDistance = {
     ex: function(params) {
 
       var dist = params.distance;
-      var point = controller.getPoint(primitiveActions.movingPointBase);
+      if(primitiveActions.movingPointBase)
+        var point = controller.getPoint(primitiveActions.movingPointBase);
+      else {
+        var point = controller.getPoint("R");
+      }
 
       var newX = Math.round((point.x + xDist(dist, r1.orientation))*100000)/100000;
       var newY = Math.round((point.y + yDist(dist, r1.orientation))*100000)/100000;
