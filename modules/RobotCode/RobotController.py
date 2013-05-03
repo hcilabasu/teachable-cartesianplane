@@ -23,9 +23,9 @@ def key(event):
     elif event.char == '\xef\x9c\x81':
         x.backwardArrow()
     elif event.char == '\xef\x9c\x82':
-        x.turnLeft()
+        x.leftArrow()
     elif event.char == '\xef\x9c\x83':
-        x.turnRight()
+        x.rightArrow()
 
 frame = Frame(root, width=350, height=100)
 frame.bind("<Key>", key)

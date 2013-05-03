@@ -54,6 +54,8 @@ class Robot:
 		self._tty.write(self.stopmotbSTR() + self.stopmotcSTR())
 		forw = False
 		back = False
+		leftc = False
+		rightc = False
     
 	def stopmotbSTR(self):
 	    return (chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x01) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
@@ -65,7 +67,9 @@ class Robot:
 	    self._tty.write(chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x01) + self.currentSpeed() + chr(0x07) + chr(0x00) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x02) + self.currentSpeed() + chr(0x07) + chr(0x00) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
 	    self.forw = True
 	    self.back = False
-	 
+	    self.rightc = False
+	    self.leftc = False
+
 	def beep(self):
 	    self._tty.write(chr(0x06)+chr(0x00)+chr(0x80)+chr(0x03)+chr(0x0B)+chr(0x02)+chr(0xF4)+chr(0x01))
 
@@ -99,16 +103,22 @@ class Robot:
 	    self._tty.write(self.motcbackwardTurn() + self.motbforwardTurn())
 	    self.forw = False
 	    self.back = False
+	    self.rightc = True
+	    self.leftc = False
 
 	def turnLeft(self):
 	    self._tty.write(self.motbbackwardTurn() + self.motcforwardTurn())
 	    self.forw = False
 	    self.back = False
+	    self.rightc = False
+	    self.leftc = True
 	    
 	def backward(self):
 	    self._tty.write(self.motbbackwardSTR() + self.motcbackwardSTR())
 	    self.forw = False
 	    self.back = True
+	    self.rightc = False
+	    self.leftc = False
 
 	#This is a backwards command to be used with the arrow. If the robot is currently moving forward, the back button will
 	#stop the robot. Otherwise, it will make it go backwards
@@ -116,6 +126,9 @@ class Robot:
 		if self.forw:
 			self.stop()
 			self.forw = False
+		elif self.back:
+			self.stop()
+			self.back = False
 		else:
 			self.backward()
 
@@ -124,7 +137,32 @@ class Robot:
 		if self.back:
 			self.stop()
 			self.back = False
+		elif self.forw:
+			self.stop()
+			self.forw = False
 		else:
 			self.forward()
+
+	def leftArrow(self):
+		if self.leftc:
+			self.stop()
+			self.leftc = False
+		elif self.rightc:
+			self.stop()
+			self.rightc = False
+		else:
+			self.turnLeft()
+
+
+	def rightArrow(self):
+		if self.rightc:
+			self.stop()
+			self.rightc = False
+		elif self.leftc:
+			self.stop()
+			self.leftc = False
+		else:
+			self.turnRight()
+		
 
 
