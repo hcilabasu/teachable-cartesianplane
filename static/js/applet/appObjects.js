@@ -108,7 +108,8 @@ var createRobot = function() {
         case "move":             // Fall through;
         case "moveSinglePoint":
           return distance;
-        default:
+        case "turn":             // Fall through;
+        case "turnSinglePoint": 
           return degrees;
       }
     },    
@@ -315,6 +316,7 @@ var pF = (function() {
     drawLine: drawLine,
     drawArc: drawArc,
     deleteObject: deletePoint,
+    pointExists: pointExists,
 
     addClickListener: addClickListener,
     

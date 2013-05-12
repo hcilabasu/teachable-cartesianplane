@@ -16,6 +16,8 @@ var controller = (function() {
     var getDistance = function(act){
       if (act.name === "moveSinglePoint") {
         return act.op.distance;
+      } else if(act.name === "turnSinglePoint") {
+        return act.op.angle;
       } else {
         return act.op;
       }
@@ -27,7 +29,14 @@ var controller = (function() {
           point: act.op.point,
           orientation: act.op.orientation,
           distance: dist
-        })
+        });
+      } else if(act.name === "turnSinglePoint"){
+        return new Action(act.name, {
+          point: act.op.point,
+          pivot: act.op.pivot,
+          angle: dist,
+          distance: act.op.distance,
+        });
       } else {
         return new Action(act.name, dist);
       }
@@ -95,7 +104,7 @@ var controller = (function() {
           var act = currNode.children.shift().value;
           primitiveActions.executeAction(act); //controller.moving[act.name](act.op);
         }
-        else if(moving[currNode.firstChild().value.name]) // == "move" || currNode.firstChild().value.name == "turn")
+        else if(moving[currNode.firstChild().value.name]) // "move" || "turn" || "moveSinglePoint"
         {
 	         console.log("In execute action moving.");
           currNode = currNode.firstChild();
@@ -254,17 +263,29 @@ var controller = (function() {
     },
 
     moveSinglePoint: function(move){
-      var point = move.point;
-      var orientation = move.orientation;
-      var distance = move.distance;
+      var point = move.point,
+          orientation = move.orientation,
+          distance = move.distance,
+          oldX = geoApp.getXcoord(point),
+          oldY = geoApp.getYcoord(point),
+          newX = Math.round((oldX + xDist(distance, orientation))*100000)/100000,
+          newY = Math.round((oldY + yDist(distance, orientation))*100000)/100000;
 
-      var oldX = geoApp.getXcoord(point);
-      var oldY = geoApp.getYcoord(point);
-
-      var newX = Math.round((oldX + xDist(distance, orientation))*100000)/100000;
-      var newY = Math.round((oldY + yDist(distance, orientation))*100000)/100000;
       geoApp.setCoords(point, newX, newY);
+    },
 
+    turnSinglePoint: function(turn){
+      var point = turn.point,
+          distance = turn.distance,
+          pivot = turn.pivot,
+          turnAngle = parseFloat(turn.angle),
+          orientation = angle(pivot, pF.getPoint(point));
+          newOrientation = (orientation + turnAngle) % 360;
+
+      var newX = pivot.x + xDist(distance, newOrientation);
+      var newY = pivot.y + yDist(distance, newOrientation);
+
+      geoApp.setCoords(point, newX, newY);
     }
   };
 

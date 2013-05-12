@@ -47,7 +47,7 @@ primitiveActions.setVars = function()
     primitiveActions.actions.tempPlot = {
       label: "Plot Temporary Point",
       ex: controller.drawing.tempPlot
-    }
+    };
 
     primitiveActions.actions.line = {
       label: "Draw line",
@@ -62,7 +62,7 @@ primitiveActions.setVars = function()
     primitiveActions.actions.tempArc = {
       label: "Draw a temporary arc",
       ex: controller.drawing.tempArc
-    }
+    };
 
     primitiveActions.actions.deleteLine = {
       label: "Delete Line",
@@ -72,16 +72,21 @@ primitiveActions.setVars = function()
     primitiveActions.actions.deleteArc = {
       label: "Delete Arc",
       ex: controller.drawing.deleteArc
-    }
+    };
 
     primitiveActions.actions.deletePoint = {
       label: "Delete Point",
       ex: controller.drawing.deletePoint
-    }
+    };
 
     primitiveActions.actions.moveSinglePoint = {
       label: "Move Single Point",
       ex: controller.moving.moveSinglePoint
+    };
+
+    primitiveActions.actions.turnSinglePoint = {
+      label: "Turn Single Point",
+      ex: controller.moving.turnSinglePoint
     };
 
   }
@@ -141,7 +146,8 @@ primitiveActions.actions.moveDistance = {
           // Set current point
           primitiveActions.movingPoint.push({
             point: currPoint, 
-            orientation: invertAngle(r1.orientation, dist)
+            orientation: invertAngle(r1.orientation, dist),
+            type: "move"
           });
         }
       } else {
@@ -158,7 +164,7 @@ primitiveActions.actions.moveDistance = {
 primitiveActions.actions.turnAngle = {
     label: "Turn",
     ex: function(params) {
-      if(primitiveActions.movingPoint !== undefined){
+      if(primitiveActions.movingPoint && primitiveActions.fromDistance){
         var prevPoint = primitiveActions.movingPoint[primitiveActions.movingPoint.length-1].point;
         // // Creating new temp plot
         
@@ -173,7 +179,7 @@ primitiveActions.actions.turnAngle = {
           var i = 2; // i specifies which point will be replaced by the new temp point when the turn is finished
         } else {
           var arcParams = ["R", primitiveActions.movingPointBase, prevPoint];
-          var i = 1;
+          var i = 1; // i specifies which point will be replaced by the new temp point when the turn is finished
         }
         controller.addAction(new Action('tempArc', arcParams));
         // Turning
@@ -209,7 +215,10 @@ primitiveActions.actions.turnAngle = {
         // Adding new point to list
         primitiveActions.movingPoint.push({
           point: newPoint, 
-          orientation: r1.orientation+parseInt(params.angle)+ex.angleDelta
+          orientation: orient,
+          pivot: new Point(r1.location.x, r1.location.y),
+          type: "turn",
+          angle: parseFloat(params.angle)
         });
 
       } else {
@@ -265,22 +274,37 @@ primitiveActions.actions.stopMovingPoint = {
     var pointName = primitiveActions.movingPoint[0].point;
     // Iterate through intermediate points in path
     while(primitiveActions.movingPoint.length > 1){
+      var pivot = primitiveActions.movingPoint[1].pivot;
+      var type = primitiveActions.movingPoint[1].type;
       var origin = controller.getPoint(primitiveActions.movingPoint[0].point);
       var target = controller.getPoint(primitiveActions.movingPoint[1].point);
+      var actionName = type == "turn" ? "turnSinglePoint" : "moveSinglePoint";  
 
       // Create line P-1
-      actions.push(new Action("tempLine", [pointName, primitiveActions.movingPoint[1].point]));
+      if(type !== "turn"){
+        actions.push(new Action("tempLine", [pointName, primitiveActions.movingPoint[1].point]));
+      } else {
+        var params;
+        if(primitiveActions.movingPoint[1].angle > 0){
+          params = [pF.pointExists(pivot), pointName, primitiveActions.movingPoint[1].point];
+        } else {
+          params = [pF.pointExists(pivot), primitiveActions.movingPoint[1].point, pointName];
+        }
+        actions.push(new Action("tempArc", params));
+      }
 
       // Delete point 0
       if(pointName !== primitiveActions.movingPoint[0].point){ // Don't delete at the first time
         actions.push(new Action("deletePoint", primitiveActions.movingPoint[0].point));
       }
 
-      // Move single point     
-      actions.push(new Action("moveSinglePoint", {
+      // Perform animated actions
+      actions.push(new Action(actionName, {
         point: pointName,
         orientation: primitiveActions.movingPoint[1].orientation,
-        distance: origin.distanceTo(target)
+        distance: type == "turn" ? pivot.distanceTo(target) : origin.distanceTo(target),
+        pivot: pivot, // will be defined if primitiveActions.movingPoint[1].type is turn
+        angle: primitiveActions.movingPoint[1].angle // Angle that needs to be turned
       }));
       
       // Delete the line
@@ -295,12 +319,14 @@ primitiveActions.actions.stopMovingPoint = {
     if(primitiveActions.movingPointBase !== "R"){
       actions.push(new Action("deletePoint", pointName));
     }
-    // Removing points array
-    primitiveActions.movingPoint = undefined;
     // Play actions
     primitiveActions.executeAction(actions);
     // Remove extensions (valid if this is closing a movePointDistance action)
     r1.removeExtension(primitiveActions.movingPointBase);
+    // Clearing everything
+    primitiveActions.movingPoint = undefined;
+    primitiveActions.movingPointBase = undefined;
+    primitiveActions.fromDistance = undefined;
   }
 
 }
@@ -316,6 +342,7 @@ primitiveActions.actions.movePointDistance = {
     var currPoint = "P" + pF.currPointNum;
     controller.addAction(new Action('tempLine', [currPoint, point.pointName]));
 
+    primitiveActions.fromDistance = true;
     primitiveActions.movingPointBase = point.pointName;
     primitiveActions.movingPoint = [{point: currPoint, orientation: r1.orientation}];
     
@@ -549,7 +576,7 @@ primitiveActions.executeAction = function(action)
 {
   var act, i;
   
-    console.log("Executing... " + action.name + " " + action.op);
+    console.log("Executing... " + action.name + " " + JSON.stringify(action.op));
    
   if(action.constructor.getName() == "Action")
   {
