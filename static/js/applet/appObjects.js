@@ -144,10 +144,41 @@ var createRobot = function() {
   var show = function() {
     makeCenter();
     makeEyes();
+    //Init
     geoApp.evalCommand("C1 = Segment[R,E]");
     geoApp.evalCommand("RB = Circle[R, C1]");
+    geoApp.evalCommand("RC = CircumcircularSector[G,H,I]");
+    geoApp.evalCommand("RD = SemiCircle[J,K]");
+    geoApp.evalCommand("RE = SemiCircle[M,L]");
+    geoApp.evalCommand("RF = SemiCircle[O,P]");
     geoApp.registerObjectClickListener("RB", "alertWasClicked");
     makeExtensions();
+
+    // Hide points
+    geoApp.setVisible('G', false);
+    geoApp.setVisible('H', false);
+    geoApp.setVisible('I', false);
+    geoApp.setVisible('J', false);
+    geoApp.setVisible('K', false);
+    geoApp.setVisible('L', false);
+    geoApp.setVisible('M', false);
+    geoApp.setVisible('N', false);
+    geoApp.setVisible('O', false);
+    geoApp.setVisible('P', false);
+    geoApp.setVisible('E', false);
+    geoApp.setVisible('R', false);
+
+    // Color
+    geoApp.setColor('C1', 255, 205, 50);
+    geoApp.setColor('RB', 255, 205, 50);
+    geoApp.setFilling('RB',0.5);
+    geoApp.setColor('RC', 255, 150, 0);
+    geoApp.setFilling('RC',0.5);
+    geoApp.setColor('RD', 255, 150, 0);
+    geoApp.setFilling('RD',0.3);
+    geoApp.setColor('RE', 255, 140, 60);
+    geoApp.setColor('RF', 255, 140, 60);
+
   };
 
   var appReady = function () {
