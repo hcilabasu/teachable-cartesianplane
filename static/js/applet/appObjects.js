@@ -8,15 +8,68 @@ var createRobot = function() {
 
   var markUnits = false;
   var pen = false;
-    
+
   //speed parameters
   var distance = .25;
   var degrees = 10;
-    
+
   var radius = 0.5;
 
+  var changeColor = function(rbC,rcC,rdC,reC,rfC) {
+    geoApp.setColor('C1', hexToR(rbC), hexToG(rbC), hexToB(rbC));
+    geoApp.setColor('RB', hexToR(rbC), hexToG(rbC), hexToB(rbC));
+    geoApp.setColor('RC', hexToR(rcC), hexToG(rcC), hexToB(rcC));
+    geoApp.setColor('RD', hexToR(rdC), hexToG(rdC), hexToB(rdC));
+    geoApp.setColor('RE', hexToR(reC), hexToG(reC), hexToB(reC));
+    geoApp.setColor('RF', hexToR(rfC), hexToG(rfC), hexToB(rfC));
+  };
+
+  var fadeColor = function(rbC,rcC,rdC,reC,rfC,steps) {
+    var count = 0;
+    // RB
+    var rb_stepR = (hexToR(geoApp.getColor('RB')) - hexToR(rbC)) / steps;
+    var rb_stepG = (hexToG(geoApp.getColor('RB')) - hexToG(rbC)) / steps;
+    var rb_stepB = (hexToB(geoApp.getColor('RB')) - hexToB(rbC)) / steps;
+    // RC
+    var rc_stepR = (hexToR(geoApp.getColor('RC')) - hexToR(rcC)) / steps;
+    var rc_stepG = (hexToG(geoApp.getColor('RC')) - hexToG(rcC)) / steps;
+    var rc_stepB = (hexToB(geoApp.getColor('RC')) - hexToB(rcC)) / steps;
+    // RD
+    var rd_stepR = (hexToR(geoApp.getColor('RD')) - hexToR(rdC)) / steps;
+    var rd_stepG = (hexToG(geoApp.getColor('RD')) - hexToG(rdC)) / steps;
+    var rd_stepB = (hexToB(geoApp.getColor('RD')) - hexToB(rdC)) / steps;
+    // RE
+    var re_stepR = (hexToR(geoApp.getColor('RE')) - hexToR(reC)) / steps;
+    var re_stepG = (hexToG(geoApp.getColor('RE')) - hexToG(reC)) / steps;
+    var re_stepB = (hexToB(geoApp.getColor('RE')) - hexToB(reC)) / steps;
+    // RF
+    var rf_stepR = (hexToR(geoApp.getColor('RF')) - hexToR(rfC)) / steps;
+    var rf_stepG = (hexToG(geoApp.getColor('RF')) - hexToG(rfC)) / steps;
+    var rf_stepB = (hexToB(geoApp.getColor('RF')) - hexToB(rfC)) / steps;
+
+
+    //console.log('Starting Color:'+hexToR(geoApp.getColor('RB'))+','+hexToG(geoApp.getColor('RB'))+','+hexToB(geoApp.getColor('RB')));
+    //console.log('Steps: '+rb_stepR+','+rb_stepG+','+rb_stepB);
+
+    var fade = setInterval(function(){
+        //console.log('Debug Steps (this):'+this.rb_stepR+','+this.rb_stepG+','+this.rb_stepB);
+       // console.log('Debug Steps:'+rb_stepR+','+rb_stepG+','+rb_stepB);
+        geoApp.setColor('C1', hexToR(geoApp.getColor('RB'))-rb_stepR, hexToG(geoApp.getColor('RB'))-rb_stepG, hexToB(geoApp.getColor('RB'))-rb_stepB);
+        geoApp.setColor('RB', hexToR(geoApp.getColor('RB'))-rb_stepR, hexToG(geoApp.getColor('RB'))-rb_stepG, hexToB(geoApp.getColor('RB'))-rb_stepB);
+        geoApp.setColor('RC', hexToR(geoApp.getColor('RC'))-rc_stepR, hexToG(geoApp.getColor('RC'))-rc_stepG, hexToB(geoApp.getColor('RC'))-rc_stepB);
+        geoApp.setColor('RD', hexToR(geoApp.getColor('RD'))-rd_stepR, hexToG(geoApp.getColor('RD'))-rd_stepG, hexToB(geoApp.getColor('RD'))-rd_stepB);
+        geoApp.setColor('RE', hexToR(geoApp.getColor('RE'))-re_stepR, hexToG(geoApp.getColor('RE'))-re_stepG, hexToB(geoApp.getColor('RE'))-re_stepB);
+        geoApp.setColor('RF', hexToR(geoApp.getColor('RF'))-rf_stepR, hexToG(geoApp.getColor('RF'))-rf_stepG, hexToB(geoApp.getColor('RF'))-rf_stepB);
+        //console.log('Next Color:'+hexToR(geoApp.getColor('RB'))+','+hexToG(geoApp.getColor('RB'))+','+hexToB(geoApp.getColor('RB')));
+        count++;
+        if (count == steps){
+          clearInterval(fade);
+        }
+    },10)
+  };
+
   /*
-   * Extensions are existing points that are connected to the robot 
+   * Extensions are existing points that are connected to the robot
    * through line segments. They rotate and move along with the robot.
    *
    * Extensions need to have:
@@ -25,12 +78,12 @@ var createRobot = function() {
    * - name (string) - Name of point being moved
    */
   var extensions = {};
-  
+
   var makeEyes = function() {
     geoApp.evalCommand("E = (" + (location.x + xDist(radius, orientation)) + "," + (location.y + yDist(radius, orientation))+ ")");
     geoApp.registerObjectClickListener("E", "alertWasClicked");
   };
-  
+
   var makeCenter = function() {
     geoApp.evalCommand("R = (" + location.x + "," + location.y + ")");
     geoApp.setLayer("R", 1);
@@ -41,7 +94,7 @@ var createRobot = function() {
     for (var i in extensions) {
       var ex = extensions[i];
       pointOrientation = orientation+ex.angleDelta == 360 ? 0 : orientation+ex.angleDelta;
-      geoApp.evalCommand(ex.name + " = (" + (location.x + xDist(ex.distance, pointOrientation)) + "," + 
+      geoApp.evalCommand(ex.name + " = (" + (location.x + xDist(ex.distance, pointOrientation)) + "," +
                                             (location.y + yDist(ex.distance, pointOrientation))+ ")");
       geoApp.evalCommand("C" + ex.name + " = Segment[R," + ex.name  + "]");
       geoApp.evalCommand("SetLineStyle[C" + ex.name + ", 1]");
@@ -73,7 +126,7 @@ var createRobot = function() {
       geoApp.deleteObject("C" + pointName);
     }
   }
-  
+
   var show = function() {
     makeCenter();
     makeEyes();
@@ -82,7 +135,7 @@ var createRobot = function() {
     geoApp.registerObjectClickListener("RB", "alertWasClicked");
     makeExtensions();
   };
-    
+
   var appReady = function () {
     if(geoApp != undefined)
       {
@@ -94,9 +147,9 @@ var createRobot = function() {
   };
 
   // Public object returned
-  return {    
+  return {
     appReady: appReady,
-    
+
     makeEyes: makeEyes,
     makeCenter: makeCenter,
     makeExtensions : makeExtensions,
@@ -111,7 +164,7 @@ var createRobot = function() {
         default:
           return degrees;
       }
-    },    
+    },
 
     addExtension: addExtension,
 
@@ -134,7 +187,7 @@ var pF = (function() {
   console.log("Playing field...");
 
   var pointNum = 1;
-  
+
    var drawLine = function(point1, point2)
    {
 	var lineName = point1 + point2;
@@ -165,12 +218,12 @@ var pF = (function() {
     r1 = createRobot();
     r1.appReady();
   }
-  
+
   var getPoint = function(point) {
     if(point.constructor && point.constructor.getName() == "Point") return point;
     else return new Point(geoApp.getXcoord(point), geoApp.getYcoord(point));
   };
-  
+
   var deletePoint = function(pointName) {
     geoApp.deleteObject(pointName);
   }
@@ -181,53 +234,53 @@ var pF = (function() {
         pName = name;
     else
       pName = "P" + pointNum;
-      
+
     geoApp.evalCommand(pName + " = (" + point.x + "," + point.y + ")");
     geoApp.setLayer(pName, 0);
-    
+
     if(funcName)
     {
-          addClickListener(pName, funcName);      
+          addClickListener(pName, funcName);
     }
-    pointNum++;       
-    
+    pointNum++;
+
     return "P"+(pointNum-1);
   }
 
   var createPoint = function(point, funcName, name) {
 //    console.log("In createPoint..." + point.x + "," + point.y);
     var exists = pointExists(point);
-    
+
     if(exists)
       return exists;
 
     else
     {
       return forceCreatePoint(point, funcName, name);
-    }  
+    }
   };
-  
+
   var pointExists = function(point)
   {
       var exists = null;
-      
+
       //iterate all points
       for (var i = 0; i < geoApp.getObjectNumber() && !exists; i++)
       {
   	var name = geoApp.getObjectName(i);
-  
-  	if ("point" == geoApp.getObjectType(name) 
+
+  	if ("point" == geoApp.getObjectType(name)
   	    && 0 == geoApp.getLayer(name)
   	    && point.x == geoApp.getXcoord(name)
   	    && point.y == geoApp.getYcoord(name))
-  	{	  
+  	{
   	    exists = name;
   	}
       }
-      
+
       return exists;
   };
-  
+
   var appReady = function(points, lines) {
     if(geoApp)
     {
@@ -240,7 +293,7 @@ var pF = (function() {
     else
       setTimeout(pF.appReady, 50);
   };
-  
+
   var plotPointsAndLines = function(points, lines){
     console.dir(points);
     console.dir(lines);
@@ -282,7 +335,7 @@ var pF = (function() {
     createPoint(new Point(2,-2), "alertWasClicked", "U2");
     createPoint(new Point(4,-2), "alertWasClicked", "U3");
     createPoint(new Point(4,2), "alertWasClicked", "U4");
-    
+
     // >>>> Lines <<<<
 
     // A
@@ -308,7 +361,7 @@ var pF = (function() {
   return {
     get lastPointNum() { return pointNum - 1; },
     get currPointNum() { return pointNum; },
-    
+
     getPoint: getPoint,
     createPoint: createPoint,
     forceCreatePoint: forceCreatePoint,
@@ -317,7 +370,7 @@ var pF = (function() {
     deleteObject: deletePoint,
 
     addClickListener: addClickListener,
-    
+
     appReady: appReady
   }
 }());
@@ -332,7 +385,7 @@ var ready = function()
     console.log("Applet ready...");
     geoApp = document.ggbApplet;
     //document.onclick = appletClicked;
-  }  
+  }
   else
   {
     console.log("Applet not yet loaded...");
