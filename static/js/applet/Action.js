@@ -119,10 +119,11 @@ primitiveActions.actions.moveDistance = {
     ex: function(params) {
 
       var dist = params.distance;
-      if(primitiveActions.movingPointBase)
+
+      if(primitiveActions.movingPointBase){
         var point = controller.getPoint(primitiveActions.movingPointBase);
-      else {
-        var point = controller.getPoint("R");
+      } else {
+        var point = r1.location;
       }
 
       var newX = Math.round((point.x + xDist(dist, r1.orientation))*100000)/100000;
@@ -274,11 +275,12 @@ primitiveActions.actions.stopMovingPoint = {
     var pointName = primitiveActions.movingPoint[0].point;
     // Iterate through intermediate points in path
     while(primitiveActions.movingPoint.length > 1){
-      var pivot = primitiveActions.movingPoint[1].pivot;
       var type = primitiveActions.movingPoint[1].type;
+      var pivot = primitiveActions.movingPoint[1].pivot;
+      var pivotName = type === "turn" ? pF.pointExists(pivot) : undefined;
       var origin = controller.getPoint(primitiveActions.movingPoint[0].point);
       var target = controller.getPoint(primitiveActions.movingPoint[1].point);
-      var actionName = type == "turn" ? "turnSinglePoint" : "moveSinglePoint";  
+      var actionName = type === "turn" ? "turnSinglePoint" : "moveSinglePoint";  
 
       // Create line P-1
       if(type !== "turn"){
@@ -286,9 +288,9 @@ primitiveActions.actions.stopMovingPoint = {
       } else {
         var params;
         if(primitiveActions.movingPoint[1].angle > 0){
-          params = [pF.pointExists(pivot), pointName, primitiveActions.movingPoint[1].point];
+          params = [pivotName, pointName, primitiveActions.movingPoint[1].point];
         } else {
-          params = [pF.pointExists(pivot), primitiveActions.movingPoint[1].point, pointName];
+          params = [pivotName, primitiveActions.movingPoint[1].point, pointName];
         }
         actions.push(new Action("tempArc", params));
       }
@@ -302,14 +304,18 @@ primitiveActions.actions.stopMovingPoint = {
       actions.push(new Action(actionName, {
         point: pointName,
         orientation: primitiveActions.movingPoint[1].orientation,
-        distance: type == "turn" ? pivot.distanceTo(target) : origin.distanceTo(target),
+        distance: type === "turn" ? pivot.distanceTo(target) : origin.distanceTo(target),
         pivot: pivot, // will be defined if primitiveActions.movingPoint[1].type is turn
-        angle: primitiveActions.movingPoint[1].angle // Angle that needs to be turned
+        angle: primitiveActions.movingPoint[1].angle, // Angle that needs to be turned
+        arc: params !== undefined ? params.join('') : undefined
       }));
       
       // Delete the line
       actions.push(new Action("deleteLine", [pointName, primitiveActions.movingPoint[1].point]));
-      
+      // If action was a turn, delete the pivot point
+      if(type === "turn"){
+        actions.push(new Action("deletePoint", pivotName));
+      }
       //Removing first point from array
       primitiveActions.movingPoint.splice(0, 1);      
     }

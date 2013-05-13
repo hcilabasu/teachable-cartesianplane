@@ -23,7 +23,7 @@ var controller = (function() {
       }
     }
 
-    var getAction = function(act, dist){
+    var getAction = function(act, dist, finalStep){
       if (act.name === "moveSinglePoint") {
         return new Action(act.name, {
           point: act.op.point,
@@ -36,6 +36,8 @@ var controller = (function() {
           pivot: act.op.pivot,
           angle: dist,
           distance: act.op.distance,
+          arc: act.op.arc,
+          isFinalStep: finalStep
         });
       } else {
         return new Action(act.name, dist);
@@ -49,15 +51,15 @@ var controller = (function() {
     temp = getDistance(act);
     while(temp != 0)
     {
-      if(Math.abs(temp) < Math.abs(stepSize))
+      if(Math.abs(temp) <= Math.abs(stepSize))
       {
-        action = getAction(act, temp); //temp is the distance measure
+        action = getAction(act, temp, true); //temp is the distance measure
         total += temp;
         temp = 0;
       }
       else
       {
-        action = getAction(act, stepSize); //stepSize is the distance measure
+        action = getAction(act, stepSize, false); //stepSize is the distance measure
         total += stepSize;        
         temp -= stepSize;
       } 
@@ -279,11 +281,16 @@ var controller = (function() {
           distance = turn.distance,
           pivot = turn.pivot,
           turnAngle = parseFloat(turn.angle),
-          orientation = angle(pivot, pF.getPoint(point));
-          newOrientation = (orientation + turnAngle) % 360;
+          orientation = angle(pivot, pF.getPoint(point)),
+          newOrientation = (orientation + turnAngle) % 360,
+          arc = turn.arc;
 
       var newX = pivot.x + xDist(distance, newOrientation);
       var newY = pivot.y + yDist(distance, newOrientation);
+
+      if(turn.isFinalStep){
+        geoApp.setVisible(arc, false);
+      }
 
       geoApp.setCoords(point, newX, newY);
     }
