@@ -197,6 +197,8 @@ var createRobot = function() {
 
     makeEyes: makeEyes,
     makeCenter: makeCenter,
+    changeColor: changeColor,
+    fadeColor: fadeColor,
     makeExtensions : makeExtensions,
     getExtension : getExtension,
     removeExtension : removeExtension,
