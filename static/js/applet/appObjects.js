@@ -80,7 +80,21 @@ var createRobot = function() {
   var extensions = {};
 
   var makeEyes = function() {
+    // Eye
     geoApp.evalCommand("E = (" + (location.x + xDist(radius, orientation)) + "," + (location.y + yDist(radius, orientation))+ ")");
+    // Shell
+    geoApp.evalCommand("G = (" + (location.x+xDist(radius+.01, orientation+190)) + "," + (location.y+yDist(radius+.01, orientation+190)) + ")");
+    geoApp.evalCommand("H = (" + (location.x+xDist(radius+.02, orientation)) + "," + (location.y+yDist(radius+.02, orientation)) + ")");
+    geoApp.evalCommand("I = (" + (location.x+xDist(radius+.01, orientation+170)) + "," + (location.y+yDist(radius+.01, orientation+170)) + ")");
+    // Head
+    geoApp.evalCommand("J = (" + (location.x+xDist(radius, orientation+30)) + "," + (location.y+yDist(radius, orientation+30)) + ")");
+    geoApp.evalCommand("K= (" + (location.x+xDist(radius, orientation+330)) + "," + (location.y+yDist(radius, orientation+330)) + ")");
+    // Antennas
+    geoApp.evalCommand("L = (" + (location.x+xDist(radius+.1, orientation+15)) + "," + (location.y+yDist(radius+.1, orientation+15)) + ")");
+    geoApp.evalCommand("M = (" + (location.x+xDist(radius+.2, orientation+45)) + "," + (location.y+yDist(radius+.2, orientation+45)) + ")");
+    geoApp.evalCommand("O= (" + (location.x+xDist(radius+.1, orientation+345)) + "," + (location.y+yDist(radius+.1, orientation+345)) + ")");
+    geoApp.evalCommand("P= (" + (location.x+xDist(radius+.2, orientation+315)) + "," + (location.y+yDist(radius+.2, orientation+315)) + ")");
+
     geoApp.registerObjectClickListener("E", "alertWasClicked");
   };
 
