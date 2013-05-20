@@ -267,6 +267,25 @@ primitiveActions.actions.movePoint = {
   }
 }
 
+
+primitiveActions.actions.movePointDistance = {
+  label: "Move Point from Distance",
+  ex: function(point){
+    // Adding robot's extension
+    r1.addExtension(point.pointName);
+    // Adding structure for shadow points and lines
+    var target = controller.getPoint(point.pointName);
+    controller.addAction(new Action('tempPlot', new Point(target.x, target.y)));
+    var currPoint = "P" + pF.currPointNum;
+    controller.addAction(new Action('tempLine', [currPoint, point.pointName]));
+
+    primitiveActions.fromDistance = true;
+    primitiveActions.movingPointBase = point.pointName;
+    primitiveActions.movingPoint = [{point: currPoint, orientation: r1.orientation}];
+    
+  }
+}
+
 primitiveActions.actions.stopMovingPoint = {
   label: "Stop Moving Point",
   ex: function() {
@@ -319,8 +338,13 @@ primitiveActions.actions.stopMovingPoint = {
       //Removing first point from array
       primitiveActions.movingPoint.splice(0, 1);      
     }
-    // Remove last point
-    actions.push(new Action("deletePoint", primitiveActions.movingPoint[0].point));
+    if(pointName !== primitiveActions.movingPoint[0].point){
+      // Remove last point if it's not the point base (meaning that no actions were taken)
+      actions.push(new Action("deletePoint", primitiveActions.movingPoint[0].point));
+    } else {
+      // must remove the line between robot and point
+      actions.push(new Action("deleteLine", pointName + "R"));
+    }
     // Remove moving point if it's not the robot
     if(primitiveActions.movingPointBase !== "R"){
       actions.push(new Action("deletePoint", pointName));
@@ -335,24 +359,6 @@ primitiveActions.actions.stopMovingPoint = {
     primitiveActions.fromDistance = undefined;
   }
 
-}
-
-primitiveActions.actions.movePointDistance = {
-  label: "Move Point from Distance",
-  ex: function(point){
-    // Adding robot's extension
-    r1.addExtension(point.pointName);
-    // Adding structure for shadow points and lines
-    var target = controller.getPoint(point.pointName);
-    controller.addAction(new Action('tempPlot', new Point(target.x, target.y)));
-    var currPoint = "P" + pF.currPointNum;
-    controller.addAction(new Action('tempLine', [currPoint, point.pointName]));
-
-    primitiveActions.fromDistance = true;
-    primitiveActions.movingPointBase = point.pointName;
-    primitiveActions.movingPoint = [{point: currPoint, orientation: r1.orientation}];
-    
-  }
 }
 
 /********************************************************************
