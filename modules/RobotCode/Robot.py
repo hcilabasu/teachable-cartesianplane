@@ -64,7 +64,7 @@ class Robot:
 	    return (chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x02) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
 
 	def forward(self):
-	    self._tty.write(chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x01) + self.currentSpeed() + chr(0x07) + chr(0x00) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x02) + self.currentSpeed() + chr(0x07) + chr(0x00) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
+	    self._tty.write(self.motbforwardSTR() + self.motcforwardSTR())
 	    self.forw = True
 	    self.back = False
 	    self.rightc = False
@@ -81,10 +81,10 @@ class Robot:
 	    return (chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x02) + self.currentSpeed() + chr(0x07) + chr(0x00) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
 	    
 	def motbbackwardSTR(self):
-	    return (chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x01) + self.currentNegSpeed() + chr(0x01) + chr(0x01) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
+	    return (chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x01) + self.currentNegSpeed() + chr(0x07) + chr(0x00) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
 
 	def motcbackwardSTR(self):
-	    return (chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x02) + self.currentNegSpeed() + chr(0x01) + chr(0x01) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
+	    return (chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x02) + self.currentNegSpeed() + chr(0x07) + chr(0x00) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
 
 	#These are functions to turn on and off certain motors using the 
 	def motbforwardTurn(self):
@@ -126,6 +126,7 @@ class Robot:
 		if self.forw:
 			self.stop()
 			self.forw = False
+			self.backward()
 		elif self.back:
 			self.stop()
 			self.back = False
@@ -137,6 +138,7 @@ class Robot:
 		if self.back:
 			self.stop()
 			self.back = False
+			self.forward()
 		elif self.forw:
 			self.stop()
 			self.forw = False
@@ -150,6 +152,7 @@ class Robot:
 		elif self.rightc:
 			self.stop()
 			self.rightc = False
+			self.turnLeft()
 		else:
 			self.turnLeft()
 
@@ -161,6 +164,7 @@ class Robot:
 		elif self.leftc:
 			self.stop()
 			self.leftc = False
+			self.turnRight()
 		else:
 			self.turnRight()
 		
