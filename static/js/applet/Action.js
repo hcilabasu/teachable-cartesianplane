@@ -194,8 +194,8 @@ primitiveActions.actions.turnAngle = {
         dist = r.distanceTo(p);
         orient = r1.orientation+ex.angleDelta+parseInt(params.angle);
         orient = orient == 360 ? 0 : orient;
-        pointX = (r.x + xDist(dist, orient));
-        pointY = (r.y + yDist(dist, orient));
+        pointX = (r.x + xDist(dist, orient)).toFixed(15);
+        pointY = (r.y + yDist(dist, orient)).toFixed(15);
 
         controller.addAction(new Action('tempPlot', new Point(r1.location.x, r1.location.y)));
         var pivot = "P" + pF.currPointNum;

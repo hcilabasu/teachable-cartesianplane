@@ -41,8 +41,9 @@ var createRobot = function() {
     for (var i in extensions) {
       var ex = extensions[i];
       pointOrientation = orientation+ex.angleDelta == 360 ? 0 : orientation+ex.angleDelta;
-      geoApp.evalCommand(ex.name + " = (" + (location.x + xDist(ex.distance, pointOrientation)) + "," + 
-                                            (location.y + yDist(ex.distance, pointOrientation))+ ")");
+      var newX = location.x + xDist(ex.distance, pointOrientation);
+      var newY = location.y + yDist(ex.distance, pointOrientation);
+      geoApp.evalCommand(ex.name + " = (" + newX.toFixed(15) + "," + newY.toFixed(15) + ")");
       geoApp.evalCommand("C" + ex.name + " = Segment[R," + ex.name  + "]");
       geoApp.evalCommand("SetLineStyle[C" + ex.name + ", 1]");
     };
