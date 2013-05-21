@@ -101,6 +101,13 @@ var alertWasClicked = function(clickedObject)
   clickListener.executeEvent(clickedObject);
 }
 
+var stopDragMode = function(){
+    // Clearing everything
+    primitiveActions.movingPoint = undefined;
+    primitiveActions.movingPointBase = undefined;
+    primitiveActions.fromDistance = undefined;
+}
+
 
 
 /********************************************************************
@@ -353,10 +360,8 @@ primitiveActions.actions.stopMovingPoint = {
     primitiveActions.executeAction(actions);
     // Remove extensions (valid if this is closing a movePointDistance action)
     r1.removeExtension(primitiveActions.movingPointBase);
-    // Clearing everything
-    primitiveActions.movingPoint = undefined;
-    primitiveActions.movingPointBase = undefined;
-    primitiveActions.fromDistance = undefined;
+    // Stopping grab mode
+    stopDragMode();
   }
 
 }

@@ -86,10 +86,11 @@ var createRobot = function() {
     
   var appReady = function () {
     if(geoApp != undefined)
-      {
-	console.log("geoApp: " + geoApp);
+    {
+      console.log("geoApp: " + geoApp);
       show();
-      }
+      stopDragMode();
+    }
     else
       setTimeout(r1.appReady, 50);
   };
