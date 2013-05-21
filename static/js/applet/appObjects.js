@@ -248,7 +248,7 @@ var pF = (function() {
     clearPlot();
     for(var i = 0; i < points.length; i++){
       var point = points[i];
-      createPoint(new Point(point.x,point.y), "alertWasClicked", point.name);
+      createPoint(new Point(point.x,point.y), "alertWasClicked");
     }
     for(var i = 0; i < lines.length; i++){
       var line = lines[i];
