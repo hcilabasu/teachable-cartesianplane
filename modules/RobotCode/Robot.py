@@ -19,7 +19,7 @@ class Robot:
 			self.leftc = False
 			self.rightc = False
 			self.speed = 90
-			self.turnSpeed = 65
+			self.turnSpeed = 55
 			print ("Connected to Robot")
 		except:
 			print ("Could not Connect to Robot. Make sure the robot is on.")
