@@ -100,6 +100,10 @@ var controller = (function() {
     
     return {    
       executeAction: function() {
+        // allow objects to be moved
+        if(pF.isLocked()){
+          pF.unlockObjects();
+        }
         if(animating)
         {
 	    console.log("In execute action animating.");
@@ -181,9 +185,14 @@ var controller = (function() {
   };
 
   var check = function() {
-      console.log("check");
-    if(actionsTree.empty())
+    console.log("check");
+    if(actionsTree.empty()){
       actionsTree.executeAction();
+    } else {
+      if(!pF.isLocked()){
+        pF.lockObjects();
+      }
+    }
     setTimeout("controller.check()", 50);
   };
   

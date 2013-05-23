@@ -7,10 +7,23 @@
         <script src="{{=URL('static','js/jquery.js')}}"></script>
         <script src="{{=URL('static','js/web2py.js')}}"></script>
 
+        <script>
+            var draggingEnabled = true;
+
+            $(function(){
+                $("#dragToggle").click(function(e){
+                    draggingEnabled = !draggingEnabled;
+                    pF.setLockEnabled(draggingEnabled);
+                    $(this).text("Dragging " + (draggingEnabled ? "ON" : "OFF"));
+                });
+            });
+        </script>
+
     </head>
     <body>
         {{=applet}}
         <div id="problem-desc">This is the current problem</div>
+        <a href="#" id="dragToggle">Dragging ON</a>
         <script>
             var olddata = "0";
             var currentProblem;

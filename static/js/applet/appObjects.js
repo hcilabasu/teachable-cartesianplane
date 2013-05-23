@@ -29,12 +29,14 @@ var createRobot = function() {
   var makeEyes = function() {
     geoApp.evalCommand("E = (" + (location.x + xDist(radius, orientation)) + "," + (location.y + yDist(radius, orientation))+ ")");
     geoApp.registerObjectClickListener("E", "alertWasClicked");
+    geoApp.setLabelVisible("E", false);
   };
   
   var makeCenter = function() {
     geoApp.evalCommand("R = (" + location.x + "," + location.y + ")");
     geoApp.setLayer("R", 1);
     geoApp.registerObjectClickListener("R", "alertWasClicked");
+    geoApp.setLabelVisible("R", false);
   };
 
   var makeExtensions = function() {
@@ -230,6 +232,38 @@ var pF = (function() {
       
       return exists;
   };
+
+  var lock = false; // Determines if objects are locked or not
+  var draggingEnabled = true; // Determines if lock should be taken in consideration
+
+  var isLocked = function(){
+    return lock;
+  }
+
+  var lockObjects = function(){
+    if(!draggingEnabled){
+      setLock(true);
+    }
+  }
+
+  var unlockObjects = function(){
+    if(!draggingEnabled){
+      setLock(false);
+    }
+  }
+
+  var setLock = function(setLock){
+    lock = setLock;
+    for(var i = 0; i < geoApp.getObjectNumber(); i++){
+      var name = geoApp.getObjectName(i);
+      geoApp.evalCommand("SetFixed["+name+","+setLock+"]");
+    }
+  }
+
+  var setLockEnabled = function(setDragEnabled){
+    draggingEnabled = setDragEnabled;
+    setLock(!setDragEnabled);
+  }
   
   var appReady = function(points, lines) {
     if(geoApp)
@@ -239,6 +273,7 @@ var pF = (function() {
       } else {
         loadTest();
       }
+      pF.lockObjects();
     }
     else
       setTimeout(pF.appReady, 50);
@@ -319,7 +354,10 @@ var pF = (function() {
     drawArc: drawArc,
     deleteObject: deletePoint,
     pointExists: pointExists,
-
+    isLocked: isLocked,
+    lockObjects: lockObjects,
+    unlockObjects: unlockObjects,
+    setLockEnabled: setLockEnabled,
     addClickListener: addClickListener,
     
     appReady: appReady
