@@ -278,6 +278,7 @@ primitiveActions.actions.movePoint = {
 primitiveActions.actions.movePointDistance = {
   label: "Move Point from Distance",
   ex: function(point){
+    pF.unlockObjects();
     // Adding robot's extension
     r1.addExtension(point.pointName);
     // Adding structure for shadow points and lines
@@ -290,6 +291,7 @@ primitiveActions.actions.movePointDistance = {
     primitiveActions.movingPointBase = point.pointName;
     primitiveActions.movingPoint = [{point: currPoint, orientation: r1.orientation}];
     
+    pF.lockObjects();
   }
 }
 
