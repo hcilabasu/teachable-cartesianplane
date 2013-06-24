@@ -48,7 +48,7 @@ class Robot:
 		return chr((-self.speed + (1 << 8)) % (1 << 8))
 
 	def currentNegTurnSpeed(self):
-		return chr((-self.turnSpeed + (1 << 8)) % (1 << 8))
+		return chr((-90 + (1 << 8)) % (1 << 8))
 
 	def stop(self):
 		self._tty.write(self.stopmotbSTR() + self.stopmotcSTR())
