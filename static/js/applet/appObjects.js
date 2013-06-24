@@ -47,7 +47,7 @@ var createRobot = function() {
       var newY = location.y + yDist(ex.distance, pointOrientation);
       geoApp.evalCommand(ex.name + " = (" + newX.toFixed(15) + "," + newY.toFixed(15) + ")");
       geoApp.evalCommand("C" + ex.name + " = Segment[R," + ex.name  + "]");
-      geoApp.evalCommand("SetLineStyle[C" + ex.name + ", 1]");
+      geoApp.evalCommand("SetLineThickness[C" + ex.name + ", 6]");
     };
   }
 
