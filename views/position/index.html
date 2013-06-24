@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Position</title>
+
+		<script src="{{=URL('static','js/jquery.js')}}"></script>
+
+		<script>
+
+		var out;
+
+		$(function(){
+
+			out = $("#output");
+
+			window.setInterval(function(){
+				$.ajax({
+					url: "get"
+				}).done(function(data){
+					position = JSON.parse(data);
+					out.text(position.x.toFixed(2) + "," + position.y.toFixed(2));
+				});
+			}, 500);
+		});
+
+		</script>
+
+	</head>
+	<body>
+		<div id="output">-,-</div>
+	</body>
+</html>
