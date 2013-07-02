@@ -29,7 +29,8 @@
     </head>
     <body>
         {{=applet}}
-        <div id="problem-desc">This is the current problem</div>
+        <!-- Changed problem-desc from a div tag to a pre tag. Essentially did this since the text in this tag is later modified with newline characters in between and the div tag disregards the newline character and prints everything in single line. The pre tag preserves the newline and renders accordingly -->
+        <pre id="problem-desc">This is the current problem</pre>
         <a href="#" id="dragToggle">Dragging ON</a>
         <script>
             var olddata = "0";
@@ -58,7 +59,14 @@
                         // Update problem info
                         currentProblem = incoming;
                         updateProblem();
-                        $("#problem-desc").text(currentProblem.text);
+                        
+                        var tmpString = currentProblem.text + "\n";
+                        
+                        for(var i = 0 ; i < currentProblem.prompts.length ; i++) {
+                            tmpString = tmpString + Number(i+1) + " " + currentProblem.prompts[i].toString() + "\n";
+                        }
+                        
+                        $("#problem-desc").text(tmpString);
                     } else {
                         alert("Fall through error...");
                     }

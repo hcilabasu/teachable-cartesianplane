@@ -4,7 +4,7 @@ from xmlrpclib import ServerProxy
 from gluon.shell import exec_environment
 from gluon.contrib.websocket_messaging import websocket_send
 
-filename = os.path.join(request.folder, 'static', 'geoapp.html')
+filename = os.path.join(request.folder, 'static', 'geoApp.html')
 server = ServerProxy('http://127.0.0.1:8000/GeogebraInterface/default/call/xmlrpc')
 
 __current_ip = '127.0.0.1'
