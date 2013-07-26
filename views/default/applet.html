@@ -116,26 +116,33 @@
                                 var correctY = point.y;
 
                                 processingString += "Point Name : " + pointName + "\nCorrect X : " + correctX + ", Correct Y : " + correctY + "\n";
-
+                                
                                 // !!!Disregarding robot for now!!!
                                 if(pointName.toLowerCase() != "robot") {
-                                    if(geoApp.getObjectType(pointName).toLowerCase() == "point" && geoApp.getXcoord(pointName) == correctX && geoApp.getYcoord(pointName) == correctY) {
-                                        isSolutionCorrect = true;
+                                    // Only if the object/point is visible on screen
+                                    if(geoApp.getVisible(pointName)) {
+                                        // !!!Careful of using toFixed, get a confirmation of the proper rounding rules to be applied.
+                                        if(geoApp.getObjectType(pointName).toLowerCase() == "point" && geoApp.getXcoord(pointName).toFixed(2) == correctX && geoApp.getYcoord(pointName).toFixed(2) == correctY) {
+                                            isSolutionCorrect = true;
+                                        }
+                                        else {
+                                            isSolutionCorrect = false;
+                                        }
+                                        
+                                        processingString += "GEO APP X : " + geoApp.getXcoord(pointName).toFixed(2) + ", GEO APP Y : " + geoApp.getYcoord(pointName).toFixed(2) + "\n";
                                     }
                                     else {
+                                        alert(pointName + " is not visible on cartesian plane.");
                                         isSolutionCorrect = false;
                                     }
                                 }
-                                processingString += "GEO APP X : " + geoApp.getXcoord(pointName) + ", GEO APP Y : " + geoApp.getYcoord(pointName) + "\n";
                             }
 
-                            alert(processingString);
-                            if(isSolutionCorrect) {
-                                alert("Your solution is correct!");
+                            if(processingString != "") {
+                                alert(processingString);
                             }
-                            else {
-                                alert("Your solution is wrong. ;(");
-                            }
+
+                            alert("Your solution is " + (isSolutionCorrect ? "correct" : "wrong") + "!");
                         }
                     }
                     else {
