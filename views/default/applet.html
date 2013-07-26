@@ -21,8 +21,17 @@
 
         <style>
             body{ 
+                position: relative;
                 padding-left: 135px;
                 padding-top: 70px;
+                min-width: 1022px;
+            }
+
+            /* This snippet positions the action-list to the right side of the body*/
+            #action-list {
+                position: absolute;
+                right: 0;
+                top: 0;
             }
         </style>
 
@@ -31,16 +40,19 @@
         {{=applet}}
         <!-- Changed problem-desc from a div tag to a pre tag. Essentially did this since the text in this tag is later modified with newline characters in between and the div tag disregards the newline character and prints everything in single line. The pre tag preserves the newline and renders accordingly -->
         <pre id="problem-desc">This is the current problem</pre>
+        <pre id="action-list"></pre>
         <a href="#" id="dragToggle">Dragging ON</a>
         <script>
             var olddata = "0";
             var currentProblem;
+            var userActionList = [];
             $(document).ready(function(){
                 if(!web2py_websocket('ws://{{=ip}}:{{=port}}/realtime/{{=group_name}}',function(e){
                     console.dir(e.data);
                     incoming = JSON.parse(unescape(e.data));
                     // TODO improve detection. Encapsulate the object and include a type property
-                    if(incoming instanceof Array){
+                    // TODO need to incorporate message types/profiles, probaby in an external js file.
+                    if(incoming instanceof Array) {
                         // Execute array of actions (replay steps)
                         updateProblem();
                         actions = [];
@@ -48,26 +60,85 @@
                             var action = incoming[i];
                             actions.push(new Action(action.name, action.op));
                         }
-                        primitiveActions.executeAction(actions);
-                    } else if(incoming.label !== undefined){
-                        console.dir("Execute action");
-                        olddata = incoming;
-                        // Execute action
-                        executeAction();    
-                    } else if(incoming.id !== undefined) {
-                        console.dir("Update problem info");
-                        // Update problem info
-                        currentProblem = incoming;
-                        updateProblem();
-                        
-                        var tmpString = currentProblem.text + "\n";
-                        
-                        for(var i = 0 ; i < currentProblem.prompts.length ; i++) {
-                            tmpString = tmpString + Number(i+1) + " " + currentProblem.prompts[i].toString() + "\n";
+
+                        //Clearing out the user actions if the problem is restarted
+                        if(actions.length == 0) {
+                            userActionList = [];
+                            $("#action-list").text("");
                         }
-                        
-                        $("#problem-desc").text(tmpString);
-                    } else {
+
+                        primitiveActions.executeAction(actions);
+                    }
+                    else if(incoming.type != "check") {
+                        if(incoming.label !== undefined) {
+                            console.dir("Execute action");
+                            olddata = incoming;
+                            
+                            //Displaying user actions as and when they happen
+                            userActionList.push(incoming.label);
+                            var tmpString = "User Actions:\n";
+                            
+                            for(var i = 0 ; i < userActionList.length ; i++) {
+                                tmpString = tmpString + Number(i+1) + ". " + userActionList[i].toString() + "\n";
+                            }
+                            $("#action-list").text(tmpString);
+                            
+                            // Execute action
+                            executeAction();    
+                        }
+                        else if(incoming.id !== undefined) {
+                            console.dir("Update problem info");
+                            // Update problem info
+                            currentProblem = incoming;
+                            updateProblem();
+                            
+                            var tmpString = currentProblem.text + "\n";
+                            
+                            for(var i = 0 ; i < currentProblem.prompts.length ; i++) {
+                                tmpString = tmpString + Number(i+1) + " " + currentProblem.prompts[i].toString() + "\n";
+                            }
+                            
+                            $("#problem-desc").text(tmpString);
+                        }
+                    }
+                    else if(incoming.type == "check") {
+                        //Do solution check here
+                        //confirm("You clicked on Check Solution");
+                        //var point1 = geoApp.getPoint("P1");
+                        //alert(geoApp.getXcoord("P1"));
+                        var isSolutionCorrect = true;
+                        var processingString = "";
+                        if(incoming.solution.points) {
+                            for(var i = 0 ; i < incoming.solution.points.length ; i++) {
+                                var point = incoming.solution.points[i];
+                                var pointName = point.name;
+                                var correctX = point.x;
+                                var correctY = point.y;
+
+                                processingString += "Point Name : " + pointName + "\nCorrect X : " + correctX + ", Correct Y : " + correctY + "\n";
+
+                                // !!!Disregarding robot for now!!!
+                                if(pointName.toLowerCase() != "robot") {
+                                    if(geoApp.getObjectType(pointName).toLowerCase() == "point" && geoApp.getXcoord(pointName) == correctX && geoApp.getYcoord(pointName) == correctY) {
+                                        isSolutionCorrect = true;
+                                    }
+                                    else {
+                                        isSolutionCorrect = false;
+                                    }
+                                }
+                                processingString += "GEO APP X : " + geoApp.getXcoord(pointName) + ", GEO APP Y : " + geoApp.getYcoord(pointName) + "\n";
+                            }
+
+                            alert(processingString);
+                            if(isSolutionCorrect) {
+                                alert("Your solution is correct!");
+                            }
+                            else {
+                                alert("Your solution is wrong. ;(");
+                            }
+                        }
+                    }
+                    else {
                         alert("Fall through error...");
                     }
                     
@@ -89,5 +160,3 @@
         </script>
     </body>
 </html>
-
-
