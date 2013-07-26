@@ -302,42 +302,47 @@ var pF = (function() {
 
     // >>>> Points <<<<
 
+    createPoint(new Point(5,5));
+    createPoint(new Point(-5,5));
+    createPoint(new Point(-5,-5));
+    createPoint(new Point(5,-5));
+
     // A
-    createPoint(new Point(-4,-2), "alertWasClicked", "A1");
-    createPoint(new Point(-3,2), "alertWasClicked", "A2");
-    createPoint(new Point(-2,-2), "alertWasClicked", "A3");
-    // S
-    createPoint(new Point(1,2), "alertWasClicked", "S1");
-    createPoint(new Point(0,2.5), "alertWasClicked", "S1S2");
-    createPoint(new Point(-1,2), "alertWasClicked", "S2");
-    createPoint(new Point(-1,0), "alertWasClicked", "S3");
-    createPoint(new Point(1,0), "alertWasClicked", "S4");
-    createPoint(new Point(1,-2), "alertWasClicked", "S5");
-    createPoint(new Point(0,-2.5), "alertWasClicked", "S5S6");
-    createPoint(new Point(-1,-2), "alertWasClicked", "S6");
-    // U
-    createPoint(new Point(2,2), "alertWasClicked", "U1");
-    createPoint(new Point(2,-2), "alertWasClicked", "U2");
-    createPoint(new Point(4,-2), "alertWasClicked", "U3");
-    createPoint(new Point(4,2), "alertWasClicked", "U4");
+    // createPoint(new Point(-4,-2), "alertWasClicked", "A1");
+    // createPoint(new Point(-3,2), "alertWasClicked", "A2");
+    // createPoint(new Point(-2,-2), "alertWasClicked", "A3");
+    // // S
+    // createPoint(new Point(1,2), "alertWasClicked", "S1");
+    // createPoint(new Point(0,2.5), "alertWasClicked", "S1S2");
+    // createPoint(new Point(-1,2), "alertWasClicked", "S2");
+    // createPoint(new Point(-1,0), "alertWasClicked", "S3");
+    // createPoint(new Point(1,0), "alertWasClicked", "S4");
+    // createPoint(new Point(1,-2), "alertWasClicked", "S5");
+    // createPoint(new Point(0,-2.5), "alertWasClicked", "S5S6");
+    // createPoint(new Point(-1,-2), "alertWasClicked", "S6");
+    // // U
+    // createPoint(new Point(2,2), "alertWasClicked", "U1");
+    // createPoint(new Point(2,-2), "alertWasClicked", "U2");
+    // createPoint(new Point(4,-2), "alertWasClicked", "U3");
+    // createPoint(new Point(4,2), "alertWasClicked", "U4");
     
     // >>>> Lines <<<<
 
     // A
-    drawLine("A1", "A2");
-    drawLine("A2", "A3");
-    // S
-    drawLine("S1", "S1S2");
-    drawLine("S1S2", "S2");
-    drawLine("S2", "S3");
-    drawLine("S3", "S4");
-    drawLine("S4", "S5");
-    drawLine("S5", "S5S6");
-    drawLine("S5S6", "S6");
-    // U
-    drawLine("U1", "U2");
-    drawLine("U2", "U3");
-    drawLine("U3", "U4");
+    // drawLine("A1", "A2");
+    // drawLine("A2", "A3");
+    // // S
+    // drawLine("S1", "S1S2");
+    // drawLine("S1S2", "S2");
+    // drawLine("S2", "S3");
+    // drawLine("S3", "S4");
+    // drawLine("S4", "S5");
+    // drawLine("S5", "S5S6");
+    // drawLine("S5S6", "S6");
+    // // U
+    // drawLine("U1", "U2");
+    // drawLine("U2", "U3");
+    // drawLine("U3", "U4");
     //drawLine("NEW", "P7");
     //if (parent.pFListener != null)
 //	parent.pFListener.set();
