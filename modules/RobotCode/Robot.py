@@ -7,13 +7,15 @@
 import serial
 import threading
 import sys
+import time
+import binascii
 
 class Robot:
 	#Overloads init method, establishes serial connection with robot
 	def __init__(self):
 		print ("Connecting to Robot")
 		try:
-			self._tty = serial.Serial(port="/dev/tty.TAG-DevB", baudrate=115200, timeout=0.01)
+			self._tty = serial.Serial(port="/dev/tty.TAG-DevB", baudrate=115200, timeout=None	)
 			self.forw = False
 			self.back = False
 			self.leftc = False
@@ -21,8 +23,10 @@ class Robot:
 			self.speed = 90
 			self.turnSpeed = 55
 			print ("Connected to Robot")
-		except:
-			print ("Could not Connect to Robot. Make sure the robot is on.")
+			self.get_orientation();
+		except Exception as ex:
+			print ("Could not Connect to Robot. Make sure the robot and the computer's bluetooth are on.")
+			print(ex)
 			sys.exit()
 
 	def setStraightSpeed(self, newSpeed):
@@ -74,6 +78,35 @@ class Robot:
 	    self._tty.write(chr(0x06)+chr(0x00)+chr(0x80)+chr(0x03)+chr(0x0B)+chr(0x02)+chr(0xF4)+chr(0x01))
 
 	#These are functions to turn on and off specific motors using the forwardSpeed(self.speed)
+
+	def get_orientation(self):
+		print ("Setting sensor input")
+		# for reading the compass sensor: http://hsrc.static.net/Research/NXT%20I2C%20Communication/
+		# sensor register documentation: http://www.hitechnic.com/cgi-bin/commerce.cgi?preadd=action&key=NMC1034
+		# Set input type mode to lowspeedv9 and raw
+		self._tty.write(chr(0x05)+chr(0x00)+  chr(0x08)+  chr(0x05)+ chr(0x03)+chr(0x0A)+chr(0x00))
+		# send read command (through a write command :-)
+		#												write cmd, port		, tx_l	 , rx_l		, addr	 , reg
+		self._tty.write(chr(0x07)+chr(0x00)+ chr(0x08)+ chr(0x0F)+chr(0X03)+chr(0x02)+chr(0x01)+chr(0x02)+chr(0x42))
+		# time.sleep(2);
+		# self._tty.write(chr(0x03)+chr(0x00)+ chr(0x00)+ chr(0x10)+chr(0x03))
+		self.checkBuffer()
+
+	def checkBuffer(self):
+		time.sleep(2)
+		self._tty.write(chr(0x03)+chr(0x00)+ chr(0x00)+ chr(0x10)+chr(0x03))
+		# while self._tty.inWaiting() == 0:
+		# 	pass
+		time.sleep(2)
+		print(self._tty.read(self._tty.inWaiting()).__repr__())
+
+	'''
+	Package format: 
+	===============
+	pkg_size_LSB | pkg_size_MSB | cmd_type | cmd ...	
+	
+	'''
+
 	def motbforwardSTR(self):
 	    return (chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x01) + self.currentSpeed() + chr(0x07) + chr(0x00) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
 	    
