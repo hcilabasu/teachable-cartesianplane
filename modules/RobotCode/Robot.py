@@ -23,7 +23,7 @@ class Robot:
 			self.speed = 90
 			self.turnSpeed = 55
 			print ("Connected to Robot")
-			self.get_orientation();
+			# self.get_orientation();
 		except Exception as ex:
 			print ("Could not Connect to Robot. Make sure the robot and the computer's bluetooth are on.")
 			print(ex)
@@ -52,7 +52,7 @@ class Robot:
 		return chr((-self.speed + (1 << 8)) % (1 << 8))
 
 	def currentNegTurnSpeed(self):
-		return chr((-90 + (1 << 8)) % (1 << 8))
+		return chr((-80 + (1 << 8)) % (1 << 8))
 
 	def stop(self):
 		self._tty.write(self.stopmotbSTR() + self.stopmotcSTR())
@@ -83,22 +83,24 @@ class Robot:
 		print ("Setting sensor input")
 		# for reading the compass sensor: http://hsrc.static.net/Research/NXT%20I2C%20Communication/
 		# sensor register documentation: http://www.hitechnic.com/cgi-bin/commerce.cgi?preadd=action&key=NMC1034
+		self._tty.write(chr(0x00)+chr(0x0f)+chr(0x01)+chr(0x03)+chr(0x00)+chr(0x02)+chr(0x41)+chr(0x04))
 		# Set input type mode to lowspeedv9 and raw
+		sleep(2)
 		self._tty.write(chr(0x05)+chr(0x00)+  chr(0x08)+  chr(0x05)+ chr(0x03)+chr(0x0A)+chr(0x00))
 		# send read command (through a write command :-)
 		#												write cmd, port		, tx_l	 , rx_l		, addr	 , reg
-		self._tty.write(chr(0x07)+chr(0x00)+ chr(0x08)+ chr(0x0F)+chr(0X03)+chr(0x02)+chr(0x01)+chr(0x02)+chr(0x42))
+		self._tty.write(chr(0x07)+chr(0x00)+ chr(0x08)+ chr(0x0F)+chr(0X01)+chr(0x03)+chr(0x02)+chr(0x02)+chr(0x42)+chr(0x43))
 		# time.sleep(2);
-		# self._tty.write(chr(0x03)+chr(0x00)+ chr(0x00)+ chr(0x10)+chr(0x03))
+		# self._tty.write(chr(0x03)+chr(0x00)+ chr(0x00)+ chr(0x10)+chr(0x01))
 		self.checkBuffer()
 
 	def checkBuffer(self):
 		time.sleep(2)
-		self._tty.write(chr(0x03)+chr(0x00)+ chr(0x00)+ chr(0x10)+chr(0x03))
+		self._tty.write(chr(0x03)+chr(0x00)+ chr(0x00)+ chr(0x10)+chr(0x01))
 		# while self._tty.inWaiting() == 0:
 		# 	pass
 		time.sleep(2)
-		print(self._tty.read(self._tty.inWaiting()).__repr__())
+		print(self._tty.read(self._tty.inWaiting())[5:].__repr__())
 
 	'''
 	Package format: 
@@ -200,6 +202,3 @@ class Robot:
 			self.turnRight()
 		else:
 			self.turnRight()
-		
-
-
