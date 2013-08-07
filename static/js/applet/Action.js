@@ -136,6 +136,9 @@ primitiveActions.actions.moveDistance = {
       var newX = Math.round((point.x + xDist(dist, r1.orientation))*100000)/100000;
       var newY = Math.round((point.y + yDist(dist, r1.orientation))*100000)/100000;
 
+      // Moving real robot
+      realRobot.moveTo(newX, newY, dist < 0 ? true : false, r1.orientation);
+
       if(Math.abs(newX) <= 5 && Math.abs(newY) <= 5){
       	console.log("move " + dist);
       	controller.addAction(new Action("move", dist));
@@ -172,6 +175,10 @@ primitiveActions.actions.moveDistance = {
 primitiveActions.actions.turnAngle = {
     label: "Turn",
     ex: function(params) {
+
+      // turn real robot
+      realRobot.turnTo(params.angle);
+
       if(primitiveActions.movingPoint && primitiveActions.fromDistance){
         var prevPoint = primitiveActions.movingPoint[primitiveActions.movingPoint.length-1].point;
         // // Creating new temp plot

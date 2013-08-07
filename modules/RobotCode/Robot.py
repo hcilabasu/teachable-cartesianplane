@@ -20,8 +20,9 @@ class Robot:
 			self.back = False
 			self.leftc = False
 			self.rightc = False
-			self.speed = 90
-			self.turnSpeed = 55
+			self.speed = 60
+			self.turnSpeed = 30
+			self.backTurnSpeed = 65
 			print ("Connected to Robot")
 			# self.get_orientation();
 		except Exception as ex:
@@ -52,14 +53,14 @@ class Robot:
 		return chr((-self.speed + (1 << 8)) % (1 << 8))
 
 	def currentNegTurnSpeed(self):
-		return chr((-80 + (1 << 8)) % (1 << 8))
+		return chr((-self.backTurnSpeed + (1 << 8)) % (1 << 8))
 
 	def stop(self):
 		self._tty.write(self.stopmotbSTR() + self.stopmotcSTR())
-		forw = False
-		back = False
-		leftc = False
-		rightc = False
+		self.forw = False
+		self.back = False
+		self.leftc = False
+		self.rightc = False
     
 	def stopmotbSTR(self):
 	    return (chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x01) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
@@ -110,6 +111,7 @@ class Robot:
 	'''
 
 	def motbforwardSTR(self):
+		#		size        size       no reply    setoutstate  motorb      power set point       mode        regul       turn ratio  runstate    tacho       "           "           "        
 	    return (chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x01) + self.currentSpeed() + chr(0x07) + chr(0x00) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
 	    
 	def motcforwardSTR(self):
@@ -123,6 +125,7 @@ class Robot:
 
 	#These are functions to turn on and off certain motors using the 
 	def motbforwardTurn(self):
+		#		size        size       no reply    setoutstate  motorb      power set point       mode        regul       turn ratio  runstate    tacho       "           "           "        
 	    return (chr(0x0C) + chr(0x00) + chr(0x80) + chr(0x04) + chr(0x01) + self.currentTurnSpeed() + chr(0x07) + chr(0x00) + chr(0x00) + chr(0x20) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00))
 	    
 	def motcforwardTurn(self):
