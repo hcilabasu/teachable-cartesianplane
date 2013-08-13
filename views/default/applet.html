@@ -212,6 +212,7 @@
             function updateProblem(){
                 console.dir("Updating plane to problem ID #" + currentProblem.id +"...");
                 pF.appReady(currentProblem.points, currentProblem.lines);
+                realRobot.reset();
             }
 
             function executeAction(){
