@@ -46,8 +46,8 @@
             var olddata = "0";
             var currentProblem;
             var userActionList = [];
-            $(document).ready(function(){
-                if(!web2py_websocket('ws://{{=ip}}:{{=port}}/realtime/{{=group_name}}',function(e){
+            $(document).ready(function() {
+                if(!web2py_websocket('ws://{{=ip}}:{{=port}}/realtime/{{=group_name}}',function(e) {
                     console.dir(e.data);
                     incoming = JSON.parse(unescape(e.data));
                     // TODO improve detection. Encapsulate the object and include a type property
@@ -106,40 +106,95 @@
                         //confirm("You clicked on Check Solution");
                         //var point1 = geoApp.getPoint("P1");
                         //alert(geoApp.getXcoord("P1"));
-                        var isSolutionCorrect = true;
+                        var isSolutionCorrect = false;
+                        var correctSolutionsCounter = 0; //There may be multiple points that need to be plotted/positioned on the cartesian plane.
+                        var solutionStatus = {"points" : [], "lines" : []}; //Tell us if each of the sub solutions is correct or not
                         var processingString = "";
+                        var threshhold_limit = 0.25;
                         if(incoming.solution.points) {
-                            for(var i = 0 ; i < incoming.solution.points.length ; i++) {
-                                var point = incoming.solution.points[i];
-                                var pointName = point.name;
-                                var correctX = point.x;
-                                var correctY = point.y;
-
-                                processingString += "Point Name : " + pointName + "\nCorrect X : " + correctX + ", Correct Y : " + correctY + "\n";
+                            // To enable the check for any point to be within the theshhold, and not just a specific point mentioned in the solution, we'll need to get the number of objects on screen using getObjectNumber and get the list of object names using getObjectName(int i). Then we refine this list to only show the points on screen. Then we iterate over every point and check for threshhold.
+                            var pointList = [];
+                            var no_of_objects = geoApp.getObjectNumber();
+                            for(var i = 0 ; i < no_of_objects ; i++) {
+                                var objectName = geoApp.getObjectName(i);
                                 
                                 // !!!Disregarding robot for now!!!
-                                if(pointName.toLowerCase() != "robot") {
+                                if(geoApp.getObjectType(objectName).toLowerCase() == "point" && pointList.indexOf(objectName) == -1 && objectName.toLowerCase() != "r") {
+                                    pointList.push(objectName);
+                                }
+                            }
+
+                            alert(JSON.stringify(pointList));
+                            
+                            var solutionPointsArray = incoming.solution.points;
+
+                            for(var i = 0 ; i < solutionPointsArray.length ; i++) {
+                                var point = solutionPointsArray[i];
+                                var solutionPointName = point.name;
+                                var correctX = point.x;
+                                var correctY = point.y;
+                                var upperX = (correctX + threshhold_limit);
+                                var lowerX = (correctX - threshhold_limit);
+                                var upperY = (correctY + threshhold_limit);
+                                var lowerY = (correctY - threshhold_limit);
+
+                                solutionStatus.points[i] = false;
+
+                                alert("Solution point name " + solutionPointName);
+
+                                for(var j = 0 ; j < pointList.length ; j++) {
+                                    // !!!Disregarding robot for now!!!
+                                    if(solutionPointName.toLowerCase() == "robot") {
+                                        break;
+                                    }
+
+                                    var pointName = pointList[j];
+                                    
+                                    alert("Looking at point " + pointName);
+                                    
                                     // Only if the object/point is visible on screen
                                     if(geoApp.getVisible(pointName)) {
+                                        alert("CorrectX : " + correctX + "\nCorrectY : " + correctY);
+
                                         // !!!Careful of using toFixed, get a confirmation of the proper rounding rules to be applied.
-                                        if(geoApp.getObjectType(pointName).toLowerCase() == "point" && geoApp.getXcoord(pointName).toFixed(2) == correctX && geoApp.getYcoord(pointName).toFixed(2) == correctY) {
-                                            isSolutionCorrect = true;
+                                        // !!!Incorporating the threshhold.
+                                        if(geoApp.getObjectType(pointName).toLowerCase() == "point") {
+                                            
+                                            var actualX = geoApp.getXcoord(pointName).toFixed(2);
+                                            var actualY = geoApp.getYcoord(pointName).toFixed(2);
+
+                                            alert("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
+
+                                            if(actualX <= upperX && actualX >= lowerX && actualY <= upperY && actualY >= lowerY) {
+                                                // !!!Should I remove the point from pointList???
+                                                solutionStatus.points[i] = true;
+                                                correctSolutionsCounter++;
+                                                //isSolutionCorrect = true;
+
+                                                //!!! Very important step. Remove the solution point and the cartesian solution once we get a match.
+                                                solutionPointsArray.splice(i, 1);
+                                                i--;
+
+                                                pointList.splice(j, 1);
+                                                j--;
+
+                                                processingString += "Point Name : " + pointName + "\nCorrect X : " + correctX + ", Correct Y : " + correctY + "\n";
+                                                processingString += "GEO APP X : " + geoApp.getXcoord(pointName).toFixed(2) + ", GEO APP Y : " + geoApp.getYcoord(pointName).toFixed(2) + "\n";
+                                                
+                                                break;
+                                            }
                                         }
-                                        else {
-                                            isSolutionCorrect = false;
-                                        }
-                                        
-                                        processingString += "GEO APP X : " + geoApp.getXcoord(pointName).toFixed(2) + ", GEO APP Y : " + geoApp.getYcoord(pointName).toFixed(2) + "\n";
-                                    }
-                                    else {
-                                        alert(pointName + " is not visible on cartesian plane.");
-                                        isSolutionCorrect = false;
                                     }
                                 }
                             }
 
                             if(processingString != "") {
                                 alert(processingString);
+                            }
+
+                            //!!! Careful, you'll need to change this when lines are incoporated in the solution.
+                            if(correctSolutionsCounter == solutionPointsArray.length) {
+                                isSolutionCorrect = true;
                             }
 
                             alert("Your solution is " + (isSolutionCorrect ? "correct" : "wrong") + "!");

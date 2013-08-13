@@ -101,11 +101,11 @@ var alertWasClicked = function(clickedObject)
   clickListener.executeEvent(clickedObject);
 }
 
-var stopDragMode = function(){
-    // Clearing everything
-    primitiveActions.movingPoint = undefined;
-    primitiveActions.movingPointBase = undefined;
-    primitiveActions.fromDistance = undefined;
+var stopDragMode = function() {
+  // Clearing everything
+  primitiveActions.movingPoint = undefined;
+  primitiveActions.movingPointBase = undefined;
+  primitiveActions.fromDistance = undefined;
 }
 
 
