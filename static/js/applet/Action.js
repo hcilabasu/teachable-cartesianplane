@@ -177,7 +177,7 @@ primitiveActions.actions.turnAngle = {
     ex: function(params) {
 
       // turn real robot
-      realRobot.turnTo(params.angle);
+      realRobot.turnTo(parseInt((parseInt(params.angle) + r1.orientation) % 360));
 
       if(primitiveActions.movingPoint && primitiveActions.fromDistance){
         var prevPoint = primitiveActions.movingPoint[primitiveActions.movingPoint.length-1].point;
@@ -261,7 +261,11 @@ primitiveActions.actions.turnCardinal = {
       S: 270
     }
     
-    controller.addAction(new Action("turn", this.cardinalPoints[direction.direction] - r1.orientation));
+    // turn real robot    
+    realRobot.turnTo(this.cardinalPoints[direction.direction]);
+
+    var angle = this.cardinalPoints[direction.direction] - r1.orientation;
+    controller.addAction(new Action("turn", angle));
   }
 }
 
@@ -409,7 +413,16 @@ primitiveActions.actions.moveTo = {
   label: "Move To",
   ex: function(params) { //(pointName, pen, markUnits)
     var targetPoint = controller.getPoint(params.pointName);
- 
+    
+    // Calculating angle
+    var xDist = targetPoint.x - r1.location.x;
+    var yDist = targetPoint.y - r1.location.y;
+    var angleInRadians = Math.atan2(yDist, xDist);
+    var angleInDegrees = parseInt(rtd(angleInRadians));
+    // Moving real robot
+    realRobot.moveTo(targetPoint.x, targetPoint.y, false, parseInt((angleInDegrees + r1.orientation) % 360));
+
+
     //determine distance
     var dist = r1.location.distanceTo(targetPoint);
     
@@ -437,6 +450,8 @@ primitiveActions.actions.turnTo = {
     var yDist = targetPoint.y - r1.location.y;
     var angleInRadians = Math.atan2(yDist, xDist);
     var angleInDegrees = rtd(angleInRadians);
+
+    realRobot.turnTo(parseInt((angleInDegrees + r1.orientation) % 360));
     
     console.log("angInDeg = " + angleInDegrees + " and orient = " + r1.orientation); 
 
