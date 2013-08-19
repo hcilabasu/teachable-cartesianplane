@@ -17,6 +17,9 @@
                     $(this).text("Dragging " + (draggingEnabled ? "ON" : "OFF"));
                 });
             });
+
+            var ADR = {};
+            ADR.POST_SOLUTION_CHECK = "{{=URL('post_Solution_Check')}}";
         </script>
 
         <style>
@@ -47,7 +50,7 @@
             var currentProblem;
             var userActionList = [];
             $(document).ready(function() {
-                if(!web2py_websocket('ws://{{=ip}}:{{=port}}/realtime/{{=group_name}}',function(e) {
+                if(!web2py_websocket('ws://{{=ip}}:{{=port}}/realtime/{{=group_name}}', function(e) {
                     console.dir(e.data);
                     incoming = JSON.parse(unescape(e.data));
                     // TODO improve detection. Encapsulate the object and include a type property
@@ -124,7 +127,7 @@
                                 }
                             }
 
-                            alert(JSON.stringify(pointList));
+                            //alert(JSON.stringify(pointList));
                             
                             var solutionPointsArray = incoming.solution.points;
 
@@ -140,7 +143,7 @@
 
                                 solutionStatus.points[i] = false;
 
-                                alert("Solution point name " + solutionPointName);
+                                //alert("Solution point name " + solutionPointName);
 
                                 for(var j = 0 ; j < pointList.length ; j++) {
                                     // !!!Disregarding robot for now!!!
@@ -150,11 +153,11 @@
 
                                     var pointName = pointList[j];
                                     
-                                    alert("Looking at point " + pointName);
+                                    //alert("Looking at point " + pointName);
                                     
                                     // Only if the object/point is visible on screen
                                     if(geoApp.getVisible(pointName)) {
-                                        alert("CorrectX : " + correctX + "\nCorrectY : " + correctY);
+                                        //alert("CorrectX : " + correctX + "\nCorrectY : " + correctY);
 
                                         // !!!Careful of using toFixed, get a confirmation of the proper rounding rules to be applied.
                                         // !!!Incorporating the threshhold.
@@ -163,7 +166,7 @@
                                             var actualX = geoApp.getXcoord(pointName).toFixed(2);
                                             var actualY = geoApp.getYcoord(pointName).toFixed(2);
 
-                                            alert("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
+                                            //alert("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
 
                                             if(actualX <= upperX && actualX >= lowerX && actualY <= upperY && actualY >= lowerY) {
                                                 // !!!Should I remove the point from pointList???
@@ -189,7 +192,7 @@
                             }
 
                             if(processingString != "") {
-                                alert(processingString);
+                                //alert(processingString);
                             }
 
                             //!!! Careful, you'll need to change this when lines are incoporated in the solution.
@@ -198,13 +201,14 @@
                             }
 
                             alert("Your solution is " + (isSolutionCorrect ? "correct" : "wrong") + "!");
+                            postSolutionCheck(isSolutionCorrect);
                         }
                     }
                     else {
                         alert("Fall through error...");
                     }
                     
-                })){
+                })) {
                     alert("html5 websocket not supported by your browser, try Google Chrome");
                 }
             });

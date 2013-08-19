@@ -51,11 +51,13 @@ var RealRobot = function(){
 		});
 	}
 
+
+	var dummy = function(){}
 	// Returning public object
 	return {
-		moveTo: moveTo,
-		turnTo: turnTo,
-		reset: reset
+		moveTo: dummy,
+		turnTo: dummy,
+		reset: dummy
 	}
 }
 

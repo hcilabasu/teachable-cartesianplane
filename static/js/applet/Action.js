@@ -679,4 +679,10 @@ primitiveActions.getSteps = function(name)
     return null;
 };
 
+function postSolutionCheck(solutionStatus) {
+  var msg = {"type" : "check", "status" : solutionStatus};
+  //ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + String(solutionStatus), [], "");
+  ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
+}
+
 controller.initialize();
