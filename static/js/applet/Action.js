@@ -420,7 +420,7 @@ primitiveActions.actions.moveTo = {
     var angleInRadians = Math.atan2(yDist, xDist);
     var angleInDegrees = parseInt(rtd(angleInRadians));
     // Moving real robot
-    realRobot.moveTo(targetPoint.x, targetPoint.y, false, parseInt((angleInDegrees + r1.orientation) % 360));
+    realRobot.moveTo(targetPoint.x, targetPoint.y, false, parseInt(angleInDegrees));
 
 
     //determine distance
@@ -451,7 +451,7 @@ primitiveActions.actions.turnTo = {
     var angleInRadians = Math.atan2(yDist, xDist);
     var angleInDegrees = rtd(angleInRadians);
 
-    realRobot.turnTo(parseInt((angleInDegrees + r1.orientation) % 360));
+    realRobot.turnTo(parseInt(angleInDegrees));
     
     console.log("angInDeg = " + angleInDegrees + " and orient = " + r1.orientation); 
 
