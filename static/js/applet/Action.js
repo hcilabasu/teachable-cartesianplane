@@ -101,11 +101,11 @@ var alertWasClicked = function(clickedObject)
   clickListener.executeEvent(clickedObject);
 }
 
-var stopDragMode = function(){
-    // Clearing everything
-    primitiveActions.movingPoint = undefined;
-    primitiveActions.movingPointBase = undefined;
-    primitiveActions.fromDistance = undefined;
+var stopDragMode = function() {
+  // Clearing everything
+  primitiveActions.movingPoint = undefined;
+  primitiveActions.movingPointBase = undefined;
+  primitiveActions.fromDistance = undefined;
 }
 
 
@@ -678,5 +678,11 @@ primitiveActions.getSteps = function(name)
   else
     return null;
 };
+
+function postSolutionCheck(solutionStatus) {
+  var msg = {"type" : "check", "status" : solutionStatus};
+  //ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + String(solutionStatus), [], "");
+  ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
+}
 
 controller.initialize();

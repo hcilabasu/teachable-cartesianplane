@@ -52,6 +52,18 @@ def error():
 def pollForEvent():
     return db(db.menuOptions2.name == 'test').select()[0].value
 
+
+def post_Solution_Check():
+    #current_problem = db(db.problemBank.id == session.problemNum).select()[0]
+    #currentProblemJSON = stringifyProblem(current_problem, "check")
+    #return dict(problems=currentProblemJSON)
+    #session.problemNum = request.vars.index
+    #data = currentProblemJSON
+    data = request.vars.data
+    # The group name 'interface' is what mobile is registered to. You can see it in the config file on the mobile side.
+    websocket_send('http://' + __current_ip + ':' + __socket_port, data, 'mykey', 'interface')
+    # websocket_send('http://localhost:' + __socket_port, data,'mykey', __socket_group_name)
+
 ## executes the current step on the server
 ## TODO remove.
 @service.xmlrpc
