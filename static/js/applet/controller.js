@@ -56,6 +56,7 @@ var controller = (function() {
         action = getAction(act, temp, true); //temp is the distance measure
         total += temp;
         temp = 0;
+        action.callback = act.callback;
       }
       else
       {

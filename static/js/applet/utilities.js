@@ -112,8 +112,9 @@ Function.prototype.getName = function() {
 *
 ***********************************************************************/
 
-function Action(name, op)
+function Action(name, op, callback)
 {
   this.name = name;
   this.op = op;
+  this.callback = callback;
 }

@@ -393,12 +393,22 @@ primitiveActions.actions.plotPoint = {
     //  controller.addAction(new Action("goTo", newPoint));
 
     var newPoint = new Point(r1.location.x, r1.location.y);
-    
+      realRobot.plotPoint();
+      var toggleBack = false;
+      if(realRobot.isRobotEnabled()){
+        realRobot.toggleRobot();  
+        taggleBack = true;
+      }
       controller.addAction(new Action("plot", newPoint));
       controller.addAction(new Action("move", 1.5));
       // controller.addAction(new Action("turnTo", {pointName : newPoint}));
       controller.addAction(new Action("moveTo", {pointName : newPoint}));
-      controller.addAction(new Action("turn", -180));
+      controller.addAction(new Action("turn", -180, function(){
+        alert('callback!');
+        if(toggleBack){
+          realRobot.toggleRobot();  
+        }
+      }));
   }
 };
 
@@ -623,6 +633,9 @@ primitiveActions.executeAction = function(action)
   {
 
     act = primitiveActions.actions[action.name];
+    if(action.callback){
+      action.callback();
+    }
 
     if(!(act.ex instanceof Array))
       {

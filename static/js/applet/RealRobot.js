@@ -1,6 +1,6 @@
 var RealRobot = function(){
 
-	var moveRobot = True;
+	var moveRobot = false;
 
 	var URL = 'http://localhost:8000/mobileinterface/robot/'
 
@@ -36,6 +36,11 @@ var RealRobot = function(){
 		makeCall('turn_to', params);
 	}
 
+	var plotPoint = function(){
+		console.dir("REAL ROBOT: Plotting point");
+		makeCall('plot_point');
+	}
+
 	/*
 	 * Moves the robot back to the origin, facing the initial direction
 	 */
@@ -59,8 +64,12 @@ var RealRobot = function(){
 	}
 
 	// Function used to attach or detach real robot from application
-	var toggleRobot(){
+	var toggleRobot = function(){
 		moveRobot = !moveRobot;
+		return moveRobot;
+	}
+
+	var isRobotEnabled = function(){
 		return moveRobot;
 	}
 
@@ -69,7 +78,9 @@ var RealRobot = function(){
 		moveTo: moveTo,
 		turnTo: turnTo,
 		reset: reset,
-		toggleRobot: toggleRobot
+		toggleRobot: toggleRobot,
+		plotPoint: plotPoint,
+		isRobotEnabled: isRobotEnabled
 	}
 }
 
