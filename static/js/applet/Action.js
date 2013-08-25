@@ -397,14 +397,13 @@ primitiveActions.actions.plotPoint = {
       var toggleBack = false;
       if(realRobot.isRobotEnabled()){
         realRobot.toggleRobot();  
-        taggleBack = true;
+        toggleBack = true;
       }
       controller.addAction(new Action("plot", newPoint));
       controller.addAction(new Action("move", 1.5));
       // controller.addAction(new Action("turnTo", {pointName : newPoint}));
       controller.addAction(new Action("moveTo", {pointName : newPoint}));
       controller.addAction(new Action("turn", -180, function(){
-        alert('callback!');
         if(toggleBack){
           realRobot.toggleRobot();  
         }
