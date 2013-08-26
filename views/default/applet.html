@@ -66,12 +66,24 @@
                     // TODO improve detection. Encapsulate the object and include a type property
                     // TODO need to incorporate message types/profiles, probaby in an external js file.
                     if(incoming instanceof Array) {
+                        var toggleBack = false;
+                        if(realRobot.isRobotEnabled()){
+                            realRobot.toggleRobot();
+                            toggleBack = true;
+                        }
                         // Execute array of actions (replay steps)
                         updateProblem();
                         actions = [];
                         for(var i = 0; i < incoming.length; i++){
                             var action = incoming[i];
-                            actions.push(new Action(action.name, action.op));
+                            var newAction = new Action(action.name, action.op);
+                            if(i === incoming.length-1 && toggleBack){
+                                newAction.callback = function(){
+                                    // Enabling robot again after executing all steps
+                                    realRobot.toggleRobot();
+                                }
+                            } 
+                            actions.push(newAction);
                         }
 
                         //Clearing out the user actions if the problem is restarted

@@ -632,9 +632,9 @@ primitiveActions.executeAction = function(action)
   {
 
     act = primitiveActions.actions[action.name];
-    if(action.callback){
-      action.callback();
-    }
+    // if(action.callback){
+    //   action.callback();
+    // }
 
     if(!(act.ex instanceof Array))
       {

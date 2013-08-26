@@ -66,6 +66,7 @@ var RealRobot = function(){
 	// Function used to attach or detach real robot from application
 	var toggleRobot = function(){
 		moveRobot = !moveRobot;
+		console.dir(moveRobot ? "Robot WILL move" : "Robot will *NOT* move");
 		return moveRobot;
 	}
 

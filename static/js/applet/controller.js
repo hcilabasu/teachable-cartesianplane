@@ -136,6 +136,9 @@ var controller = (function() {
             animating = false;
             drawing.adjustLoc();
           }
+          if(currNode.value.callback){
+            currNode.value.callback();
+          }
           
           currNode = currNode.parent;
           currNode.children.shift();
