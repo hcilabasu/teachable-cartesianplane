@@ -697,4 +697,9 @@ function postSolutionCheck(solutionStatus) {
   ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
 }
 
+function setProblemNumber(probNum) {
+  var msg = {"type" : "reset", "number" : probNum};
+  ajax(ADR.SET_PROBLEM_NUMBER + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
+}
+
 controller.initialize();

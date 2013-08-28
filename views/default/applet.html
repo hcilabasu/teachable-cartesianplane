@@ -12,23 +12,43 @@
             var draggingEnabled = true;
             var realRobotEnabled = false;
 
-            $(function(){
-                $("#dragToggle").click(function(e){
+            $(function() {
+                $("#dragToggle").click(function(e) {
                     draggingEnabled = !draggingEnabled;
                     pF.setLockEnabled(draggingEnabled);
                     $(this).text("Dragging " + (draggingEnabled ? "ON" : "OFF"));
                     return false;
                 });
 
-                $("#realRobot").click(function(e){
+                $("#realRobot").click(function(e) {
                     realRobotEnabled = realRobot.toggleRobot();
                     $(this).text("Real Robot " + (realRobotEnabled ? "ON" : "OFF"));
+                    return false;
+                });
+
+                // Problem selection logic
+                $("#problemSelector").click(function () {
+                    var selectedProblemNumber = Number((prompt("Enter problem number : ") - 1));
+
+                    console.log("<><>selectedProblemNumber : " + selectedProblemNumber);
+
+                    // The case is constructed this way since '0' is a special case that made if(selectedProblemNumber) to be false.
+                    if((selectedProblemNumber && selectedProblemNumber >= 0) || selectedProblemNumber == 0) {
+                        setProblemNumber(selectedProblemNumber);
+                    }
+                    else {
+                        //alert("Undefined problem number!");
+                    }
+
+                    //This helps the window from shifting after function execution.
                     return false;
                 });
             });
 
             var ADR = {};
             ADR.POST_SOLUTION_CHECK = "{{=URL('post_Solution_Check')}}";
+            ADR.SET_PROBLEM_NUMBER = "{{=URL('set_Problem_Number')}}";
+            
         </script>
 
         <style>
@@ -53,6 +73,7 @@
         <!-- Changed problem-desc from a div tag to a pre tag. Essentially did this since the text in this tag is later modified with newline characters in between and the div tag disregards the newline character and prints everything in single line. The pre tag preserves the newline and renders accordingly -->
         <pre id="problem-desc">This is the current problem</pre>
         <pre id="action-list"></pre>
+        <a href="#" id="problemSelector">Change Problem</a> |
         <a href="#" id="dragToggle">Dragging ON</a> |
         <a href="#" id="realRobot">Real Robot OFF</a>
         <script>
