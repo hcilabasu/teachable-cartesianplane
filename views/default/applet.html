@@ -48,7 +48,7 @@
             var ADR = {};
             ADR.POST_SOLUTION_CHECK = "{{=URL('post_Solution_Check')}}";
             ADR.SET_PROBLEM_NUMBER = "{{=URL('set_Problem_Number')}}";
-            
+            ADR.MAKE_ATTRIBUTION = "{{=URL('mobileinterface','robot','make_attribution')}}";
         </script>
 
         <style>
@@ -88,7 +88,7 @@
                     // TODO need to incorporate message types/profiles, probaby in an external js file.
                     if(incoming instanceof Array) {
                         var toggleBack = false;
-                        if(realRobot.isRobotEnabled()){
+                        if(realRobot.isRobotEnabled() && incoming.length > 0){
                             realRobot.toggleRobot();
                             toggleBack = true;
                         }
@@ -100,6 +100,7 @@
                             var newAction = new Action(action.name, action.op);
                             if(i === incoming.length-1 && toggleBack){
                                 newAction.callback = function(){
+                                    alert(1);
                                     // Enabling robot again after executing all steps
                                     realRobot.toggleRobot();
                                 }
