@@ -171,9 +171,10 @@
                                 }
                             }
 
-                            //alert(JSON.stringify(pointList));
+                            // alert(JSON.stringify(pointList));
                             
                             var solutionPointsArray = incoming.solution.points;
+                            var numberOfSolutions = solutionPointsArray.length;
 
                             for(var i = 0 ; i < solutionPointsArray.length ; i++) {
                                 var point = solutionPointsArray[i];
@@ -187,7 +188,7 @@
 
                                 solutionStatus.points[i] = false;
 
-                                //alert("Solution point name " + solutionPointName);
+                                alert("Solution point name " + solutionPointName);
 
                                 for(var j = 0 ; j < pointList.length ; j++) {
                                     // !!!Disregarding robot for now!!!
@@ -197,11 +198,11 @@
 
                                     var pointName = pointList[j];
                                     
-                                    //alert("Looking at point " + pointName);
+                                    // alert("Looking at point " + pointName);
                                     
                                     // Only if the object/point is visible on screen
                                     if(geoApp.getVisible(pointName)) {
-                                        //alert("CorrectX : " + correctX + "\nCorrectY : " + correctY);
+                                        // alert("CorrectX : " + correctX + "\nCorrectY : " + correctY);
 
                                         // !!!Careful of using toFixed, get a confirmation of the proper rounding rules to be applied.
                                         // !!!Incorporating the threshhold.
@@ -210,11 +211,14 @@
                                             var actualX = geoApp.getXcoord(pointName).toFixed(2);
                                             var actualY = geoApp.getYcoord(pointName).toFixed(2);
 
-                                            //alert("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
+                                            // alert("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
 
                                             if(actualX <= upperX && actualX >= lowerX && actualY <= upperY && actualY >= lowerY) {
                                                 // !!!Should I remove the point from pointList???
                                                 solutionStatus.points[i] = true;
+
+                                                // alert("Incrementeing correctSolutionsCounter.....");
+                                                
                                                 correctSolutionsCounter++;
                                                 //isSolutionCorrect = true;
 
@@ -236,11 +240,14 @@
                             }
 
                             if(processingString != "") {
-                                //alert(processingString);
+                                // alert(processingString);
                             }
 
+                            // alert("correctSolutionsCounter : " + correctSolutionsCounter + "\nsolutionPointsArray.length : " + solutionPointsArray.length + "\nnumberOfSolutions : " + numberOfSolutions);
+
                             //!!! Careful, you'll need to change this when lines are incoporated in the solution.
-                            if(correctSolutionsCounter == solutionPointsArray.length) {
+                            // if(correctSolutionsCounter == solutionPointsArray.length) {
+                            if(correctSolutionsCounter == numberOfSolutions) {
                                 isSolutionCorrect = true;
                             }
 
