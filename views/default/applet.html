@@ -30,7 +30,7 @@
                 $("#problemSelector").click(function () {
                     var selectedProblemNumber = Number((prompt("Enter problem number : ") - 1));
 
-                    console.log("<><>selectedProblemNumber : " + selectedProblemNumber);
+                    console.log("<><>selectedProblemNumber : " + selectedProblemNumber + 1);
 
                     // The case is constructed this way since '0' is a special case that made if(selectedProblemNumber) to be false.
                     if((selectedProblemNumber && selectedProblemNumber >= 0) || selectedProblemNumber == 0) {
@@ -165,18 +165,18 @@
                             for(var i = 0 ; i < no_of_objects ; i++) {
                                 var objectName = geoApp.getObjectName(i);
                                 
-                                alert("objectName : " + objectName);
+                                console.log("objectName : " + objectName);
                                 
                                 // !!!Disregarding robot and eye for now, and adding all other points!!!
                                 if(geoApp.getObjectType(objectName).toLowerCase() == "point" && pointList.indexOf(objectName) == -1 && objectName.toLowerCase() != "r" && objectName.toLowerCase() != "e") {
                                     pointList.push(objectName);
                                 }
                                 else {
-                                    alert("Ignored " + objectName);
+                                    console.log("Ignored " + objectName);
                                 }
                             }
 
-                            alert(JSON.stringify(pointList));
+                            console.log(JSON.stringify(pointList));
                             
                             var solutionPointsArray = incoming.solution.points;
                             var numberOfSolutions = 0;
@@ -202,7 +202,7 @@
 
                                 solutionStatus.points[i] = false;
 
-                                alert("Solution point name " + solutionPointName);
+                                console.log("Solution point name " + solutionPointName);
 
                                 for(var j = 0 ; j < pointList.length ; j++) {
                                     // !!!Disregarding robot for now!!!
@@ -212,11 +212,11 @@
 
                                     var pointName = pointList[j];
                                     
-                                    alert("Looking at point " + pointName);
+                                    console.log("Looking at point " + pointName);
                                     
                                     // Only if the object/point is visible on screen
                                     if(geoApp.getVisible(pointName)) {
-                                        alert("CorrectX : " + correctX + "\nCorrectY : " + correctY);
+                                        console.log("CorrectX : " + correctX + "\nCorrectY : " + correctY);
 
                                         // !!!Careful of using toFixed, get a confirmation of the proper rounding rules to be applied.
                                         // !!!Incorporating the threshhold.
@@ -225,13 +225,13 @@
                                             var actualX = geoApp.getXcoord(pointName).toFixed(2);
                                             var actualY = geoApp.getYcoord(pointName).toFixed(2);
 
-                                            alert("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
+                                            console.log("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
 
                                             if(actualX <= upperX && actualX >= lowerX && actualY <= upperY && actualY >= lowerY) {
                                                 // !!!Should I remove the point from pointList???
                                                 solutionStatus.points[i] = true;
 
-                                                alert("Incrementeing correctSolutionsCounter.....");
+                                                console.log("Incrementeing correctSolutionsCounter.....");
                                                 
                                                 correctSolutionsCounter++;
                                                 //isSolutionCorrect = true;
@@ -254,10 +254,10 @@
                             }
 
                             if(processingString != "") {
-                                alert(processingString);
+                                console.log(processingString);
                             }
 
-                            alert("correctSolutionsCounter : " + correctSolutionsCounter + "\nsolutionPointsArray.length : " + solutionPointsArray.length + "\nnumberOfSolutions : " + numberOfSolutions);
+                            console.log("correctSolutionsCounter : " + correctSolutionsCounter + "\nsolutionPointsArray.length : " + solutionPointsArray.length + "\nnumberOfSolutions : " + numberOfSolutions);
 
                             //!!! Careful, you'll need to change this when lines are incoporated in the solution.
                             // if(correctSolutionsCounter == solutionPointsArray.length) {
