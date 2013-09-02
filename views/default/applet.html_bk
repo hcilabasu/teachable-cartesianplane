@@ -1,0 +1,293 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Cartesian Plane</title>
+
+        <script src="{{=URL('static','js/jquery.js')}}"></script>
+        <script src="{{=URL('static','js/web2py.js')}}"></script>
+        <script type="text/javascript" src="../static/js/applet/RealRobot.js"></script>
+
+        <script>
+            var draggingEnabled = true;
+            var realRobotEnabled = false;
+
+            $(function() {
+                $("#dragToggle").click(function(e) {
+                    draggingEnabled = !draggingEnabled;
+                    pF.setLockEnabled(draggingEnabled);
+                    $(this).text("Dragging " + (draggingEnabled ? "ON" : "OFF"));
+                    return false;
+                });
+
+                $("#realRobot").click(function(e) {
+                    realRobotEnabled = realRobot.toggleRobot();
+                    $(this).text("Real Robot " + (realRobotEnabled ? "ON" : "OFF"));
+                    return false;
+                });
+
+                // Problem selection logic
+                $("#problemSelector").click(function () {
+                    var selectedProblemNumber = Number((prompt("Enter problem number : ") - 1));
+
+                    console.log("<><>selectedProblemNumber : " + selectedProblemNumber);
+
+                    // The case is constructed this way since '0' is a special case that made if(selectedProblemNumber) to be false.
+                    if((selectedProblemNumber && selectedProblemNumber >= 0) || selectedProblemNumber == 0) {
+                        setProblemNumber(selectedProblemNumber);
+                    }
+                    else {
+                        //alert("Undefined problem number!");
+                    }
+
+                    //This helps the window from shifting after function execution.
+                    return false;
+                });
+            });
+
+            var ADR = {};
+            ADR.POST_SOLUTION_CHECK = "{{=URL('post_Solution_Check')}}";
+            ADR.SET_PROBLEM_NUMBER = "{{=URL('set_Problem_Number')}}";
+            ADR.MAKE_ATTRIBUTION = "{{=URL('mobileinterface','robot','make_attribution')}}";
+        </script>
+
+        <style>
+            body{ 
+                position: relative;
+                padding-left: 135px;
+                padding-top: 70px;
+                min-width: 1022px;
+            }
+
+            /* This snippet positions the action-list to the right side of the body*/
+            #action-list {
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+        </style>
+
+    </head>
+    <body>
+        {{=applet}}
+        <!-- Changed problem-desc from a div tag to a pre tag. Essentially did this since the text in this tag is later modified with newline characters in between and the div tag disregards the newline character and prints everything in single line. The pre tag preserves the newline and renders accordingly -->
+        <pre id="problem-desc">This is the current problem</pre>
+        <pre id="action-list"></pre>
+        <a href="#" id="problemSelector">Change Problem</a> |
+        <a href="#" id="dragToggle">Dragging ON</a> |
+        <a href="#" id="realRobot">Real Robot OFF</a>
+        <script>
+            var olddata = "0";
+            var currentProblem;
+            var userActionList = [];
+            $(document).ready(function() {
+                if(!web2py_websocket('ws://{{=ip}}:{{=port}}/realtime/{{=group_name}}', function(e) {
+                    console.dir(e.data);
+                    incoming = JSON.parse(unescape(e.data));
+                    // TODO improve detection. Encapsulate the object and include a type property
+                    // TODO need to incorporate message types/profiles, probaby in an external js file.
+                    if(incoming instanceof Array) {
+                        var toggleBack = false;
+                        if(realRobot.isRobotEnabled() && incoming.length > 0){
+                            realRobot.toggleRobot();
+                            toggleBack = true;
+                        }
+                        // Execute array of actions (replay steps)
+                        updateProblem();
+                        actions = [];
+                        for(var i = 0; i < incoming.length; i++){
+                            var action = incoming[i];
+                            var newAction = new Action(action.name, action.op);
+                            if(i === incoming.length-1 && toggleBack){
+                                newAction.callback = function(){
+                                    // Enabling robot again after executing all steps
+                                    realRobot.toggleRobot();
+                                }
+                            } 
+                            actions.push(newAction);
+                        }
+
+                        //Clearing out the user actions if the problem is restarted
+                        if(actions.length == 0) {
+                            userActionList = [];
+                            $("#action-list").text("");
+                        }
+
+                        primitiveActions.executeAction(actions);
+                    }
+                    else if(incoming.type != "check") {
+                        if(incoming.label !== undefined) {
+                            console.dir("Execute action");
+                            olddata = incoming;
+                            
+                            //Displaying user actions as and when they happen
+                            userActionList.push(incoming.label);
+                            var tmpString = "User Actions:\n";
+                            
+                            for(var i = 0 ; i < userActionList.length ; i++) {
+                                tmpString = tmpString + Number(i+1) + ". " + userActionList[i].toString() + "\n";
+                            }
+                            $("#action-list").text(tmpString);
+                            
+                            // Execute action
+                            executeAction();    
+                        }
+                        else if(incoming.id !== undefined) {
+                            console.dir("Update problem info");
+                            // Update problem info
+                            currentProblem = incoming;
+                            updateProblem();
+                            
+                            var tmpString = currentProblem.text + "\n";
+                            
+                            for(var i = 0 ; i < currentProblem.prompts.length ; i++) {
+                                tmpString = tmpString + Number(i+1) + " " + currentProblem.prompts[i].toString() + "\n";
+                            }
+                            
+                            $("#problem-desc").text(tmpString);
+                        }
+                    }
+                    else if(incoming.type == "check") {
+                        //Do solution check here
+                        //confirm("You clicked on Check Solution");
+                        //var point1 = geoApp.getPoint("P1");
+                        //alert(geoApp.getXcoord("P1"));
+                        var isSolutionCorrect = false;
+                        var correctSolutionsCounter = 0; //There may be multiple points that need to be plotted/positioned on the cartesian plane.
+                        var solutionStatus = {"points" : [], "lines" : []}; //Tell us if each of the sub solutions is correct or not
+                        var processingString = "";
+                        var threshhold_limit = 0.25;
+                        if(incoming.solution.points) {
+                            // To enable the check for any point to be within the theshhold, and not just a specific point mentioned in the solution, we'll need to get the number of objects on screen using getObjectNumber and get the list of object names using getObjectName(int i). Then we refine this list to only show the points on screen. Then we iterate over every point and check for threshhold.
+                            var pointList = [];
+                            var no_of_objects = geoApp.getObjectNumber();
+                            for(var i = 0 ; i < no_of_objects ; i++) {
+                                var objectName = geoApp.getObjectName(i);
+                                
+                                // alert("objectName : " + objectName);
+                                
+                                // !!!Disregarding robot and eye for now, and adding all other points!!!
+                                if(geoApp.getObjectType(objectName).toLowerCase() == "point" && pointList.indexOf(objectName) == -1 && objectName.toLowerCase() != "r" && objectName.toLowerCase() != "e") {
+                                    pointList.push(objectName);
+                                }
+                                else {
+                                    // alert("Ignored " + objectName);
+                                }
+                            }
+
+                            alert(JSON.stringify(pointList));
+                            
+                            var solutionPointsArray = incoming.solution.points;
+                            var numberOfSolutions = 0;
+
+                            for(var i = 0 ; i < solutionPointsArray.length ; i++) {
+                                var point = solutionPointsArray[i];
+                                var solutionPointName = point.name;
+
+                                // !!!Disregarding robot for now!!!
+                                if(solutionPointName.toLowerCase() == "robot") {
+                                    continue;
+                                }
+                                else {
+                                    numberOfSolutions++;
+                                }
+
+                                var correctX = point.x;
+                                var correctY = point.y;
+                                var upperX = (correctX + threshhold_limit);
+                                var lowerX = (correctX - threshhold_limit);
+                                var upperY = (correctY + threshhold_limit);
+                                var lowerY = (correctY - threshhold_limit);
+
+                                solutionStatus.points[i] = false;
+
+                                // alert("Solution point name " + solutionPointName);
+
+                                for(var j = 0 ; j < pointList.length ; j++) {
+                                    // !!!Disregarding robot for now!!!
+                                    // if(solutionPointName.toLowerCase() == "robot") {
+                                        // break;
+                                    // }
+
+                                    var pointName = pointList[j];
+                                    
+                                    // alert("Looking at point " + pointName);
+                                    
+                                    // Only if the object/point is visible on screen
+                                    if(geoApp.getVisible(pointName)) {
+                                        // alert("CorrectX : " + correctX + "\nCorrectY : " + correctY);
+
+                                        // !!!Careful of using toFixed, get a confirmation of the proper rounding rules to be applied.
+                                        // !!!Incorporating the threshhold.
+                                        if(geoApp.getObjectType(pointName).toLowerCase() == "point") {
+                                            
+                                            var actualX = geoApp.getXcoord(pointName).toFixed(2);
+                                            var actualY = geoApp.getYcoord(pointName).toFixed(2);
+
+                                            // alert("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
+
+                                            if(actualX <= upperX && actualX >= lowerX && actualY <= upperY && actualY >= lowerY) {
+                                                // !!!Should I remove the point from pointList???
+                                                solutionStatus.points[i] = true;
+
+                                                // alert("Incrementeing correctSolutionsCounter.....");
+                                                
+                                                correctSolutionsCounter++;
+                                                //isSolutionCorrect = true;
+
+                                                //!!! Very important step. Remove the solution point and the cartesian solution once we get a match.
+                                                solutionPointsArray.splice(i, 1);
+                                                i--;
+
+                                                pointList.splice(j, 1);
+                                                j--;
+
+                                                processingString += "Point Name : " + pointName + "\nCorrect X : " + correctX + ", Correct Y : " + correctY + "\n";
+                                                processingString += "GEO APP X : " + geoApp.getXcoord(pointName).toFixed(2) + ", GEO APP Y : " + geoApp.getYcoord(pointName).toFixed(2) + "\n";
+                                                
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if(processingString != "") {
+                                // alert(processingString);
+                            }
+
+                            // alert("correctSolutionsCounter : " + correctSolutionsCounter + "\nsolutionPointsArray.length : " + solutionPointsArray.length + "\nnumberOfSolutions : " + numberOfSolutions);
+
+                            //!!! Careful, you'll need to change this when lines are incoporated in the solution.
+                            // if(correctSolutionsCounter == solutionPointsArray.length) {
+                            if(correctSolutionsCounter == numberOfSolutions) {
+                                isSolutionCorrect = true;
+                            }
+
+                            console.dir("Your solution is " + (isSolutionCorrect ? "correct" : "wrong") + "!");
+                            postSolutionCheck(isSolutionCorrect);
+                        }
+                    }
+                    else {
+                        // alert("Fall through error...");
+                    }
+                    
+                })) {
+                    alert("html5 websocket not supported by your browser, try Google Chrome");
+                }
+            });
+
+            function updateProblem(){
+                console.dir("Updating plane to problem ID #" + currentProblem.id +"...");
+                pF.appReady(currentProblem.points, currentProblem.lines);
+                realRobot.reset();
+            }
+
+            function executeAction(){
+                console.log("EXECUTING CLICKLISTENER EVENT!!! " + olddata.name + " - " + olddata.op);
+                clickListener.executeEvent(new Action(olddata.name, olddata.op));
+            }
+
+        </script>
+    </body>
+</html>

@@ -137,7 +137,7 @@ primitiveActions.actions.moveDistance = {
       var newY = Math.round((point.y + yDist(dist, r1.orientation))*100000)/100000;
 
       // Moving real robot
-      realRobot.moveTo(newX, newY, dist < 0 ? true : false, r1.orientation);
+      realRobot.moveTo(newX, newY, dist < 0 ? true : false, parseInt(r1.orientation));
 
       if(Math.abs(newX) <= 5 && Math.abs(newY) <= 5){
       	console.log("move " + dist);
@@ -436,7 +436,7 @@ primitiveActions.actions.moveTo = {
     var dist = r1.location.distanceTo(targetPoint);
     
     console.log("r1.location = " + r1.location.x + "," + r1.location.y + " dist = " + dist);
-      controller.addAction(new Action("turnTo", {pointName : targetPoint}));
+      controller.addAction(new Action("turnTo", {pointName : targetPoint, moveRobot: false}));
       controller.addAction(new Action("move", dist));
   }
 };
@@ -460,7 +460,9 @@ primitiveActions.actions.turnTo = {
     var angleInRadians = Math.atan2(yDist, xDist);
     var angleInDegrees = rtd(angleInRadians);
 
-    realRobot.turnTo(parseInt(angleInDegrees));
+    if(params.moveRobot){
+      realRobot.turnTo(parseInt(angleInDegrees));
+    }
     
     console.log("angInDeg = " + angleInDegrees + " and orient = " + r1.orientation); 
 
@@ -695,12 +697,7 @@ function postSolutionCheck(solutionStatus) {
   var msg = {"type" : "check", "status" : solutionStatus};
   //ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + String(solutionStatus), [], "");
   ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
-  ajax(ADR.MAKE_ATTRIBUTION + "?out=" + (solutionStatus === true ? "success" : "failure"))
-}
-
-function setProblemNumber(probNum) {
-  var msg = {"type" : "reset", "number" : probNum};
-  ajax(ADR.SET_PROBLEM_NUMBER + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
+  ajax(ADR.MAKE_ATTRIBUTION + "?desattr=" + "desirable" + "&out=" + (solutionStatus === true ? "success" : "failure"))
 }
 
 controller.initialize();
