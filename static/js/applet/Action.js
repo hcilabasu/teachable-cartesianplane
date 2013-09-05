@@ -192,7 +192,8 @@ primitiveActions.actions.turnAngle = {
         if(params.angle > 0) {
           var arcParams = ["R", prevPoint, primitiveActions.movingPointBase];
           var i = 2; // i specifies which point will be replaced by the new temp point when the turn is finished
-        } else {
+        }
+        else {
           var arcParams = ["R", primitiveActions.movingPointBase, prevPoint];
           var i = 1; // i specifies which point will be replaced by the new temp point when the turn is finished
         }
@@ -236,7 +237,8 @@ primitiveActions.actions.turnAngle = {
           angle: parseFloat(params.angle)
         });
 
-      } else {
+      }
+      else {
         // Turning while NOT dragging a point
         controller.addAction(new Action('turn', params.angle));   
       }
@@ -671,28 +673,27 @@ primitiveActions.addNewAction = function(label, steps)
     //sets the value to the label, fine for now but may need to change
     primitiveActions.procs[label] = label;
   }
-  else
-  {
+  else {
     alert("Attempting to add action with the same label as one that exists!");
   }
 };
 
-primitiveActions.getProcs = function()
-{
+primitiveActions.getProcs = function() {
   return primitiveActions.procs;
 };
 
-primitiveActions.getSteps = function(name)
-{
+primitiveActions.getSteps = function(name) {
   console.log("Getting steps... " + name);
-  if(primitiveActions.actions[name].ex instanceof Array)
+  if(primitiveActions.actions[name].ex instanceof Array) {
     return primitiveActions.actions[name].ex;
-  else
+  }
+  else {
     return null;
+  }
 };
 
-function postSolutionCheck(solutionStatus) {
-  var msg = {"type" : "check", "status" : solutionStatus};
+function postSolutionCheck(solutionStatus, mobileMessage) {
+  var msg = {"type" : "check", "status" : solutionStatus, "message" : mobileMessage};
   //ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + String(solutionStatus), [], "");
   ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
   ajax(ADR.MAKE_ATTRIBUTION + "?desattr=" + "desirable" + "&out=" + (solutionStatus === true ? "success" : "failure"))

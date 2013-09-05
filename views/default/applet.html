@@ -158,6 +158,7 @@
                         var solutionStatus = {"points" : [], "lines" : []}; //Tell us if each of the sub solutions is correct or not
                         var processingString = "";
                         var threshhold_limit = 0.25;
+                        var messageBackToMobile = "";
                         if(incoming.solution.points) {
                             // To enable the check for any point to be within the theshhold, and not just a specific point mentioned in the solution, we'll need to get the number of objects on screen using getObjectNumber and get the list of object names using getObjectName(int i). Then we refine this list to only show the points on screen. Then we iterate over every point and check for threshhold.
                             var pointList = [];
@@ -181,92 +182,104 @@
                             var solutionPointsArray = incoming.solution.points;
                             var numberOfSolutions = 0;
 
-                            for(var i = 0 ; i < solutionPointsArray.length ; i++) {
-                                var point = solutionPointsArray[i];
-                                var solutionPointName = point.name;
+                            if(pointList.length != 0) {
+                                for(var i = 0 ; i < solutionPointsArray.length ; i++) {
+                                    var point = solutionPointsArray[i];
+                                    var solutionPointName = point.name;
 
-                                // !!!Disregarding robot for now!!!
-                                if(solutionPointName.toLowerCase() == "robot") {
-                                    continue;
-                                }
-                                else {
-                                    numberOfSolutions++;
-                                }
-
-                                var correctX = point.x;
-                                var correctY = point.y;
-                                var upperX = (correctX + threshhold_limit);
-                                var lowerX = (correctX - threshhold_limit);
-                                var upperY = (correctY + threshhold_limit);
-                                var lowerY = (correctY - threshhold_limit);
-
-                                solutionStatus.points[i] = false;
-
-                                console.log("Solution point name " + solutionPointName);
-
-                                for(var j = 0 ; j < pointList.length ; j++) {
                                     // !!!Disregarding robot for now!!!
-                                    // if(solutionPointName.toLowerCase() == "robot") {
-                                        // break;
-                                    // }
+                                    if(solutionPointName.toLowerCase() == "robot") {
+                                        continue;
+                                    }
+                                    else {
+                                        numberOfSolutions++;
+                                    }
 
-                                    var pointName = pointList[j];
-                                    
-                                    console.log("Looking at point " + pointName);
-                                    
-                                    // Only if the object/point is visible on screen
-                                    if(geoApp.getVisible(pointName)) {
-                                        console.log("CorrectX : " + correctX + "\nCorrectY : " + correctY);
+                                    var correctX = point.x;
+                                    var correctY = point.y;
+                                    var upperX = (correctX + threshhold_limit);
+                                    var lowerX = (correctX - threshhold_limit);
+                                    var upperY = (correctY + threshhold_limit);
+                                    var lowerY = (correctY - threshhold_limit);
 
-                                        // !!!Careful of using toFixed, get a confirmation of the proper rounding rules to be applied.
-                                        // !!!Incorporating the threshhold.
-                                        if(geoApp.getObjectType(pointName).toLowerCase() == "point") {
-                                            
-                                            var actualX = geoApp.getXcoord(pointName).toFixed(2);
-                                            var actualY = geoApp.getYcoord(pointName).toFixed(2);
+                                    solutionStatus.points[i] = false;
 
-                                            console.log("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
+                                    console.log("Solution point name " + solutionPointName);
 
-                                            if(actualX <= upperX && actualX >= lowerX && actualY <= upperY && actualY >= lowerY) {
-                                                // !!!Should I remove the point from pointList???
-                                                solutionStatus.points[i] = true;
+                                    for(var j = 0 ; j < pointList.length ; j++) {
+                                        // !!!Disregarding robot for now!!!
+                                        // if(solutionPointName.toLowerCase() == "robot") {
+                                            // break;
+                                        // }
 
-                                                console.log("Incrementeing correctSolutionsCounter.....");
+                                        var pointName = pointList[j];
+                                        
+                                        console.log("Looking at point " + pointName);
+                                        
+                                        // Only if the object/point is visible on screen
+                                        if(geoApp.getVisible(pointName)) {
+                                            console.log("CorrectX : " + correctX + "\nCorrectY : " + correctY);
+
+                                            // !!!Careful of using toFixed, get a confirmation of the proper rounding rules to be applied.
+                                            // !!!Incorporating the threshhold.
+                                            if(geoApp.getObjectType(pointName).toLowerCase() == "point") {
                                                 
-                                                correctSolutionsCounter++;
-                                                //isSolutionCorrect = true;
+                                                var actualX = geoApp.getXcoord(pointName).toFixed(2);
+                                                var actualY = geoApp.getYcoord(pointName).toFixed(2);
 
-                                                //!!! Very important step. Remove the solution point and the cartesian solution once we get a match.
-                                                solutionPointsArray.splice(i, 1);
-                                                i--;
+                                                console.log("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
 
-                                                pointList.splice(j, 1);
-                                                j--;
+                                                if(actualX <= upperX && actualX >= lowerX && actualY <= upperY && actualY >= lowerY) {
+                                                    // !!!Should I remove the point from pointList???
+                                                    solutionStatus.points[i] = true;
 
-                                                processingString += "Point Name : " + pointName + "\nCorrect X : " + correctX + ", Correct Y : " + correctY + "\n";
-                                                processingString += "GEO APP X : " + geoApp.getXcoord(pointName).toFixed(2) + ", GEO APP Y : " + geoApp.getYcoord(pointName).toFixed(2) + "\n";
-                                                
-                                                break;
+                                                    // alert(pointName + " i <--> i " + geoApp.isIndependent(pointName));
+                                                    // alert(pointName + " m <--> m " + geoApp.isMoveable(pointName));
+
+                                                    console.log("Incrementeing correctSolutionsCounter.....");
+                                                    
+                                                    correctSolutionsCounter++;
+                                                    //isSolutionCorrect = true;
+
+                                                    //!!! Very important step. Remove the solution point and the cartesian solution once we get a match.
+                                                    solutionPointsArray.splice(i, 1);
+                                                    i--;
+
+                                                    pointList.splice(j, 1);
+                                                    j--;
+
+                                                    processingString += "Point Name : " + pointName + "\nCorrect X : " + correctX + ", Correct Y : " + correctY + "\n";
+                                                    processingString += "GEO APP X : " + geoApp.getXcoord(pointName).toFixed(2) + ", GEO APP Y : " + geoApp.getYcoord(pointName).toFixed(2) + "\n";
+                                                    
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
                                 }
+
+                                console.log("correctSolutionsCounter : " + correctSolutionsCounter + "\nsolutionPointsArray.length : " + solutionPointsArray.length + "\nnumberOfSolutions : " + numberOfSolutions);
+
+                                //!!! Careful, you'll need to change this when lines are incoporated in the solution.
+                                // if(correctSolutionsCounter == solutionPointsArray.length) {
+                                if(correctSolutionsCounter == numberOfSolutions) {
+                                    isSolutionCorrect = true;
+                                }
+                            }
+                            else {
+                                messageBackToMobile = "You have not plotted any points.";
+
+                                // !!!This is just to make sure the check at the bottom is false
+                                numberOfSolutions = -1;
+                                // alert("No points to check");
                             }
 
                             if(processingString != "") {
                                 console.log(processingString);
                             }
 
-                            console.log("correctSolutionsCounter : " + correctSolutionsCounter + "\nsolutionPointsArray.length : " + solutionPointsArray.length + "\nnumberOfSolutions : " + numberOfSolutions);
-
-                            //!!! Careful, you'll need to change this when lines are incoporated in the solution.
-                            // if(correctSolutionsCounter == solutionPointsArray.length) {
-                            if(correctSolutionsCounter == numberOfSolutions) {
-                                isSolutionCorrect = true;
-                            }
-
                             console.dir("Your solution is " + (isSolutionCorrect ? "correct" : "wrong") + "!");
-                            postSolutionCheck(isSolutionCorrect);
+                            postSolutionCheck(isSolutionCorrect, messageBackToMobile);
                         }
                     }
                     else {
