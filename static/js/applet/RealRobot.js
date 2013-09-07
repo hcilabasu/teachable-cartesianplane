@@ -70,7 +70,7 @@ var RealRobot = function(){
 		return moveRobot;
 	}
 
-	var isRobotEnabled = function(){
+	var isRobotEnabled = function() {
 		return moveRobot;
 	}
 

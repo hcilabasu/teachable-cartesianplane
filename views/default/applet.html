@@ -52,7 +52,7 @@
         </script>
 
         <style>
-            body{ 
+            body {
                 position: relative;
                 padding-left: 135px;
                 padding-top: 70px;
@@ -66,8 +66,8 @@
                 top: 0;
             }
         </style>
-
     </head>
+
     <body>
         {{=applet}}
         <!-- Changed problem-desc from a div tag to a pre tag. Essentially did this since the text in this tag is later modified with newline characters in between and the div tag disregards the newline character and prints everything in single line. The pre tag preserves the newline and renders accordingly -->
@@ -80,6 +80,7 @@
             var olddata = "0";
             var currentProblem;
             var userActionList = [];
+            var appletLockStatus = false;
             $(document).ready(function() {
                 if(!web2py_websocket('ws://{{=ip}}:{{=port}}/realtime/{{=group_name}}', function(e) {
                     console.dir(e.data);
@@ -95,16 +96,17 @@
                         // Execute array of actions (replay steps)
                         updateProblem();
                         actions = [];
-                        for(var i = 0; i < incoming.length; i++){
+                        for(var i = 0; i < incoming.length; i++) {
                             var action = incoming[i];
                             var newAction = new Action(action.name, action.op);
-                            if(i === incoming.length-1 && toggleBack){
-                                newAction.callback = function(){
+                            if(i === incoming.length-1 && toggleBack) {
+                                newAction.callback = function() {
                                     alert(1);
                                     // Enabling robot again after executing all steps
                                     realRobot.toggleRobot();
                                 }
-                            } 
+                            }
+
                             actions.push(newAction);
                         }
 
@@ -116,43 +118,41 @@
 
                         primitiveActions.executeAction(actions);
                     }
-                    else if(incoming.type != "check") {
-                        if(incoming.label !== undefined) {
-                            console.dir("Execute action");
-                            olddata = incoming;
-                            
-                            //Displaying user actions as and when they happen
-                            userActionList.push(incoming.label);
-                            var tmpString = "User Actions:\n";
-                            
-                            for(var i = 0 ; i < userActionList.length ; i++) {
-                                tmpString = tmpString + Number(i+1) + ". " + userActionList[i].toString() + "\n";
-                            }
-                            $("#action-list").text(tmpString);
-                            
-                            // Execute action
-                            executeAction();    
-                        }
-                        else if(incoming.id !== undefined) {
-                            console.dir("Update problem info");
-                            // Update problem info
-                            currentProblem = incoming;
-                            updateProblem();
-                            
-                            var tmpString = currentProblem.text + "\n";
-                            
-                            for(var i = 0 ; i < currentProblem.prompts.length ; i++) {
-                                tmpString = tmpString + Number(i+1) + " " + currentProblem.prompts[i].toString() + "\n";
-                            }
-                            
-                            $("#problem-desc").text(tmpString);
-                        }
+                    else if(incoming.type == "lockapplet") {
+                        console.log("Lock Applet!");
+                        // $("#ggbApplet").height(1).width(1);
+                        // $("#ggbApplet").hide();
+                        appletLockStatus = true;
+
+                        // Disabling the robot and all the points
+                        // realRobot.toggleRobot();
+                        // geoApp.setMode(27);
+                        // geoApp.setLayerVisible(0, false);
+                        // geoApp.setLayerVisible(1, false);
+                        // Disabling clicks on the robot and eye.
+                        // geoApp.unregisterObjectClickListener("R");
+                        // geoApp.unregisterObjectClickListener("E");
+                        toggleAllObjectClickListeners(false);
+                    }
+                    else if(incoming.type == "unlockapplet") {
+                        console.log("Unlock Applet!");
+                        // $("#ggbApplet").show();
+                        appletLockStatus = false;
+
+                        // Enabling the robot and all the points
+                        // realRobot.toggleRobot();
+                        // geoApp.setMode(27);
+                        // geoApp.setLayerVisible(0, true);
+                        // geoApp.setLayerVisible(1, true);
+                        // Enabling clicks on the robot and eye.
+                        // geoApp.registerObjectClickListener("R", "alertWasClicked");
+                        // geoApp.registerObjectClickListener("E", "alertWasClicked");
+                        toggleAllObjectClickListeners(true);
                     }
                     else if(incoming.type == "check") {
+                        console.log("Solution check triggered.");
                         //Do solution check here
                         //confirm("You clicked on Check Solution");
-                        //var point1 = geoApp.getPoint("P1");
-                        //alert(geoApp.getXcoord("P1"));
                         var isSolutionCorrect = false;
                         var correctSolutionsCounter = 0; //There may be multiple points that need to be plotted/positioned on the cartesian plane.
                         var solutionStatus = {"points" : [], "lines" : []}; //Tell us if each of the sub solutions is correct or not
@@ -280,6 +280,38 @@
 
                             console.dir("Your solution is " + (isSolutionCorrect ? "correct" : "wrong") + "!");
                             postSolutionCheck(isSolutionCorrect, messageBackToMobile);
+                        }
+                    }
+                    else if(incoming.type != "check") {
+                        if(incoming.label !== undefined) {
+                            console.dir("Execute action");
+                            olddata = incoming;
+                            
+                            //Displaying user actions as and when they happen
+                            userActionList.push(incoming.label);
+                            var tmpString = "User Actions:\n";
+                            
+                            for(var i = 0 ; i < userActionList.length ; i++) {
+                                tmpString = tmpString + Number(i+1) + ". " + userActionList[i].toString() + "\n";
+                            }
+                            $("#action-list").text(tmpString);
+                            
+                            // Execute action
+                            executeAction();    
+                        }
+                        else if(incoming.id !== undefined) {
+                            console.dir("Update problem info");
+                            // Update problem info
+                            currentProblem = incoming;
+                            updateProblem();
+                            
+                            var tmpString = currentProblem.text + "\n";
+                            
+                            for(var i = 0 ; i < currentProblem.prompts.length ; i++) {
+                                tmpString = tmpString + Number(i+1) + " " + currentProblem.prompts[i].toString() + "\n";
+                            }
+                            
+                            $("#problem-desc").text(tmpString);
                         }
                     }
                     else {
