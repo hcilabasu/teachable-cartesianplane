@@ -51,7 +51,7 @@ var createRobot = function() {
     };
   }
 
-  var addExtension = function(pointName){
+  var addExtension = function(pointName) {
     var point = pF.getPoint(pointName);
     var robot = pF.getPoint("R");
     var angleDelta = angle(robot, point)-orientation;
@@ -66,12 +66,12 @@ var createRobot = function() {
     return returnObject;
   }
 
-  var getExtension = function(pointName){
+  var getExtension = function(pointName) {
     return extensions[pointName];
   }
 
-  var removeExtension = function(pointName){
-    if(extensions[pointName]){
+  var removeExtension = function(pointName) {
+    if(extensions[pointName]) {
       delete extensions[pointName];
       geoApp.deleteObject("C" + pointName);
     }
@@ -120,10 +120,10 @@ var createRobot = function() {
 
     addExtension: addExtension,
 
-    get location() { return location; },
-    get orientation() { return orientation; },
-    set location(loc) { location = loc; },
-    set orientation(o) { orientation = o; }
+    get location() {return location;},
+    get orientation() {return orientation;},
+    set location(loc) {location = loc;},
+    set orientation(o) {orientation = o;}
   }
 
  var addClickListener = function(object, func) {
@@ -174,11 +174,17 @@ var pF = (function() {
   }
   
   var getPoint = function(point) {
+    console.log("getPoint, point : " + JSON.stringify(point));
+
     if(point.constructor && point.constructor.getName() == "Point") {
+      // console.log("first if");
       return point;
     }
     else {
-      return new Point(geoApp.getXcoord(point), geoApp.getYcoord(point));
+      // console.log("second if");
+      var tmpPoint = new Point(geoApp.getXcoord(point), geoApp.getYcoord(point));
+      // console.log("tmpPoint : " + JSON.stringify(tmpPoint));
+      return tmpPoint;
     }
   };
   
@@ -208,14 +214,13 @@ var pF = (function() {
   }
 
   var createPoint = function(point, funcName, name) {
-//    console.log("In createPoint..." + point.x + "," + point.y);
+   // console.log("In createPoint..." + point.x + "," + point.y);
     var exists = pointExists(point);
     
-    if(exists)
+    if(exists) {
       return exists;
-
-    else
-    {
+    }
+    else {
       return forceCreatePoint(point, funcName, name);
     }  
   };
@@ -227,7 +232,7 @@ var pF = (function() {
     for (var i = 0; i < geoApp.getObjectNumber() && !exists; i++) {
       var name = geoApp.getObjectName(i);
 
-      if ("point" == geoApp.getObjectType(name) && 0 == geoApp.getLayer(name) && point.x == geoApp.getXcoord(name) && point.y == geoApp.getYcoord(name)) {	  
+      if("point" == geoApp.getObjectType(name) && 0 == geoApp.getLayer(name) && point.x == geoApp.getXcoord(name) && point.y == geoApp.getYcoord(name)) {	  
         exists = name;
       }
     }
@@ -256,7 +261,7 @@ var pF = (function() {
 
   var setLock = function(setLock) {
     lock = setLock;
-    for(var i = 0; i < geoApp.getObjectNumber(); i++) {
+    for(var i = 0 ; i < geoApp.getObjectNumber() ; i++) {
       var name = geoApp.getObjectName(i);
       geoApp.evalCommand("SetFixed["+name+","+setLock+"]");
     }
@@ -271,7 +276,8 @@ var pF = (function() {
     if(geoApp) {
       if(points !== undefined) {
         plotPointsAndLines(points, lines);
-      } else {
+      }
+      else {
         loadTest();
       }
       pF.lockObjects();
@@ -376,10 +382,15 @@ var pF = (function() {
 /*************************************************************************************/
 
 var geoApp;
+
+//Adrin added this flag
+var APPLET_READY = false;
+
 var ready = function() {
   if(document.applets[0] != null && document.applets[0].isActive) {
     console.log("Applet ready...");
     geoApp = document.ggbApplet;
+    APPLET_READY = true;
     //document.onclick = appletClicked;
   }  
   else {

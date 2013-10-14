@@ -113,6 +113,7 @@
                         //Clearing out the user actions if the problem is restarted
                         if(actions.length == 0) {
                             userActionList = [];
+                            // console.log("action-list is empty....ARRAY");
                             $("#action-list").text("");
                         }
 
@@ -289,12 +290,12 @@
                             
                             //Displaying user actions as and when they happen
                             userActionList.push(incoming.label);
-                            var tmpString = "User Actions:\n";
+                            var userActionsString = "User Actions:\n";
                             
                             for(var i = 0 ; i < userActionList.length ; i++) {
-                                tmpString = tmpString + Number(i+1) + ". " + userActionList[i].toString() + "\n";
+                                userActionsString = userActionsString + Number(i+1) + ". " + userActionList[i].toString() + "\n";
                             }
-                            $("#action-list").text(tmpString);
+                            $("#action-list").text(userActionsString);
                             
                             // Execute action
                             executeAction();    
@@ -305,13 +306,20 @@
                             currentProblem = incoming;
                             updateProblem();
                             
-                            var tmpString = currentProblem.text + "\n";
+                            // console.log("action-list is empty....id !== undefined");
+
+                            //Clearing out the user actions if the problem is restarted
+                            userActionList = [];
+                            $("#action-list").text(userActionsString = "");//clearing the user actions display and string
+
+
+                            var currentProblemDescString = currentProblem.text + "\n";
                             
                             for(var i = 0 ; i < currentProblem.prompts.length ; i++) {
-                                tmpString = tmpString + Number(i+1) + " " + currentProblem.prompts[i].toString() + "\n";
+                                currentProblemDescString = currentProblemDescString + Number(i+1) + " " + currentProblem.prompts[i].toString() + "\n";
                             }
                             
-                            $("#problem-desc").text(tmpString);
+                            $("#problem-desc").text(currentProblemDescString);
                         }
                     }
                     else {
@@ -330,7 +338,7 @@
             }
 
             function executeAction(){
-                console.log("EXECUTING CLICKLISTENER EVENT!!! " + olddata.name + " - " + olddata.op);
+                console.log("EXECUTING CLICKLISTENER EVENT!!! " + olddata.name + " - " + JSON.stringify(olddata));
                 clickListener.executeEvent(new Action(olddata.name, olddata.op));
             }
 

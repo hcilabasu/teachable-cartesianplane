@@ -88,9 +88,10 @@ NB ERIN: leaving in the state machine, but very much simplifying.
     var addArg = function(newArg) {
       console.log("Adding new arg to " + args);
       
-      if(args.length == maxArgs)
+      if(args.length == maxArgs) {
         args.shift();
-        
+      }
+
       args.push(newArg);
       
       console.log("Args is now: " + args);
@@ -115,23 +116,22 @@ NB ERIN: leaving in the state machine, but very much simplifying.
     
     console.log("Getting options...");
     
-    if(optionsList)
-    {
-      for(var i = 0; i < optionsList.length; i++)
-      {
+    if(optionsList) {
+      for(var i = 0; i < optionsList.length; i++) {
         o = optionsList[i];
       
         //I think there's probably a built in array method to do this kind of
         // processing
-        if(o.index instanceof Array)
-        {
+        if(o.index instanceof Array) {
           op = [];
-          for(var j = 0; j < o.index.length; j++)
+          for(var j = 0; j < o.index.length; j++) {
             op[j] = stateMachine.getArg(o.index[j]);
+          }
         }
-        else
+        else {
           op = stateMachine.getArg(o.index);
-          
+        }
+
         options[i] = new Action(o.act, op);
         op = null;
       }
@@ -148,68 +148,60 @@ NB ERIN: leaving in the state machine, but very much simplifying.
     var eIndex;
     var origin, pointName;
 
-   if (event != null && event.constructor.getName() == "Action")
-    {
-	console.log("event constructor is action." + event);
-	primitiveActions.executeAction(event);	
-    }       
-    else
-    {
-	if (event == null)
-	{
-	    origin = "playingField";
-	    //	console.log("origin is playingField");
-	}
-	else if(event.constructor.getName() == "Action")
-	{
-            eIndex = 4; //an option was selected event
-	    origin = "action"; // the event is an action
-	}
-	else if(event.constructor.getName() == "Point")
-	{
-            eIndex = 2; //the field was clicked event
-	    origin = "field"; // I don't know what this means
-	}
-	else
-	{
-	    if(event == "X1" || event == "X2" || event == "Y1" || event == "Y2")
-	    {
-		eIndex = 3; //an axis was clicked event
-		origin = "axis";
-	    }
+    if(event != null && event.constructor.getName() == "Action") {
+      console.log("event constructor is action. " + JSON.stringify(event));
+      primitiveActions.executeAction(event);
+    }
+    else {
+      if(event == null) {
+          origin = "playingField";
+          //	console.log("origin is playingField");
+      }
+      else if(event.constructor.getName() == "Action") {
+        eIndex = 4; //an option was selected event
+        origin = "action"; // the event is an action
+      }
+      else if(event.constructor.getName() == "Point") {
+        eIndex = 2; //the field was clicked event
+        origin = "field"; // I don't know what this means
+      }
+      else {
+        if(event == "X1" || event == "X2" || event == "Y1" || event == "Y2") {
+          eIndex = 3; //an axis was clicked event
+          origin = "axis";
+        }
+        else if(event == "R" || event == "E" || event == "RB") {
+          eIndex = 0; //the robot was clicked event
+          origin = "robot";
+        }
+        else {
+          eIndex = 1; //a point was clicked event
+          origin = "point"; // ERIN - need to know which point was clicked
+          pointName = event;
+        }
+      }
 
-	    else if(event == "R" || event == "E" || event == "RB")
-	    {
-		eIndex = 0; //the robot was clicked event
-		origin = "robot";
-	    }
-	    else
-	    {
-		eIndex = 1; //a point was clicked event
-		origin = "point"; // ERIN - need to know which point was clicked
-		pointName = event;
-	    }
-	}
+      JSONoptions = {"trigger": origin};
 
-	JSONoptions = {"trigger": origin};
-	if (pointName != null)
-	    JSONoptions = {"trigger": origin, "pointName": pointName};
+      if(pointName != null) {
+        JSONoptions = {"trigger": origin, "pointName": pointName};
+      }
 
-	$.ajax({url:"loadOptions", 
-		data: JSONoptions, 
-		//dataType: "json",
-		beforeSend: function(x) {
-		    if (x && x.overrideMimeType) {
-			x.overrideMimeType("application/j-son;charset=UTF-8");
-		    }
-		},
-		success: function(data) 
-		  {console.dir(data);}
-    });
-
+      $.ajax({url:"loadOptions", 
+      	data: JSONoptions, 
+      	//dataType: "json",
+      	beforeSend: function(x) {
+    	    if(x && x.overrideMimeType) {
+      		  x.overrideMimeType("application/j-son;charset=UTF-8");
+          }
+      	},
+      	success: function(data) {
+          console.dir(data);
+        }
+      });
     }
     
-     // older code
+    // older code
 
     
     //frames[2].actionOpts.loadOptions(getOptions(stateMachine.getOptions()));
