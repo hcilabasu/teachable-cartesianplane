@@ -100,7 +100,6 @@
                             var newAction = new Action(action.name, action.op);
                             if(i === incoming.length-1 && toggleBack){
                                 newAction.callback = function(){
-                                    alert(1);
                                     // Enabling robot again after executing all steps
                                     realRobot.toggleRobot();
                                 }
