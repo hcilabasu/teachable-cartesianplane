@@ -1,4 +1,4 @@
-var RealRobot = function(){
+var RealRobot = function() {
 
 	var moveRobot = false;
 
@@ -7,16 +7,18 @@ var RealRobot = function(){
 	/*
 	 * Moves the robot to a specific x, y and angle. Can move either backward or forward
 	 */
-	var moveTo = function(x_p, y_p, backwards_p, angle_p){
+	var moveTo = function(x_p, y_p, backwards_p, angle_p) {
 		console.dir("Moving robot to (" + x_p + "," + y_p + "), BACKWARDS: " + backwards_p + ", ANGLE: " + angle_p);
 		var params = {
 			x: x_p,
 			y: y_p,
 		};
-		if (backwards_p === true){
+		
+		if(backwards_p === true) {
 			params.backwards = true;
 		}
-		if (angle_p !== undefined){
+		
+		if(angle_p !== undefined) {
 			params.angle = angle_p;
 		}
 		makeCall('move_to', params);
@@ -25,18 +27,19 @@ var RealRobot = function(){
 	/*
 	 * Turns the robot to a specific direction
 	 */
-	var turnTo = function(angle_p, backwards_p){
+	var turnTo = function(angle_p, backwards_p) {
 		console.dir("Turning robot to ANGLE: " + angle_p + ", BACKWARDS: " + backwards_p);
 		var params = {
 			angle: angle_p
 		};
-		if (backwards_p === true){
+		
+		if(backwards_p === true) {
 			params.backwards = true;
 		}
 		makeCall('turn_to', params);
 	}
 
-	var plotPoint = function(){
+	var plotPoint = function() {
 		console.dir("REAL ROBOT: Plotting point");
 		makeCall('plot_point');
 	}
@@ -44,7 +47,7 @@ var RealRobot = function(){
 	/*
 	 * Moves the robot back to the origin, facing the initial direction
 	 */
-	var reset = function(){
+	var reset = function() {
 		console.dir("Resetting robot");
 		moveTo(0,0,false,0);
 	}
@@ -53,7 +56,7 @@ var RealRobot = function(){
 	 * Makes the AJAX call to the necessary resource
 	 */
 	var makeCall = function(action, params){
-		if(moveRobot){
+		if(moveRobot) {
 			$.ajax({
 				url: URL + action,
 				data: params
@@ -64,13 +67,13 @@ var RealRobot = function(){
 	}
 
 	// Function used to attach or detach real robot from application
-	var toggleRobot = function(){
+	var toggleRobot = function() {
 		moveRobot = !moveRobot;
 		console.dir(moveRobot ? "Robot WILL move" : "Robot will *NOT* move");
 		return moveRobot;
 	}
 
-	var isRobotEnabled = function(){
+	var isRobotEnabled = function() {
 		return moveRobot;
 	}
 

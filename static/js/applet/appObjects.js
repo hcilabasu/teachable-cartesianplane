@@ -51,7 +51,7 @@ var createRobot = function() {
     };
   }
 
-  var addExtension = function(pointName){
+  var addExtension = function(pointName) {
     var point = pF.getPoint(pointName);
     var robot = pF.getPoint("R");
     var angleDelta = angle(robot, point)-orientation;
@@ -66,12 +66,12 @@ var createRobot = function() {
     return returnObject;
   }
 
-  var getExtension = function(pointName){
+  var getExtension = function(pointName) {
     return extensions[pointName];
   }
 
-  var removeExtension = function(pointName){
-    if(extensions[pointName]){
+  var removeExtension = function(pointName) {
+    if(extensions[pointName]) {
       delete extensions[pointName];
       geoApp.deleteObject("C" + pointName);
     }
@@ -87,18 +87,18 @@ var createRobot = function() {
   };
     
   var appReady = function () {
-    if(geoApp != undefined)
-    {
+    if(geoApp != undefined) {
       console.log("geoApp: " + geoApp);
       show();
       stopDragMode();
     }
-    else
+    else {
       setTimeout(r1.appReady, 50);
+    }
   };
 
   // Public object returned
-  return {    
+  return {
     appReady: appReady,
     
     makeEyes: makeEyes,
@@ -120,10 +120,10 @@ var createRobot = function() {
 
     addExtension: addExtension,
 
-    get location() { return location; },
-    get orientation() { return orientation; },
-    set location(loc) { location = loc; },
-    set orientation(o) { orientation = o; }
+    get location() {return location;},
+    get orientation() {return orientation;},
+    set location(loc) {location = loc;},
+    set orientation(o) {orientation = o;}
   }
 
  var addClickListener = function(object, func) {
@@ -140,13 +140,12 @@ var pF = (function() {
 
   var pointNum = 1;
   
-   var drawLine = function(point1, point2)
-   {
-	var lineName = point1 + point2;
-	geoApp.evalCommand(lineName + " = Segment[" + point1 + "," + point2 + "]");
+  var drawLine = function(point1, point2) {
+    var lineName = point1 + point2;
+    geoApp.evalCommand(lineName + " = Segment[" + point1 + "," + point2 + "]");
   };
 
-  var drawArc = function(point1, point2, point3){
+  var drawArc = function(point1, point2, point3) {
     var arcName = point1 + point2 + point3;
     geoApp.evalCommand(arcName + " = CircularArc[" + point1 + "," + point2 + "," + point3 + "]");
   }
@@ -155,106 +154,114 @@ var pF = (function() {
     geoApp.registerObjectClickListener(object, func);
   };
 
-  var clearPlot = function(){
+  var clearPlot = function() {
     pointNum = 1;
     var total = geoApp.getObjectNumber();
     var names = [];
-    for (var i = 0; i < total; i++){
+    
+    for (var i = 0; i < total; i++) {
       var name = geoApp.getObjectName(i);
       names.push(name);
     }
-    for (var i = 0; i < names.length; i++){
+
+    for (var i = 0; i < names.length; i++) {
       deletePoint(names[i]);
     }
+
     // Re-creating robot
     r1 = createRobot();
     r1.appReady();
   }
   
   var getPoint = function(point) {
-    if(point.constructor && point.constructor.getName() == "Point") return point;
-    else return new Point(geoApp.getXcoord(point), geoApp.getYcoord(point));
+    console.log("getPoint, point : " + JSON.stringify(point));
+
+    if(point.constructor && point.constructor.getName() == "Point") {
+      // console.log("first if");
+      return point;
+    }
+    else {
+      // console.log("second if");
+      var tmpPoint = new Point(geoApp.getXcoord(point), geoApp.getYcoord(point));
+      // console.log("tmpPoint : " + JSON.stringify(tmpPoint));
+      return tmpPoint;
+    }
   };
   
   var deletePoint = function(pointName) {
     geoApp.deleteObject(pointName);
   }
 
-  var forceCreatePoint = function(point, funcName, name){
+  var forceCreatePoint = function(point, funcName, name) {
     var pName;
-    if(name)
-        pName = name;
-    else
+    if(name) {
+      pName = name;
+    }
+    else {
       pName = "P" + pointNum;
-      
+    }
+
     geoApp.evalCommand(pName + " = (" + point.x + "," + point.y + ")");
     geoApp.setLayer(pName, 0);
     
-    if(funcName)
-    {
-          addClickListener(pName, funcName);      
+    if(funcName) {
+      addClickListener(pName, funcName);      
     }
+
     pointNum++;       
     
     return "P"+(pointNum-1);
   }
 
   var createPoint = function(point, funcName, name) {
-//    console.log("In createPoint..." + point.x + "," + point.y);
+   // console.log("In createPoint..." + point.x + "," + point.y);
     var exists = pointExists(point);
     
-    if(exists)
+    if(exists) {
       return exists;
-
-    else
-    {
+    }
+    else {
       return forceCreatePoint(point, funcName, name);
     }  
   };
   
-  var pointExists = function(point)
-  {
-      var exists = null;
+  var pointExists = function(point) {
+    var exists = null;
       
-      //iterate all points
-      for (var i = 0; i < geoApp.getObjectNumber() && !exists; i++)
-      {
-  	var name = geoApp.getObjectName(i);
-  
-  	if ("point" == geoApp.getObjectType(name) 
-  	    && 0 == geoApp.getLayer(name)
-  	    && point.x == geoApp.getXcoord(name)
-  	    && point.y == geoApp.getYcoord(name))
-  	{	  
-  	    exists = name;
-  	}
+    //iterate all points
+    for (var i = 0; i < geoApp.getObjectNumber() && !exists; i++) {
+      var name = geoApp.getObjectName(i);
+
+      if("point" == geoApp.getObjectType(name) && 0 == geoApp.getLayer(name) && point.x == geoApp.getXcoord(name) && point.y == geoApp.getYcoord(name)) {	  
+        exists = name;
       }
+    }
       
-      return exists;
+    return exists;
   };
 
   var lock = false; // Determines if objects are locked or not
   var draggingEnabled = true; // Determines if lock should be taken in consideration
 
-  var isLocked = function(){
+  var isLocked = function() {
     return lock;
   }
 
-  var lockObjects = function(){
+  var lockObjects = function() {
     if(!draggingEnabled){
       setLock(true);
     }
   }
 
-  var unlockObjects = function(){
+  var unlockObjects = function() {
     if(!draggingEnabled){
       setLock(false);
     }
   }
 
-  var setLock = function(setLock){
+  var setLock = function(setLock) {
     lock = setLock;
-    for(var i = 0; i < geoApp.getObjectNumber(); i++){
+    for(var i = 0 ; i < geoApp.getObjectNumber() ; i++) {
       var name = geoApp.getObjectName(i);
       geoApp.evalCommand("SetFixed["+name+","+setLock+"]");
     }
@@ -266,28 +273,31 @@ var pF = (function() {
   }
   
   var appReady = function(points, lines) {
-    if(geoApp)
-    {
-      if(points !== undefined){
+    if(geoApp) {
+      if(points !== undefined) {
         plotPointsAndLines(points, lines);
-      } else {
+      }
+      else {
         loadTest();
       }
       pF.lockObjects();
     }
-    else
+    else {
       setTimeout(pF.appReady, 50);
+    }
   };
   
-  var plotPointsAndLines = function(points, lines){
+  var plotPointsAndLines = function(points, lines) {
     console.dir(points);
     console.dir(lines);
     clearPlot();
-    for(var i = 0; i < points.length; i++){
+    
+    for(var i = 0; i < points.length; i++) {
       var point = points[i];
       createPoint(new Point(point.x,point.y), "alertWasClicked");
     }
-    for(var i = 0; i < lines.length; i++){
+
+    for(var i = 0; i < lines.length; i++) {
       var line = lines[i];
       drawLine(line.p1, line.p2);
     }
@@ -372,16 +382,18 @@ var pF = (function() {
 /*************************************************************************************/
 
 var geoApp;
-var ready = function()
-{
-  if(document.applets[0] != null && document.applets[0].isActive)
-  {
+
+//Adrin added this flag
+var APPLET_READY = false;
+
+var ready = function() {
+  if(document.applets[0] != null && document.applets[0].isActive) {
     console.log("Applet ready...");
     geoApp = document.ggbApplet;
+    APPLET_READY = true;
     //document.onclick = appletClicked;
   }  
-  else
-  {
+  else {
     console.log("Applet not yet loaded...");
     setTimeout(ready, 10000);
   }
@@ -391,9 +403,8 @@ ready();
 r1.appReady();
 pF.appReady();
 
-var appletClicked = function()
-{
-    alertWasClicked(null)
+var appletClicked = function() {
+  alertWasClicked(null)
 }
 
 /********************************************************************************/
@@ -405,3 +416,29 @@ var appletClicked = function()
   //controller.addAction(new Action("goTo", clickedObject));
 }*/
 
+/********************************************************************************/
+
+// Adrin added this function, need to integrate it into the above code.
+var __OBJECT_LISTENER_MAP__ = {};
+function toggleAllObjectClickListeners(bool_activate) {
+  console.log("Calling unregisterAllObjectClickListeners");
+
+  var no_of_objects = geoApp.getObjectNumber();
+  for(var i = 0 ; i < no_of_objects ; i++) {
+      var objectName = geoApp.getObjectName(i);
+      
+      console.log("objectName : " + objectName);
+      
+      if(geoApp.getObjectType(objectName).toLowerCase() == "point") {
+        if(bool_activate) {
+          geoApp.registerObjectClickListener(objectName, "alertWasClicked");
+        }
+        else {
+          geoApp.unregisterObjectClickListener(objectName);
+        }
+      }
+      else {
+        console.log("Ignored " + objectName);
+      }
+  }
+}

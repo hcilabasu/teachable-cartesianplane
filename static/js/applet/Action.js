@@ -15,8 +15,7 @@ primitiveActions.movingPointBase = undefined;
 /**********************************************************************/
 
 //var controller, r1, pF;
-primitiveActions.setVars = function()
-{
+primitiveActions.setVars = function() {
   //if(frames[1])
   {
    // controller = frames[1].controller;
@@ -31,18 +30,24 @@ primitiveActions.setVars = function()
     
     primitiveActions.actions.move = {
       label: "Move",
-	ex: controller.moving.move
+      ex: controller.moving.move
     };
     
     primitiveActions.actions.turn = {
       label: "Turn",
-	ex: controller.moving.turn
+      ex: controller.moving.turn
     };
     
     primitiveActions.actions.plot = {
       label: "Plot Point2",
       ex: controller.drawing.plot
     };
+
+    //Adrin added this
+    primitiveActions.actions.finishedPlot = {
+      label : "Finished Plotting Point",
+      ex: function(){}//Put in an empty implementation, could be modified later if we need something to happen on finshing a plot action.
+    }
 
     primitiveActions.actions.tempPlot = {
       label: "Plot Temporary Point",
@@ -88,7 +93,6 @@ primitiveActions.setVars = function()
       label: "Turn Single Point",
       ex: controller.moving.turnSinglePoint
     };
-
   }
   //else
   //  setTimeout(setVars, 50)
@@ -96,8 +100,7 @@ primitiveActions.setVars = function()
 
 /*********************************************************/
 
-var alertWasClicked = function(clickedObject)
-{
+var alertWasClicked = function(clickedObject) {
   clickListener.executeEvent(clickedObject);
 }
 
@@ -139,12 +142,12 @@ primitiveActions.actions.moveDistance = {
       // Moving real robot
       realRobot.moveTo(newX, newY, dist < 0 ? true : false, r1.orientation);
 
-      if(Math.abs(newX) <= 5 && Math.abs(newY) <= 5){
+      if(Math.abs(newX) <= 5 && Math.abs(newY) <= 5) {
       	console.log("move " + dist);
       	controller.addAction(new Action("move", dist));
 
         // Handling point move state
-        if(primitiveActions.movingPoint !== undefined){
+        if(primitiveActions.movingPoint !== undefined) {
           var newPoint = new Point(newX, newY);
           controller.addAction(new Action('tempPlot', newPoint));
           var currPoint = "P" + pF.currPointNum;
@@ -161,7 +164,8 @@ primitiveActions.actions.moveDistance = {
             type: "move"
           });
         }
-      } else {
+      }
+      else {
         console.log("Can't move. Has to stay inside of bounds...");
       }
 
@@ -179,7 +183,7 @@ primitiveActions.actions.turnAngle = {
       // turn real robot
       realRobot.turnTo(parseInt((parseInt(params.angle) + r1.orientation) % 360));
 
-      if(primitiveActions.movingPoint && primitiveActions.fromDistance){
+      if(primitiveActions.movingPoint && primitiveActions.fromDistance) {
         var prevPoint = primitiveActions.movingPoint[primitiveActions.movingPoint.length-1].point;
         // // Creating new temp plot
         
@@ -192,7 +196,8 @@ primitiveActions.actions.turnAngle = {
         if(params.angle > 0) {
           var arcParams = ["R", prevPoint, primitiveActions.movingPointBase];
           var i = 2; // i specifies which point will be replaced by the new temp point when the turn is finished
-        } else {
+        }
+        else {
           var arcParams = ["R", primitiveActions.movingPointBase, prevPoint];
           var i = 1; // i specifies which point will be replaced by the new temp point when the turn is finished
         }
@@ -235,12 +240,40 @@ primitiveActions.actions.turnAngle = {
           type: "turn",
           angle: parseFloat(params.angle)
         });
-
-      } else {
+      }
+      else {
         // Turning while NOT dragging a point
         controller.addAction(new Action('turn', params.angle));   
       }
     }
+}
+
+/********************************************************************
+* function grabPointFromDistance:
+*
+* parameters: the point to grab
+*
+*********************************************************************/
+
+//Adrin added this function to route the grab point from distance action via controller.js
+primitiveActions.actions.grabPointFromDistance = {
+  label: "Grab Point from distance",
+  ex: function(point) {
+    pF.unlockObjects();
+    // Adding robot's extension
+    r1.addExtension(point.pointName);
+    // Adding structure for shadow points and lines
+    var target = controller.getPoint(point.pointName);
+    controller.addAction(new Action('tempPlot', new Point(target.x, target.y)));
+    var currPoint = "P" + pF.currPointNum;
+    controller.addAction(new Action('tempLine', [currPoint, point.pointName]));
+
+    primitiveActions.fromDistance = true;
+    primitiveActions.movingPointBase = point.pointName;
+    primitiveActions.movingPoint = [{point: currPoint, orientation: r1.orientation}];
+    
+    pF.lockObjects();
+  }
 }
 
 
@@ -285,10 +318,14 @@ primitiveActions.actions.movePoint = {
   }
 }
 
-
+//Adrin removed the "ex" implementation and put it into grabPointFromDistance
 primitiveActions.actions.movePointDistance = {
   label: "Move Point from Distance",
-  ex: function(point){
+  ex: function(point) {
+    controller.addAction(new Action("grabPointFromDistance", point));
+  }
+
+  /*function(point) {
     pF.unlockObjects();
     // Adding robot's extension
     r1.addExtension(point.pointName);
@@ -303,7 +340,7 @@ primitiveActions.actions.movePointDistance = {
     primitiveActions.movingPoint = [{point: currPoint, orientation: r1.orientation}];
     
     pF.lockObjects();
-  }
+  }*/
 }
 
 primitiveActions.actions.stopMovingPoint = {
@@ -376,7 +413,6 @@ primitiveActions.actions.stopMovingPoint = {
     // Stopping grab mode
     stopDragMode();
   }
-
 }
 
 /********************************************************************
@@ -393,21 +429,26 @@ primitiveActions.actions.plotPoint = {
     //  controller.addAction(new Action("goTo", newPoint));
 
     var newPoint = new Point(r1.location.x, r1.location.y);
-      realRobot.plotPoint();
-      var toggleBack = false;
-      if(realRobot.isRobotEnabled()){
+    realRobot.plotPoint();
+    var toggleBack = false;
+    if(realRobot.isRobotEnabled()) {
+      realRobot.toggleRobot();  
+      toggleBack = true;
+    }
+
+    controller.addAction(new Action("plot", newPoint));
+    controller.addAction(new Action("move", 1.5));
+    // controller.addAction(new Action("turnTo", {pointName : newPoint}));
+    controller.addAction(new Action("moveTo", {pointName : newPoint}));
+    controller.addAction(new Action("turn", -180, function() {
+      if(toggleBack) {
         realRobot.toggleRobot();  
-        toggleBack = true;
       }
-      controller.addAction(new Action("plot", newPoint));
-      controller.addAction(new Action("move", 1.5));
-      // controller.addAction(new Action("turnTo", {pointName : newPoint}));
-      controller.addAction(new Action("moveTo", {pointName : newPoint}));
-      controller.addAction(new Action("turn", -180, function(){
-        if(toggleBack){
-          realRobot.toggleRobot();  
-        }
-      }));
+    }));
+
+    //Adrin added the following
+    //Added this to somehow "tell" the end of the plot point action in controller.js
+    controller.addAction(new Action("finishedPlot"));
   }
 };
 
@@ -421,23 +462,35 @@ primitiveActions.actions.plotPoint = {
 primitiveActions.actions.moveTo = {
   label: "Move To",
   ex: function(params) { //(pointName, pen, markUnits)
+    
+    console.log("params : " + JSON.stringify(params));
+
     var targetPoint = controller.getPoint(params.pointName);
     
+    console.log("targetPoint after controller.getPoint : " + JSON.stringify(targetPoint));
+
     // Calculating angle
     var xDist = targetPoint.x - r1.location.x;
     var yDist = targetPoint.y - r1.location.y;
     var angleInRadians = Math.atan2(yDist, xDist);
     var angleInDegrees = parseInt(rtd(angleInRadians));
-    // Moving real robot
-    realRobot.moveTo(targetPoint.x, targetPoint.y, false, parseInt(angleInDegrees));
-
-
-    //determine distance
-    var dist = r1.location.distanceTo(targetPoint);
     
-    console.log("r1.location = " + r1.location.x + "," + r1.location.y + " dist = " + dist);
+    //Adrin added this if test.
+    if(xDist == 0 && yDist == 0) {
+      console.log("xDist = yDist = 0.....");
+    }
+    else {
+      // Moving real robot
+      realRobot.moveTo(targetPoint.x, targetPoint.y, false, parseInt(angleInDegrees));
+
+
+      //determine distance
+      var dist = r1.location.distanceTo(targetPoint);
+      
+      console.log("r1.location = " + r1.location.x + "," + r1.location.y + " dist = " + dist);
       controller.addAction(new Action("turnTo", {pointName : targetPoint}));
       controller.addAction(new Action("move", dist));
+    }
   }
 };
 
@@ -460,11 +513,22 @@ primitiveActions.actions.turnTo = {
     var angleInRadians = Math.atan2(yDist, xDist);
     var angleInDegrees = rtd(angleInRadians);
 
-    realRobot.turnTo(parseInt(angleInDegrees));
-    
-    console.log("angInDeg = " + angleInDegrees + " and orient = " + r1.orientation); 
+    //Adrin added this
+    //Did this for handling grab point immediately after plot point, while still animating.
+    if(angleInDegrees == 0) {
+      console.log("Resetting to 360.");
+      angleInDegrees = 360;
+    }
 
+    //Adrin added this if test.
+    // if(xDist == 0 && yDist == 0) {
+    // }
+    // else {
+      realRobot.turnTo(parseInt(angleInDegrees));
+      
+      console.log("angInDeg = " + angleInDegrees + " and orient = " + r1.orientation);
       controller.addAction(new Action("turn", angleInDegrees - r1.orientation));
+    // }
   }
 };
 
@@ -480,38 +544,34 @@ primitiveActions.actions.turnTo = {
 
 primitiveActions.actions.drawLineTo = {
   label: "Draw Line To",
-    ex: function(params) { //(pointName, pen, markUnits)
-	var targetPoint = controller.getPoint(params.pointName2);
-	var currentPoint = controller.getPoint(params.pointName);
-        //determine distance
-        var dist1 = r1.location.distanceTo(currentPoint);
-	var dist2 = currentPoint.distanceTo(targetPoint);
-  var speed = r1.speed("move");
+  ex: function(params) { //(pointName, pen, markUnits)
+    var targetPoint = controller.getPoint(params.pointName2);
+    var currentPoint = controller.getPoint(params.pointName);
+    //determine distance
+    var dist1 = r1.location.distanceTo(currentPoint);
+    var dist2 = currentPoint.distanceTo(targetPoint);
+    var speed = r1.speed("move");
 
-	console.log("params: " + params.pointName2 + " - " + params.pointName);
+    console.log("params: " + params.pointName2 + " - " + params.pointName);
 
-        controller.addAction(new Action("turnTo", {pointName : currentPoint}));
-        controller.addAction(new Action("move", dist1));
-        controller.addAction(new Action("turnTo", {pointName : targetPoint}));
-        controller.addAction(new Action("line", [params.pointName, "R"]));
-        controller.addAction(new Action("move", dist2));
-        controller.addAction(new Action("deleteLine", params.pointName + "R"));
-        controller.addAction(new Action("line", [params.pointName, params.pointName2]));
+    controller.addAction(new Action("turnTo", {pointName : currentPoint}));
+    controller.addAction(new Action("move", dist1));
+    controller.addAction(new Action("turnTo", {pointName : targetPoint}));
+    controller.addAction(new Action("line", [params.pointName, "R"]));
+    controller.addAction(new Action("move", dist2));
+    controller.addAction(new Action("deleteLine", params.pointName + "R"));
+    controller.addAction(new Action("line", [params.pointName, params.pointName2]));
 
-        // console.dir(dist2);
-        // var wholeDist = parseInt(dist2/speed,10);
-        // var partDist = dist2 - wholeDist*speed;
-        // var moved = 0;
+    // console.dir(dist2);
+    // var wholeDist = parseInt(dist2/speed,10);
+    // var partDist = dist2 - wholeDist*speed;
+    // var moved = 0;
 
-        // for(var i = 0; i < wholeDist; i++){
-        //   controller.addAction(new Action("move", speed));
-          
-
-        // }
-
-        // controller.addAction(new Action("move", partDist));
-        // controller.addAction(new Action("line", [params.pointName, params.pointName2]));
-    
+    // for(var i = 0; i < wholeDist; i++){
+    //   controller.addAction(new Action("move", speed));
+    // }
+    // controller.addAction(new Action("move", partDist));
+    // controller.addAction(new Action("line", [params.pointName, params.pointName2]));
   }
 };
 
@@ -534,8 +594,7 @@ primitiveActions.actions.measureDistance = {
   
     //if two parameters are passed then two points have been specified;
     // move to the first point before "measuring" the distance
-    if(point instanceof Array)
-    {
+    if(point instanceof Array) {
       console.log("Found two points...");
       targetPoint = controller.getPoint(point[1]);
       console.log("Target: " + targetPoint.x + "," + targetPoint.y);
@@ -543,8 +602,7 @@ primitiveActions.actions.measureDistance = {
       console.log("Origin: " + targetPoint.x + "," + targetPoint.y);
       controller.addAction(new Action("goTo", originPoint));
     }
-    else
-    {
+    else {
       console.log("Found one point...");
       targetPoint = controller.getPoint(point);
       originPoint = r1.location;
@@ -555,13 +613,11 @@ primitiveActions.actions.measureDistance = {
     console.log("Distance measured = " + dist);
 
     controller.addAction(new Action("goTo", targetPoint));
-
-    //not sure what to do with this exactly
-
-    //add distance label  
-//    var first = "P" + (controller.getLastPointNum()-1);
-//    var second = "P" + (controller.getCurrPointNum()-1);
     
+    //not sure what to do with this exactly
+    // add distance label  
+    // var first = "P" + (controller.getLastPointNum()-1);
+    // var second = "P" + (controller.getCurrPointNum()-1);
     return dist; //not sure how handling this yet
   }
 };
@@ -592,10 +648,10 @@ primitiveActions.actions.addDistanceLabel = {
 primitiveActions.actions.computeValue = {
   label: "Compute Value",
   ex: function(params) {
-      var expressionStr = params.formula;
-      var answer = eval(expressionStr);
-      console.log("computeValue - " + answer);
-      return answer;
+    var expressionStr = params.formula;
+    var answer = eval(expressionStr);
+    console.log("computeValue - " + answer);
+    return answer;
   }
 };
 
@@ -606,61 +662,57 @@ primitiveActions.actions.computeValue = {
 *
 ***********************************************************************/
 
-primitiveActions.getActions = function()
-{
+primitiveActions.getActions = function() {
   var list = {}, prop;
   var acts = primitiveActions.actions;
 
   //some of the specifics of this might need to change at some point
   
-  for (prop in acts)
+  for(prop in acts) {
     list[acts[prop].label] = prop;
-  
+  }
+
   return list;
 };
 
 //action can either be a single action stored in primitiveActions.actions
 // or an array of steps
 
-primitiveActions.executeAction = function(action)
-{
+primitiveActions.executeAction = function(action) {
   var act, i;
   
-    console.log("Executing... " + action.name + " " + JSON.stringify(action.op));
+  console.log("Executing... " + action.name + " " + JSON.stringify(action));
    
-  if(action.constructor.getName() == "Action")
-  {
-
+  if(action.constructor.getName() == "Action") {
     act = primitiveActions.actions[action.name];
     // if(action.callback){
     //   action.callback();
     // }
+    
+    // console.log("primitiveActions.actions " + JSON.stringify(primitiveActions.actions));
+    console.log("act " + JSON.stringify(act));
 
-    if(!(act.ex instanceof Array))
-      {
-    console.log("primitiveActions.executeAction in If");
+    if(!(act.ex instanceof Array)) {
+      console.log("primitiveActions.executeAction in If");
+      act.ex(action.op);
+    }
+    else {
+      console.log("primitiveActions.executeAction in else");
 
-	  act.ex(action.op);
-      }
-    else
-    {
-    console.log("primitiveActions.executeAction in else");
-
-      for(i = 0; i < act.ex.length; i++)
+      for(i = 0 ; i < act.ex.length ; i++) {
         controller.addAction(act.ex[i]);
+      }
     }
   }
-  else
-  {
-    for(i = 0; i < action.length; i++)
+  else {
+    for(i = 0 ; i < action.length ; i++) {
       controller.addAction(action[i])
+    }
   }
 };
 
-primitiveActions.addNewAction = function(label, steps)
-{
-  if(!primitiveActions.actions[label])
-  {
+primitiveActions.addNewAction = function(label, steps) {
+  if(!primitiveActions.actions[label]) {
     console.log(label);
     console.log(steps);
     primitiveActions.actions[label] = {
@@ -671,28 +723,27 @@ primitiveActions.addNewAction = function(label, steps)
     //sets the value to the label, fine for now but may need to change
     primitiveActions.procs[label] = label;
   }
-  else
-  {
+  else {
     alert("Attempting to add action with the same label as one that exists!");
   }
 };
 
-primitiveActions.getProcs = function()
-{
+primitiveActions.getProcs = function() {
   return primitiveActions.procs;
 };
 
-primitiveActions.getSteps = function(name)
-{
+primitiveActions.getSteps = function(name) {
   console.log("Getting steps... " + name);
-  if(primitiveActions.actions[name].ex instanceof Array)
+  if(primitiveActions.actions[name].ex instanceof Array) {
     return primitiveActions.actions[name].ex;
-  else
+  }
+  else {
     return null;
+  }
 };
 
-function postSolutionCheck(solutionStatus) {
-  var msg = {"type" : "check", "status" : solutionStatus};
+function postSolutionCheck(solutionStatus, mobileMessage) {
+  var msg = {"type" : "check", "status" : solutionStatus, "message" : mobileMessage};
   //ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + String(solutionStatus), [], "");
   ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
   ajax(ADR.MAKE_ATTRIBUTION + "?out=" + (solutionStatus === true ? "success" : "failure"))
