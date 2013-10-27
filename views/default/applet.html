@@ -99,9 +99,8 @@
                         for(var i = 0; i < incoming.length; i++) {
                             var action = incoming[i];
                             var newAction = new Action(action.name, action.op);
-                            if(i === incoming.length-1 && toggleBack) {
-                                newAction.callback = function() {
-                                    alert(1);
+                            if(i === incoming.length-1 && toggleBack){
+                                newAction.callback = function(){
                                     // Enabling robot again after executing all steps
                                     realRobot.toggleRobot();
                                 }
