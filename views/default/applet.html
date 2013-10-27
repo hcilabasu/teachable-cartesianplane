@@ -154,6 +154,7 @@
                         console.log("Solution check triggered.");
                         //Do solution check here
                         //confirm("You clicked on Check Solution");
+                        var robotPointName = "R";
                         var isSolutionCorrect = false;
                         var correctSolutionsCounter = 0; //There may be multiple points that need to be plotted/positioned on the cartesian plane.
                         var solutionStatus = {"points" : [], "lines" : []}; //Tell us if each of the sub solutions is correct or not
@@ -170,13 +171,19 @@
                                 console.log("objectName : " + objectName);
                                 
                                 // !!!Disregarding robot and eye for now, and adding all other points!!!
-                                if(geoApp.getObjectType(objectName).toLowerCase() == "point" && pointList.indexOf(objectName) == -1 && objectName.toLowerCase() != "r" && objectName.toLowerCase() != "e") {
+                                // !!!Taking robot into account below outside the loop!!!
+                                if(geoApp.getObjectType(objectName).toLowerCase() == "point" && pointList.indexOf(objectName) == -1 && objectName.toLowerCase() != robotPointName.toLowerCase() && objectName.toLowerCase() != "e") {
                                     pointList.push(objectName);
                                 }
                                 else {
                                     console.log("Ignored " + objectName);
                                 }
                             }
+
+                            //!!!Push in the robot into pointList, but make sure it is the last point in the array. This is important for solution checking in the
+                            //!!!for loop below. You're doing this for the plot point feature, where if the robot is at the solution coordinates, but has not 
+                            //!!!plotted the point, you need to tell the user.
+                            pointList.push(robotPointName);
 
                             console.log(JSON.stringify(pointList));
                             
@@ -188,7 +195,7 @@
                                     var point = solutionPointsArray[i];
                                     var solutionPointName = point.name;
 
-                                    // !!!Disregarding robot for now!!!
+                                    // !!!Disregarding robot from solution json for now!!!
                                     if(solutionPointName.toLowerCase() == "robot") {
                                         continue;
                                     }
@@ -231,27 +238,47 @@
                                                 console.log("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
 
                                                 if(actualX <= upperX && actualX >= lowerX && actualY <= upperY && actualY >= lowerY) {
-                                                    // !!!Should I remove the point from pointList???
-                                                    solutionStatus.points[i] = true;
+                                                    // If the robot is at the correct coordinates, that means we have parsed through the entirety of pointList
+                                                    // and have finally come to the robot point, and it is located at the solution coordinates, but the solution
+                                                    // point has not been plotted yet.
+                                                    if(pointName.toLowerCase() == robotPointName.toLowerCase()) {
+                                                        console.log("Robot is at solution coordinates, but point has not been plotted or moved to solution coordinates.");
+                                                        
+                                                        if(incoming.problemType.toLowerCase() == "plot") {
+                                                            messageBackToMobile = "Robot is at correct position, you just need to plot the point.";
+                                                        }
+                                                        else {
+                                                            messageBackToMobile = "Robot is at correct position, you may need to release the point, or move it to the robot location."
+                                                        }
+                                                    }
+                                                    else {
+                                                        // !!!Should I remove the point from pointList???
+                                                        solutionStatus.points[i] = true;
 
-                                                    // alert(pointName + " i <--> i " + geoApp.isIndependent(pointName));
-                                                    // alert(pointName + " m <--> m " + geoApp.isMoveable(pointName));
+                                                        // alert(pointName + " i <--> i " + geoApp.isIndependent(pointName));
+                                                        // alert(pointName + " m <--> m " + geoApp.isMoveable(pointName));
 
-                                                    console.log("Incrementeing correctSolutionsCounter.....");
-                                                    
-                                                    correctSolutionsCounter++;
-                                                    //isSolutionCorrect = true;
+                                                        console.log("Incrementing correctSolutionsCounter.....");
+                                                        
+                                                        correctSolutionsCounter++;
+                                                        //isSolutionCorrect = true;
 
-                                                    //!!! Very important step. Remove the solution point and the cartesian solution once we get a match.
-                                                    solutionPointsArray.splice(i, 1);
-                                                    i--;
+                                                        //!!! Very important step. Remove the solution point and the cartesian solution once we get a match.
+                                                        solutionPointsArray.splice(i, 1);
+                                                        i--;
 
-                                                    pointList.splice(j, 1);
-                                                    j--;
+                                                        // Only if it is a solution point do we need to remove it. We need the robot point in the pointList
+                                                        // array for further testing of subsequent solution points from the solution json, even though for now
+                                                        // we only have one point solutions in the database.
+                                                        // if(pointName.toLowerCase() != robotPointName.toLowerCase()) {
+                                                        pointList.splice(j, 1);
+                                                        j--;
+                                                        // }
 
-                                                    processingString += "Point Name : " + pointName + "\nCorrect X : " + correctX + ", Correct Y : " + correctY + "\n";
-                                                    processingString += "GEO APP X : " + geoApp.getXcoord(pointName).toFixed(2) + ", GEO APP Y : " + geoApp.getYcoord(pointName).toFixed(2) + "\n";
-                                                    
+                                                        processingString += "Point Name : " + pointName + "\nCorrect X : " + correctX + ", Correct Y : " + correctY + "\n";
+                                                        processingString += "GEO APP X : " + geoApp.getXcoord(pointName).toFixed(2) + ", GEO APP Y : " + geoApp.getYcoord(pointName).toFixed(2) + "\n";
+                                                    }
+
                                                     break;
                                                 }
                                             }
@@ -268,7 +295,10 @@
                                 }
                             }
                             else {
-                                messageBackToMobile = "You have not plotted any points.";
+                                //If the problem type is a plot type.
+                                if(incoming.problemType.toLowerCase() == "plot") {
+                                    messageBackToMobile = "You have not plotted any points.";
+                                }
 
                                 // !!!This is just to make sure the check at the bottom is false
                                 numberOfSolutions = -1;
