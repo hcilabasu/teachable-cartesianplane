@@ -21,11 +21,45 @@ def call():
     return service()
 ### end requires
 def index():
-    return dict()
+    #Adrin added this for prompts
+    # prompts = db(db.problemPrompts).select()
+    # return dict(prompts=prompts)
+    return dict() #original before Adrin changed it.
     
 def applet():
-    return dict(applet=XML(open(filename).read()), ip=__current_ip, port=__socket_port, group_name=__socket_group_name)
+    #Adrin added this for prompts
+    prompts = db(db.problemPrompts).select()
 
+    promptsJSON = "["
+    promptsJSON += ",".join([stringifyPrompts(p) for p in prompts])
+    promptsJSON += "]"
+
+    return dict(applet=XML(open(filename).read()), ip=__current_ip, port=__socket_port, group_name=__socket_group_name, prompts=promptsJSON)
+
+#Adrin added this
+def stringifyPrompts(prompt):
+    json = '"'
+    json += prompt.problemId
+    json += '"'
+
+    
+    # json += '": {"label":"'
+    # json += prompt.label
+    # json += '",'
+    # json += '"parameters":['
+    # json += ",".join(['"' + p + '"' for p in prompt.parameters])
+    # json += '],'
+    # json += '"steps":['
+    # json += ",".join(['"' + s + '"' for s in prompt.steps])
+    # json += '],'
+    # json += '"trigger":"'
+    # json += prompt.trigger
+    # json += '",'
+    # json += '"origin":"'
+    # json += prompt.origin
+    # json += '"'
+    # json += '}'
+    return json
     
 def loadOptions():
     websocket_send('http://' + __current_ip + ':' + __socket_port, response.json(request.vars), 'mykey', 'interface')

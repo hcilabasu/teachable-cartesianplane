@@ -10,7 +10,7 @@ var createRobot = function() {
   var pen = false;
     
   //speed parameters
-  var distance = .25;
+  var distance = .15; //Adrin changed this from .25
   var degrees = 10;
     
   var radius = 0.5;
