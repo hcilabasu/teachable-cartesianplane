@@ -101,6 +101,14 @@ def set_Problem_Number():
    data = request.vars.data
    websocket_send('http://' + __current_ip + ':' + __socket_port, data, 'mykey', 'interface')
 
+def log():
+    data = request.vars.data
+    websocket_send('http://' + __current_ip + ':' + __socket_port, data, 'mykey', 'interface')
+
+def send_data_to_mobile():
+    data = request.vars.data
+    websocket_send('http://' + __current_ip + ':' + __socket_port, data, 'mykey', 'interface')
+
 ## executes the current step on the server
 ## TODO remove.
 @service.xmlrpc

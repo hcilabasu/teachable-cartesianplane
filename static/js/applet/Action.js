@@ -682,7 +682,26 @@ primitiveActions.executeAction = function(action) {
   var act, i;
   
   console.log("Executing... " + action.name + " " + JSON.stringify(action));
-   
+  
+  // Logging action executions here. Not recording sub actions.
+  // action could have the following forms
+  // {"name":"plotPoint","op":{}}
+  // {"name":"moveDistance","op":{"distance":"1"}}
+  // {"name":"move","op":"1"}
+  // {"name":"turnAngle","op":{"angle":"90"}}
+  if(typeof action.op == "object") {//if its a main action
+    var op;
+    if(action.op.hasOwnProperty("distance")) {
+      op = action.op.distance;
+    }
+
+    if(action.op.hasOwnProperty("angle")) {
+      op = action.op.angle;
+    }
+
+    log("virtual robot action " + action.name + " " + (op ? op : ""), {"source":__SOURCE__});
+  }
+
   if(action.constructor.getName() == "Action") {
     act = primitiveActions.actions[action.name];
     // if(action.callback){

@@ -53,3 +53,22 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
+timestamp: 2013-10-31T00:21:19.397629
+CREATE TABLE problemPrompts(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    problemId CHAR(512),
+    type CHAR(512),
+    text CHAR(512),
+    prompts TEXT,
+    points TEXT,
+    lines TEXT,
+    solution CHAR(512),
+    problemType CHAR(512)
+);
+success!
+timestamp: 2013-10-31T00:36:00.409406
+ALTER TABLE problemPrompts ADD prompt TEXT;
+timestamp: 2013-10-31T00:36:00.506475
+ALTER TABLE problemPrompts ADD state CHAR(512);
+timestamp: 2013-10-31T00:40:55.415299
+ALTER TABLE problemPrompts ADD triggers CHAR(512);
