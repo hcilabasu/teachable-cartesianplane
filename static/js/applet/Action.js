@@ -699,7 +699,12 @@ primitiveActions.executeAction = function(action) {
       op = action.op.angle;
     }
 
-    log("virtual robot action " + action.name + " " + (op ? op : ""), {"source":__SOURCE__});
+    // log("virtual robot action " + action.name + " " + (op ? op : ""), {"source":__SOURCE__});
+    if(!op) {
+      var op = ""; //in case of plot point
+    }
+    
+    log("", {"type":action.name,"parameter":op,"initial":"", "final":""});
   }
 
   if(action.constructor.getName() == "Action") {

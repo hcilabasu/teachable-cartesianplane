@@ -81,12 +81,12 @@ NB ERIN: leaving in the state machine, but very much simplifying.
     };
     
     var clearArgs = function() {
-      log("Clearing args: " + args);
+      // log("Clearing args: " + args);
       args = [];
     }
     
     var addArg = function(newArg) {
-      log("Adding new arg to " + args);
+      // log("Adding new arg to " + args);
       
       if(args.length == maxArgs) {
         args.shift();
@@ -94,7 +94,7 @@ NB ERIN: leaving in the state machine, but very much simplifying.
 
       args.push(newArg);
       
-      log("Args is now: " + args);
+      // log("Args is now: " + args);
     };
     
     var getArg = function(i) {
@@ -114,7 +114,7 @@ NB ERIN: leaving in the state machine, but very much simplifying.
     var options = [];
     var op = null, o;
     
-    log("Getting options...");
+    // log("Getting options...");
     
     if(optionsList) {
       for(var i = 0; i < optionsList.length; i++) {
@@ -149,7 +149,7 @@ NB ERIN: leaving in the state machine, but very much simplifying.
     var origin, pointName;
 
     if(event != null && event.constructor.getName() == "Action") {
-      log("event constructor is action. " + JSON.stringify(event));
+      // log("event constructor is action. " + JSON.stringify(event));
       primitiveActions.executeAction(event);
     }
     else {
@@ -174,7 +174,7 @@ NB ERIN: leaving in the state machine, but very much simplifying.
           eIndex = 0; //the robot was clicked event
           origin = "robot";
           
-          log("Student clicked on the robot",{"source":"system"});
+          // log("Student clicked on the robot",{"source":"system"});
         }
         else {
           eIndex = 1; //a point was clicked event
