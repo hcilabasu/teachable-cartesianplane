@@ -1,9 +1,9 @@
 var clickListener = (function() {
-//  log("Click listener...");
+//  console.log("Click listener...");
 
   var stateMachine = (function() {
   
-//  log("State machine...");
+//  console.log("State machine...");
   
     /*******************************************************************
     *
@@ -76,17 +76,17 @@ NB ERIN: leaving in the state machine, but very much simplifying.
       currentState = states[currentState.events[eIndex]];
     };
     
-    var getOptions = function() {
+    var getOptions = function() { 
       return currentState.options;
     };
     
     var clearArgs = function() {
-      // log("Clearing args: " + args);
+      console.log("Clearing args: " + args);
       args = [];
     }
     
     var addArg = function(newArg) {
-      // log("Adding new arg to " + args);
+      console.log("Adding new arg to " + args);
       
       if(args.length == maxArgs) {
         args.shift();
@@ -94,7 +94,7 @@ NB ERIN: leaving in the state machine, but very much simplifying.
 
       args.push(newArg);
       
-      // log("Args is now: " + args);
+      console.log("Args is now: " + args);
     };
     
     var getArg = function(i) {
@@ -114,7 +114,7 @@ NB ERIN: leaving in the state machine, but very much simplifying.
     var options = [];
     var op = null, o;
     
-    // log("Getting options...");
+    console.log("Getting options...");
     
     if(optionsList) {
       for(var i = 0; i < optionsList.length; i++) {
@@ -149,13 +149,13 @@ NB ERIN: leaving in the state machine, but very much simplifying.
     var origin, pointName;
 
     if(event != null && event.constructor.getName() == "Action") {
-      // log("event constructor is action. " + JSON.stringify(event));
+      console.log("event constructor is action. " + JSON.stringify(event));
       primitiveActions.executeAction(event);
     }
     else {
       if(event == null) {
           origin = "playingField";
-          //	log("origin is playingField");
+          //	console.log("origin is playingField");
       }
       else if(event.constructor.getName() == "Action") {
         eIndex = 4; //an option was selected event
@@ -173,8 +173,6 @@ NB ERIN: leaving in the state machine, but very much simplifying.
         else if(event == "R" || event == "E" || event == "RB") {
           eIndex = 0; //the robot was clicked event
           origin = "robot";
-          
-          // log("Student clicked on the robot",{"source":"system"});
         }
         else {
           eIndex = 1; //a point was clicked event
@@ -210,7 +208,7 @@ NB ERIN: leaving in the state machine, but very much simplifying.
     // do a remote procedure call
      /* options = getOptions(stateMachine.getOptions());
       JSONoptions = {"actions": JSON.stringify(options)};
-      log("options: " + JSONoptions);
+      console.log("options: " + JSONoptions);
       $.ajax({url:"loadOptions", 
 	      data: JSONoptions, 
 	      //dataType: "json",
@@ -229,25 +227,25 @@ NB ERIN: leaving in the state machine, but very much simplifying.
       
   /*var events = [
     function(val) {
-      log("Executing clickedRobot event...");
+      console.log("Executing clickedRobot event...");
       stateMachine.clearArgs();
     },
     function(val) { 
-      log("Executing clickedPoint event...");
+      console.log("Executing clickedPoint event...");
       stateMachine.addArg(val);
     },
     function(val) {
-      log("Executing clickedField event...");
+      console.log("Executing clickedField event...");
       primitiveActions.executeAction(new Action("goTo", val));
       stateMachine.clearArgs();
     },
     function(val) {
-      log("Executing clickedAxis event...");
+      console.log("Executing clickedAxis event...");
       primitiveActions.executeAction(new Action("turnToAxis", val));
       stateMachine.clearArgs();
     },
     function(val) {
-      log("Executing selected event...");
+      console.log("Executing selected event...");
       primitiveActions.executeAction(val);
       stateMachine.clearArgs();
     }

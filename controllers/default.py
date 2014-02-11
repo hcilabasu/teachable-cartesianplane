@@ -1,5 +1,6 @@
 import os
 import socket
+import json
 from xmlrpclib import ServerProxy
 from gluon.shell import exec_environment
 from gluon.contrib.websocket_messaging import websocket_send
@@ -21,45 +22,11 @@ def call():
     return service()
 ### end requires
 def index():
-    #Adrin added this for prompts
-    # prompts = db(db.problemPrompts).select()
-    # return dict(prompts=prompts)
-    return dict() #original before Adrin changed it.
+    return dict()
     
 def applet():
-    #Adrin added this for prompts
-    prompts = db(db.problemPrompts).select()
+    return dict(applet=XML(open(filename).read()), ip=__current_ip, port=__socket_port, group_name=__socket_group_name)
 
-    promptsJSON = "["
-    promptsJSON += ",".join([stringifyPrompts(p) for p in prompts])
-    promptsJSON += "]"
-
-    return dict(applet=XML(open(filename).read()), ip=__current_ip, port=__socket_port, group_name=__socket_group_name, prompts=promptsJSON)
-
-#Adrin added this
-def stringifyPrompts(prompt):
-    json = '"'
-    json += prompt.problemId
-    json += '"'
-
-    
-    # json += '": {"label":"'
-    # json += prompt.label
-    # json += '",'
-    # json += '"parameters":['
-    # json += ",".join(['"' + p + '"' for p in prompt.parameters])
-    # json += '],'
-    # json += '"steps":['
-    # json += ",".join(['"' + s + '"' for s in prompt.steps])
-    # json += '],'
-    # json += '"trigger":"'
-    # json += prompt.trigger
-    # json += '",'
-    # json += '"origin":"'
-    # json += prompt.origin
-    # json += '"'
-    # json += '}'
-    return json
     
 def loadOptions():
     websocket_send('http://' + __current_ip + ':' + __socket_port, response.json(request.vars), 'mykey', 'interface')
@@ -72,6 +39,16 @@ def loadOptions():
     ##s.update(value="3")
     ##return server.loadOptions()
 
+def send_message():
+    data = request.vars
+    msg = dict()
+    # creating message object
+    msg['message'] = data.message
+    msg['type'] = 'alert'
+    # creating message json text
+    msg_json = json.dumps(msg)
+    # sending message
+    websocket_send('http://' + __current_ip + ':' + __socket_port, msg_json, 'mykey', data.target)
     
 def echo():
     return "Hello World"
@@ -100,14 +77,6 @@ def post_Solution_Check():
 def set_Problem_Number():
    data = request.vars.data
    websocket_send('http://' + __current_ip + ':' + __socket_port, data, 'mykey', 'interface')
-
-def log():
-    data = request.vars.data
-    websocket_send('http://' + __current_ip + ':' + __socket_port, data, 'mykey', 'interface')
-
-def send_data_to_mobile():
-    data = request.vars.data
-    websocket_send('http://' + __current_ip + ':' + __socket_port, data, 'mykey', 'interface')
 
 ## executes the current step on the server
 ## TODO remove.

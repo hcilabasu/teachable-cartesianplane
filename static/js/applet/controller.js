@@ -103,7 +103,7 @@ var controller = (function() {
         value: action,
         children: [],
         parent: parent,
-        
+            
         firstChild: function() {
           console.log("firstChild");
           return this.children[0];

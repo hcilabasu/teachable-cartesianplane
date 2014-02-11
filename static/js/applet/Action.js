@@ -139,10 +139,12 @@ primitiveActions.actions.moveDistance = {
       var newX = Math.round((point.x + xDist(dist, r1.orientation))*100000)/100000;
       var newY = Math.round((point.y + yDist(dist, r1.orientation))*100000)/100000;
 
-      // Moving real robot
-      realRobot.moveTo(newX, newY, dist < 0 ? true : false, r1.orientation);
-
       if(Math.abs(newX) <= 5 && Math.abs(newY) <= 5) {
+
+        // Moving real robot
+        console.log("Moving real robot");
+        realRobot.moveTo(newX, newY, dist < 0 ? true : false, r1.orientation);
+
       	console.log("move " + dist);
       	controller.addAction(new Action("move", dist));
 
@@ -164,9 +166,12 @@ primitiveActions.actions.moveDistance = {
             type: "move"
           });
         }
+
       }
       else {
         console.log("Can't move. Has to stay inside of bounds...");
+        // Sending message to mobile interface
+        commMobile.sendMessage('interface','The value is too big! Quinn would move out of bounds.');
       }
 
     }
@@ -179,6 +184,9 @@ primitiveActions.actions.moveDistance = {
 primitiveActions.actions.turnAngle = {
     label: "Turn",
     ex: function(params) {
+
+      // Check to see if cognitive prompt triggered
+      ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "mid" + "&angle=" + parseInt((parseInt(params.angle) + r1.orientation) % 360) + "&number=" + 1); //"&orientation=" + parseInt((parseInt(params.angle) + r1.orientation) % 360));
 
       // turn real robot
       realRobot.turnTo(parseInt((parseInt(params.angle) + r1.orientation) % 360));
@@ -294,8 +302,9 @@ primitiveActions.actions.turnCardinal = {
       S: 270
     }
     
-    // turn real robot    
-    realRobot.turnTo(this.cardinalPoints[direction.direction]);
+    // Turn real robot    
+    //realRobot.turnTo(this.cardinalPoints[direction.direction]);
+
 
     var angle = this.cardinalPoints[direction.direction] - r1.orientation;
     controller.addAction(new Action("turn", angle));
@@ -682,31 +691,7 @@ primitiveActions.executeAction = function(action) {
   var act, i;
   
   console.log("Executing... " + action.name + " " + JSON.stringify(action));
-  
-  // Logging action executions here. Not recording sub actions.
-  // action could have the following forms
-  // {"name":"plotPoint","op":{}}
-  // {"name":"moveDistance","op":{"distance":"1"}}
-  // {"name":"move","op":"1"}
-  // {"name":"turnAngle","op":{"angle":"90"}}
-  if(typeof action.op == "object") {//if its a main action
-    var op;
-    if(action.op.hasOwnProperty("distance")) {
-      op = action.op.distance;
-    }
-
-    if(action.op.hasOwnProperty("angle")) {
-      op = action.op.angle;
-    }
-
-    // log("virtual robot action " + action.name + " " + (op ? op : ""), {"source":__SOURCE__});
-    if(!op) {
-      var op = ""; //in case of plot point
-    }
-    
-    log("", {"type":action.name,"parameter":op,"initial":"", "final":""});
-  }
-
+   
   if(action.constructor.getName() == "Action") {
     act = primitiveActions.actions[action.name];
     // if(action.callback){
@@ -766,11 +751,15 @@ primitiveActions.getSteps = function(name) {
   }
 };
 
-function postSolutionCheck(solutionStatus, mobileMessage) {
+
+function postSolutionCheck(solutionStatus, mobileMessage, problemNumber) {
+  console.log(problemNumber);
   var msg = {"type" : "check", "status" : solutionStatus, "message" : mobileMessage};
   //ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + String(solutionStatus), [], "");
   ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
-  ajax(ADR.MAKE_ATTRIBUTION + "?out=" + (solutionStatus === true ? "success" : "failure"))
+  //ajax(ADR.MAKE_ATTRIBUTION + "?out=" + (solutionStatus === true ? "success" : "failure"));
+  //check to see if prompts should be called
+  ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + (solutionStatus === true ? "hit" : "missed") + "&state=" + "end" + "&number=" + problemNumber);
 }
 
 function setProblemNumber(probNum) {
