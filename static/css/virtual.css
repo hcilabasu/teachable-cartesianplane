@@ -1,0 +1,27 @@
+html,body { 
+	height: 100%; 
+	margin: 0;
+	padding: 0;
+}
+
+iframe.cartesianplane {
+	border: 0;
+	width: -webkit-calc(100% - 320px);
+	height: 100%;
+}
+
+iframe.robot {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 320px;
+	height: 480px;
+}
+
+iframe.mobile {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 320px;
+	height: -webkit-calc(100% - 480px);
+}

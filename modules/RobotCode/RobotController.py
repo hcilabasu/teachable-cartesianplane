@@ -36,10 +36,10 @@ def keyDown(event):
         x.backwardArrow()
         #backward = True
     elif event.char == '\xef\x9c\x82':
-        x.leftArrow(low_speed=True)
+        x.leftArrow(low_speed=False)
         #left = True
     elif event.char == '\xef\x9c\x83':
-        x.rightArrow(low_speed=True)
+        x.rightArrow(low_speed=False)
         #right = True
 
 def keyUp(event):

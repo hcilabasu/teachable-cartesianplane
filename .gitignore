@@ -6,3 +6,5 @@ sessions/*
 .DS_Store
 
 *.pyc
+
+*.pyc
