@@ -11,8 +11,9 @@
         <script type="text/javascript" src="../static/js/applet/main.js"></script>
 
         <script>
-            var draggingEnabled = true;
+            var draggingEnabled = false;
             var realRobotEnabled = false;
+            var togglePassword = "clippyiscool";
 
             $(function() {
                 $("#dragToggle").click(function(e) {
@@ -44,6 +45,15 @@
 
                     //This helps the window from shifting after function execution.
                     return false;
+                });
+
+                $("#controlsToggle").click(function(e){
+                    e.preventDefault();
+                    if(prompt("What is the keyword?") == togglePassword){
+                        $(".toggle").toggle();
+                    } else {
+                        alert("ah-ah-ah! You didn't say the magic word!");
+                    }
                 });
             });
 
@@ -78,11 +88,12 @@
     <body>
         {{=applet}}
         <!-- Changed problem-desc from a div tag to a pre tag. Essentially did this since the text in this tag is later modified with newline characters in between and the div tag disregards the newline character and prints everything in single line. The pre tag preserves the newline and renders accordingly -->
-        <pre id="problem-desc">This is the current problem</pre>
-        <pre id="action-list"></pre>
-        <a href="#" id="problemSelector">Change Problem</a> |
-        <a href="#" id="dragToggle">Dragging ON</a> |
-        <a href="#" id="realRobot">Real Robot OFF</a>
+        <pre class="toggle" id="problem-desc">This is the current problem</pre>
+        <pre class="toggle" id="action-list"></pre>
+        <a href="#" id="controlsToggle">Toggle Controls</a> <span class="toggle">|</span>
+        <a href="#" class="toggle" id="problemSelector">Change Problem</a> <span class="toggle">|</span>
+        <a href="#" class="toggle" id="dragToggle">Dragging OFF</a> <span class="toggle">|</span>
+        <a href="#" class="toggle" id="realRobot">Real Robot OFF</a>
         <script>
             try {
                 var olddata = "0";
