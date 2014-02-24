@@ -294,7 +294,7 @@ var pF = (function() {
     
     for(var i = 0; i < points.length; i++) {
       var point = points[i];
-      createPoint(new Point(point.x,point.y), "alertWasClicked");
+      createPoint(new Point(point.x,point.y));//, "alertWasClicked"); // uncomment second half of line to enable point clicking
     }
 
     for(var i = 0; i < lines.length; i++) {

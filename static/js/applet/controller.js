@@ -317,7 +317,7 @@ var controller = (function() {
       
   var drawing = {
     plot: function(newPoint) {
-      pF.createPoint(newPoint, "alertWasClicked");
+      pF.createPoint(newPoint);//, "alertWasClicked"); // Add function if points need to respond to clicking
     },
     tempPlot: function(newPoint) {
       var point = pF.forceCreatePoint(newPoint, undefined);
