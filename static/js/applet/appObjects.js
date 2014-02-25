@@ -294,7 +294,7 @@ var pF = (function() {
     
     for(var i = 0; i < points.length; i++) {
       var point = points[i];
-      createPoint(new Point(point.x,point.y), "alertWasClicked");
+      createPoint(new Point(point.x,point.y));//, "alertWasClicked"); // uncomment second half of line to enable point clicking
     }
 
     for(var i = 0; i < lines.length; i++) {
@@ -421,7 +421,8 @@ var appletClicked = function() {
 // Adrin added this function, need to integrate it into the above code.
 var __OBJECT_LISTENER_MAP__ = {};
 function toggleAllObjectClickListeners(bool_activate) {
-  console.log("Calling unregisterAllObjectClickListeners");
+  console.dir("Calling toggleAllObjectClickListeners");
+  console.dir("bool_activate : " + bool_activate);
 
   var no_of_objects = geoApp.getObjectNumber();
   for(var i = 0 ; i < no_of_objects ; i++) {
