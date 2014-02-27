@@ -130,6 +130,9 @@ primitiveActions.actions.moveDistance = {
 
       var dist = params.distance;
 
+      // Check to see if it's time to display a cognitive prompt
+      callCheckForCognitivePrompt();
+
       if(primitiveActions.movingPointBase){
         var point = controller.getPoint(primitiveActions.movingPointBase);
       } else {
@@ -185,8 +188,8 @@ primitiveActions.actions.turnAngle = {
     label: "Turn",
     ex: function(params) {
 
-      // Check to see if cognitive prompt triggered
-      ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "mid" + "&angle=" + parseInt((parseInt(params.angle) + r1.orientation) % 360) + "&number=" + 1); //"&orientation=" + parseInt((parseInt(params.angle) + r1.orientation) % 360));
+      // Check to see if it's time to display a cognitive prompt
+      callCheckForCognitivePrompt();
 
       // turn real robot
       realRobot.turnTo(parseInt((parseInt(params.angle) + r1.orientation) % 360));
@@ -440,6 +443,10 @@ primitiveActions.actions.plotPoint = {
     var newPoint = new Point(r1.location.x, r1.location.y);
     realRobot.plotPoint();
     var toggleBack = false;
+
+    // Check to see if it's time to display a cognitive prompt
+    callCheckForCognitivePrompt();
+
     if(realRobot.isRobotEnabled()) {
       realRobot.toggleRobot();  
       toggleBack = true;
@@ -784,12 +791,18 @@ function postSolutionCheck(solutionStatus, mobileMessage, problemNumber) {
   //ajax(ADR.MAKE_ATTRIBUTION + "?out=" + (solutionStatus === true ? "success" : "failure"));
   //check to see if prompts should be called
   ajax(ADR.RANDOMLY_ORDER_PROMPT + "?trigger=" + (solutionStatus === true ? "hit" : "missed") + "&state=" + "end" + "&number=" + problemNumber);
-  ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + (solutionStatus === true ? "hit" : "missed") + "&state=" + "end" + "&number=" + problemNumber);
+  
+
+  callCheckForCognitivePrompt();
 }
 
 function setProblemNumber(probNum) {
   var msg = {"type" : "reset", "number" : probNum};
   ajax(ADR.SET_PROBLEM_NUMBER + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
+}
+
+function callCheckForCognitivePrompt() {
+  ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541");
 }
 
 controller.initialize();
