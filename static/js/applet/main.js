@@ -53,7 +53,7 @@ function calculateFinalState(initialState, operation, parameter) {
     // Also checks for existence of P1.
     var bool_GrabMode = ((primitiveActions.fromDistance && geoApp.getObjectType("P1").toLowerCase() == "point") ? true : false);
 
-    var tempString;
+    var tempString = "";
 
     if(parameter) {
         parameter = Number(parameter);
@@ -92,7 +92,7 @@ function calculateFinalState(initialState, operation, parameter) {
         }
     }
     
-    finalState.string = "R," + newX + "," + newY + "," + r1.orientation + (tempString ? ":" + tempString : "");
+    finalState.string = "R," + newX + "," + newY + "," + r1.orientation + (tempString ? tempString : "");
 
     // If it is a plot point
     if(operation.indexOf("plotPoint") != -1) {
@@ -126,9 +126,6 @@ function calculateFinalState(initialState, operation, parameter) {
             var newP1X  = (r.x + xDist(dist, orient)).toFixed(2);
             var newP1Y = (r.y + yDist(dist, orient)).toFixed(2);
 
-
-
-
             // var grabbedPoint = controller.getPoint("P1");//!!!Bad assumption, need to take care of this and properly find the grabbed point.
             // var newP1X = Math.round((grabbedPoint.x + xDist(parameter, r1.orientation))*100000)/100000;
             // var newP1Y = Math.round((grabbedPoint.y + yDist(parameter, r1.orientation))*100000)/100000;
@@ -155,7 +152,7 @@ function calculateFinalState(initialState, operation, parameter) {
         
         var finalRot = Number(r1.orientation) + parameter;
 
-        finalState.string = "R," + newX + "," + newY + "," + finalRot + (tempString ? ":" + tempString : "");
+        finalState.string = "R," + newX + "," + newY + "," + finalRot + (tempString ? tempString : "");
     }
 
 
