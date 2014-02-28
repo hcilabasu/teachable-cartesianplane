@@ -131,7 +131,8 @@ primitiveActions.actions.moveDistance = {
       var dist = params.distance;
 
       // Check to see if it's time to display a cognitive prompt
-      callCheckForCognitivePrompt();
+      //callCheckForCognitivePrompt();
+      ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541");
 
       if(primitiveActions.movingPointBase){
         var point = controller.getPoint(primitiveActions.movingPointBase);
@@ -189,7 +190,8 @@ primitiveActions.actions.turnAngle = {
     ex: function(params) {
 
       // Check to see if it's time to display a cognitive prompt
-      callCheckForCognitivePrompt();
+      //callCheckForCognitivePrompt();
+      ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541");
 
       // turn real robot
       realRobot.turnTo(parseInt((parseInt(params.angle) + r1.orientation) % 360));
@@ -788,12 +790,10 @@ function postSolutionCheck(solutionStatus, mobileMessage, problemNumber) {
   var msg = {"type" : "check", "status" : solutionStatus, "message" : mobileMessage};
   //ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + String(solutionStatus), [], "");
   ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
-  //ajax(ADR.MAKE_ATTRIBUTION + "?out=" + (solutionStatus === true ? "success" : "failure"));
+  console.log(ADR.MAKE_COGNITIVE_PROMPT);
+  ajax(ADR.MAKE_ATTRIBUTION + "?out=" + (solutionStatus === true ? "success" : "failure"));
   //check to see if prompts should be called
   ajax(ADR.RANDOMLY_ORDER_PROMPT + "?trigger=" + (solutionStatus === true ? "hit" : "missed") + "&state=" + "end" + "&number=" + problemNumber);
-  
-
-  callCheckForCognitivePrompt();
 }
 
 function setProblemNumber(probNum) {
