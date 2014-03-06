@@ -30,3 +30,31 @@
   <param name="showAlgebraInput" value="false" />
   Please <a href="http://www.java.com">install Java 1.4.2</a> (or later) to use this page.
 </applet>
+
+<script>
+  (function(){
+    var settings = {
+      // Sizes for the virtual condition
+      virtual: {
+        height: 1000,
+        width: 1000
+      },
+      // Regular width and height
+      height: 650,
+      width: 900
+    };
+
+    // Getting search string
+    var searchString = window.location.search;
+    searchString = (searchString) ? searchString.slice(1) : undefined;
+    
+    // Getting the right object    
+    var type = (searchString && settings[searchString]) ? settings[searchString] : settings;
+
+    // Setting up the width and height of applet
+    var appletEl = document.getElementById("ggbApplet");
+    appletEl.width = type.width;
+    appletEl.height = type.height;
+  })();
+  
+</script>
