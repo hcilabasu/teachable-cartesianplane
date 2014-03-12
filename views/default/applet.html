@@ -11,7 +11,7 @@
         <script type="text/javascript" src="../static/js/applet/main.js"></script>
 
         <script>
-            var draggingEnabled = false;
+            var draggingEnabled = true;
             var realRobotEnabled = false;
             var togglePassword = "clippyiscool";
 
@@ -23,9 +23,8 @@
                     return false;
                 };
 
-                $("#dragToggle").click(!setLock);
+                $("#dragToggle").click(setLock);
                 
-                // Setting the initial lock according to the variable "draggingEnabled"
                 setLock();
 
                 $("#realRobot").click(function(e) {
