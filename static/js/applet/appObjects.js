@@ -240,8 +240,8 @@ var pF = (function() {
     return exists;
   };
 
-  var lock = false; // Determines if objects are locked or not
-  var draggingEnabled = true; // Determines if lock should be taken in consideration
+  var lock = true; // Determines if objects are locked or not
+  var draggingEnabled = false; // Determines if lock should be taken in consideration
 
   var isLocked = function() {
     return lock;
