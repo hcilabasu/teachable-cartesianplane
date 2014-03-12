@@ -16,12 +16,17 @@
             var togglePassword = "clippyiscool";
 
             $(function() {
-                $("#dragToggle").click(function(e) {
+                var setLock = function(e) {
                     draggingEnabled = !draggingEnabled;
                     pF.setLockEnabled(draggingEnabled);
                     $(this).text("Dragging " + (draggingEnabled ? "ON" : "OFF"));
                     return false;
-                });
+                };
+
+                $("#dragToggle").click(!setLock);
+                
+                // Setting the initial lock according to the variable "draggingEnabled"
+                setLock();
 
                 $("#realRobot").click(function(e) {
                     realRobotEnabled = realRobot.toggleRobot();
