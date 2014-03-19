@@ -791,7 +791,7 @@ function postSolutionCheck(solutionStatus, mobileMessage, problemNumber) {
   //ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + String(solutionStatus), [], "");
   ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
   console.log(ADR.MAKE_COGNITIVE_PROMPT);
-  ajax(ADR.MAKE_ATTRIBUTION + "?out=" + (solutionStatus === true ? "success" : "failure"));
+  ajax(ADR.MAKE_ATTRIBUTION + "?out=" + (solutionStatus === true ? "success" : "failure") + "&number=" + problemNumber );
   //check to see if prompts should be called
   ajax(ADR.RANDOMLY_ORDER_PROMPT + "?trigger=" + (solutionStatus === true ? "hit" : "missed") + "&state=" + "end" + "&number=" + problemNumber);
 }
