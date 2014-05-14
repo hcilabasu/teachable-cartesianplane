@@ -15,7 +15,21 @@
         <script>
             var draggingEnabled = true;
             var realRobotEnabled = false;
-            var + (realRobotEnabled ? "ON" : "OFF"));
+            var togglePassword = "clippyiscool";
+
+            $(function() {
+                var setLock = function(e) {
+                    draggingEnabled = !draggingEnabled;
+                    pF.setLockEnabled(draggingEnabled);
+                    $(this).text("Dragging " + (draggingEnabled ? "ON" : "OFF"));
+                    return false;
+                };
+
+                $("#dragToggle").click(setLock);
+
+                $("#realRobot").click(function(e) {
+                    realRobotEnabled = realRobot.toggleRobot();
+                    $(this).text("Real Robot " + (realRobotEnabled ? "ON" : "OFF"));
                     return false;
                 });
 
@@ -216,10 +230,12 @@
 
                                         var correctX = point.x;
                                         var correctY = point.y;
-			    		// Added by Abha to show prompts for incorrect solution
- 					orgX = correctX;
-					orgY = correctY;
-                                        var upperX = (correctX + threshhold_limit);
+                			    		
+                                        // Added by Abha to show prompts for incorrect solution
+                     					orgX = correctX;
+                    					orgY = correctY;
+                                       
+                                       var upperX = (correctX + threshhold_limit);
                                         var lowerX = (correctX - threshhold_limit);
                                         var upperY = (correctY + threshhold_limit);
                                         var lowerY = (correctY - threshhold_limit);
@@ -248,9 +264,10 @@
                                                     
                                                     var actualX = geoApp.getXcoord(pointName).toFixed(2);
                                                     var actualY = geoApp.getYcoord(pointName).toFixed(2);
-						    // Added by Abha to show prompts for incorrect solution
-						    plotX = actualX;
-						    plotY = actualY;
+                        						    
+                                                    // Added by Abha to show prompts for incorrect solution
+                        						    plotX = actualX;
+                        						    plotY = actualY;
 
                                                     // log("ActualX : " + actualX + "\nActualY : " + actualY + "\n\nUpperX : " + upperX + "\nLowerX : " + lowerX + "\nUpperY : " + upperY + "\nLowerY : " + lowerY);
 
@@ -288,20 +305,21 @@
                                     //!!! Careful, you'll need to change this when lines are incoporated in the solution.
                                     // if(correctSolutionsCounter == solutionPointsArray.length) {
                                     if(correctSolutionsCounter == numberOfSolutions) {
-					messageBackToMobile = "Correct";
+				                        messageBackToMobile = "Correct";
                                         isSolutionCorrect = true;
                                     }
-				    //Changed By Abha to show prompts for incorrect solution
-				    else {
-					   
-					   var message = incorrectcheck(orgX, orgY, plotX, plotY);
-					   messageBackToMobile = message;
-					} 
+				                    //Changed By Abha to show prompts for incorrect solution
+				                    else {
+                                        console.log("Calling incorrectcheck.....");
+                                        var message = incorrectcheck(orgX, orgY, plotX, plotY);
+                                        messageBackToMobile = message;
+                                    }
                                 }
                                 else {
                                     //messageBackToMobile = "You have not plotted any points.";
-				    //Changed By Abha to show prompts for incorrect solution
-				      messageBackToMobile = "PlotPoint";
+                				    
+                                    //Changed By Abha to show prompts for incorrect solution
+                                    messageBackToMobile = "PlotPoint";
 
                                     // !!!This is just to make sure the check at the bottom is false
                                     numberOfSolutions = -1;

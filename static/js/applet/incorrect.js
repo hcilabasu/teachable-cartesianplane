@@ -1,7 +1,7 @@
 /* Function to check what kind of Mistake was made when an incorrect solution is checked
    Created by Abha */
 
-fucntion incorrectcheck(orgX, orgY, plotX, plotY)
+function incorrectcheck(orgX, orgY, plotX, plotY)
 {
 	if((orgX < 0 && plotX >= 0) || (orgX >= 0 && plotX < 0))
 	{
@@ -75,4 +75,3 @@ fucntion incorrectcheck(orgX, orgY, plotX, plotY)
 	}
 
 }
-
