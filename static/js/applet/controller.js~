@@ -275,7 +275,7 @@ var controller = (function() {
   };
 
   var check = function() {
-    //console.log("check");
+    console.log("check");
     // console.log("actionsTree length " + actionsTree.empty());
     
     //if actionsTree is not empty, execute actions in it
