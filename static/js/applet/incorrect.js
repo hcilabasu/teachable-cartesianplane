@@ -64,7 +64,7 @@ function incorrectcheck(orgX, orgY, plotX, plotY)
 	}
 	if((orgX >= 0 && plotX < 0) || (orgY >= 0 && plotY < 0))
 	{
-           if((((PlotX + 1) * -1) == orgX) || (((plotY + 1) * -1) == orgY)) 
+           if((((plotX + 1) * -1) == orgX) || (((plotY + 1) * -1) == orgY)) 
 	   {
 		   return "Offbyone";
 	   }			
