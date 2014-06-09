@@ -10,33 +10,27 @@ function incorrectcheck(orgx, orgy, plotx, ploty)
 	plotY = parseInt(ploty,10);
 	console.log("org X"+orgX+"org Y"+orgY+"plot X"+plotX+"plot Y"+plotY);
 
-	if((orgX > 0 && plotX == 0) || (orgX < 0 && plotX == 0))
+	if(orgX > 0 && plotX == 0)
 	{
-		return "Nomoveonx";
+		return "Nomoveonx+";
 		console.log("Error Type No move on X");
 	}
-	else if((orgY > 0 && plotY == 0) || (orgY < 0 && plotY == 0))
+	else if(orgX < 0 && plotX == 0)
 	{
-		return "Nomovey";
+		return "Nomoveonx-";
+		console.log("Error Type No move on X");
+	}
+	else if(orgY > 0 && plotY == 0)
+	{
+		return "Nomoveony+";
 		console.log("Error Type No move on Y");
 	}
-	else if((orgX < 0 && orgY < 0) && (plotX > 0 && plotY > 0))
+	else if(orgY < 0 && plotY == 0)
 	{
-	   if(((orgX * -1) == plotX) && ((orgY * -1) == plotY))
-	   {
-	      return "Sign";
-	      console.log("Error Type Sign");
-	   }
+		return "Nomoveony-";
+		console.log("Error Type No move on Y");
 	}
-	else if((orgX >= 0 && orgY >= 0) && (plotX < 0 && plotY < 0))
-	{
-	   if(((plotY * -1) == orgY) || ((plotX * -1) == orgX))
-	   {
-	      return "Sign";
-	      console.log("Error Type Sign");
-	   }
-	}
-	else if(((orgX * -1) == plotX) && ((orgY * -1) == plotX ))
+	else if(((orgX * -1) == plotX) && ((orgY * -1) == plotY))
 	{
 	      return "Sign";
 	      console.log("Error Type Sign");
@@ -46,85 +40,74 @@ function incorrectcheck(orgx, orgy, plotx, ploty)
 	   return "Flip";
 	   console.log("Error Type Flip");
 	}
-	else if((orgX < 0 && plotY > 0) && (orgY > 0 && plotX < 0))
+	else if(((orgX * -1) == plotY) && ((orgY * -1) == plotX))
 	{
-	  if(((orgX * -1) == plotY) && ((plotX * -1) == orgY))
-	   {
              return "Flip";
              console.log("Error Type Flip");
-	   }
 	}
-	else if((orgY < 0 && plotX >= 0) && (orgX >= 0 && plotY < 0))
+	else if((orgX >= 0) && (orgY >= 0) && (plotX >= 0) && (plotY >= 0) && ((orgX - 1) == plotX))
 	{
-	  if(((orgY * -1) == plotX) && ((plotY * -1) == orgX))
-	   {
-             return "Flip";
-             console.log("Error Type Flip");
-	   }
+	   return "Offbyonex";
 	}
-	else if((orgX >= 0) && (orgY >= 0))
+	else if((orgX >= 0) && (orgY >= 0) && (plotX >= 0) && (plotY >= 0) && ((orgX + 1) == plotX))
 	{
-	   if((plotX >= 0) && (plotY >= 0))
-	   {
-	   	   if(((orgX - 1) == plotX) || ((orgY - 1) == plotY)) 
-	       {
-		      return "Offbyone";
-		      console.log("Error Type OffbyOne");
-		   }
-	       else if(((orgX + 1) == plotX) || ((orgY + 1) == plotY)) 
-	       {
-		      return "Offbyone";
-		      console.log("Error Type OffbyOne");
-		   }
-	   }			
+	   return "Offbyonex";
 	}
-	else if((orgX < 0) && (orgY < 0))
+	else if((orgX >= 0) && (orgY >= 0) && (plotX >= 0) && (plotY >= 0) && ((orgY - 1) == plotY))
 	{
-	   if((plotX < 0) && (plotY < 0))
-	   {
-	      if(((orgX - 1) == plotX) || ((orgY - 1) == plotY)) 
-	       {
-		      return "Offbyone";
-		      console.log("Error Type OffbyOne");
-		   }
-		   else if(((orgX + 1) == plotX) || ((orgY + 1) == plotY)) 
-	       {
-		      return "Offbyone";
-		      console.log("Error Type OffbyOne");
-		   }
-	   }			
+	   return "Offbyoney";
 	}
-	else if((orgX < 0 && plotX >= 0) || (orgY < 0 && plotY >= 0))
+	else if((orgX >= 0) && (orgY >= 0) && (plotX >= 0) && (plotY >= 0) && ((orgY + 1) == plotY))
 	{
-       if((((orgX - 1) * -1) == plotX) || (((orgY - 1) * -1) == plotY)) 
-	   {
-		   return "Offbyone";
-		   console.log("Error Type OffbyOne");
-	   }			
+	   return "Offbyoney";
 	}
-	else if((orgX >= 0 && plotX < 0) || (orgY >= 0 && plotY < 0))
+	else if((orgX < 0) && (orgY < 0) && (plotX < 0) && (plotY < 0) && ((orgX - 1) == plotX))
 	{
-        if((((plotX + 1) * -1) == orgX) || (((plotY + 1) * -1) == orgY)) 
-	   {
-		   return "Offbyone";
-		   console.log("Error Type OffbyOne");
-	   }			
+	   return "Offbyonex";
 	}
-	else if(orgX == 0)
+	else if((orgX < 0) && (orgY < 0) && (plotX < 0) && (plotY < 0) && ((orgX + 1) == plotX))
 	{
-		if(((orgY + 1) == plotY) || ((orgY - 1) == plotY))
-		{
-			return "Offbyone";
-			console.log("Error Type OffbyOne");
-		}
+	   return "Offbyonex";
 	}
-	else if(orgY == 0)
+	else if((orgX < 0) && (orgY < 0) && (plotX < 0) && (plotY < 0) && ((orgY - 1) == plotY))
 	{
-		if(((orgX + 1) == plotX) || ((orgX - 1) == plotX))
-		{
-			return "Offbyone";
-			console.log("Error Type OffbyOne");
-		}
+	   return "Offbyoney";
+	}
+	else if((orgX < 0) && (orgY < 0) && (plotX < 0) && (plotY < 0) && ((orgY + 1) == plotY))
+	{
+	   return "Offbyoney";
+	}
+	else if(orgX < 0 && plotX >= 0 && (((orgX - 1) * -1) == plotX))
+	{
+	   return "Offbyonex";
+	} 
+        else if(orgY < 0 && plotY >= 0 && (((orgY - 1) * -1) == plotY)) 
+	{
+	   return "Offbyoney";			
+	}
+	else if(orgX >= 0 && plotX < 0 && (((plotX + 1) * -1) == orgX)) 
+	{
+	   return "Offbyonex";
+	}
+	else if(orgY >= 0 && plotY < 0 && (((plotY + 1) * -1) == orgY))
+	{
+	   return "Offbyoney";		
+	}
+	else if(orgX == 0 && ((orgY + 1) == plotY)) 
+	{
+	   return "Offbyoney";
+	}
+	else if(orgX == 0 && ((orgY - 1) == plotY)) 
+	{
+	   return "Offbyoney";
+	}
+	else if(orgY == 0 && ((orgX + 1) == plotX))
+	{
+	   return "Offbyonex";
+	}
+	else if(orgY == 0 && ((orgX - 1) == plotX))
+	{
+	   return "Offbyonex";
 	}
 	else
 	{
@@ -132,4 +115,83 @@ function incorrectcheck(orgx, orgy, plotx, ploty)
 	   console.log("Error Type General");
 	}
 
+}
+
+/****************************************
+Function when the solution checked is correct
+*****************************************/
+
+function correct(orgX, orgY)
+{
+	if(orgX >= 0 && orgY >= 0)
+	{
+	   return "Firstquad";
+	}
+	else if(orgX < 0 && orgY >= 0)
+	{
+	   return "Secondquad";
+	}
+	else if(orgX < 0 && orgY < 0)
+	{
+	   return "Thirdquad";
+	}
+	else if(orgX >= 0 && orgY < 0)
+	{
+	   return "Fourthquad";
+	}
+}
+
+/**********************************************
+Function to check type of prompts to be displayed
+within interaction.
+**********************************************/
+
+function checkmove(label, distance, Xcoord, Ycoord, anglevalue)
+{
+	console.log("Angle in incorrect" + anglevalue);
+	console.log("label" + label+ "Distance"+ distance+ "Xcoord"+ Xcoord +"Ycoord"+Ycoord);
+	if(label == "moveDistance" && anglevalue == 0)
+	{
+	   if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
+	   {
+	      return "xcorrect";
+	   }
+	   else if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
+	   {
+	      return "xwrong";
+	   } 
+	}
+	else if(label == "moveDistance" && anglevalue == 90)
+	{
+	   if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
+	   {
+	      return "ycorrect";
+	   }
+	   else if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
+	   {
+	      return "ywrong";
+	   } 
+	}
+	else if(label == "moveDistance" && anglevalue == 180)
+	{
+	   if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
+	   {
+	      return "xcorrect";
+	   }
+	   else if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
+	   {
+	      return "xwrong";
+	   } 
+	}
+	else if(label == "moveDistance" && anglevalue == 270)
+	{
+	   if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
+	   {
+	      return "ycorrect";
+	   }
+	   else if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
+	   {
+	      return "ywrong";
+	   } 
+	}
 }

@@ -11,11 +11,14 @@
         <script type="text/javascript" src="../static/js/applet/main.js"></script>
 	<!-- Added by Abha for adding prompts for incorrect solution-->
         <script type="text/javascript" src="../static/js/applet/incorrect.js"></script>
+        <script type="text/javascript" src="../static/js/applet/Action.js"></script>
+
 
         <script>
             var draggingEnabled = true;
             var realRobotEnabled = false;
             var togglePassword = "clippyiscool";
+	
 
             $(function() {
                 var setLock = function(e) {
@@ -65,8 +68,6 @@
             ADR.POST_SOLUTION_CHECK = "{{=URL('post_Solution_Check')}}";
             ADR.SET_PROBLEM_NUMBER = "{{=URL('set_Problem_Number')}}";
             ADR.MAKE_ATTRIBUTION = "{{=URL('mobileinterface','robot','make_attribution')}}";
-	    //ABHA
-            ADR.SEND_ERROR = "{{=URL('mobileinterface','robot','send_error')}}";
             ADR.MAKE_COGNITIVE_PROMPT = "{{=URL('mobileinterface','robot','make_cognitive_prompt')}}";
             ADR.RANDOMLY_ORDER_PROMPT = "{{=URL('mobileinterface','robot','randomly_order_prompts')}}";
             ADR.INCREMENT_PROMPT_COUNT = "{{=URL('mobileinterface','default','increment_prompt_count')}}";
@@ -107,6 +108,9 @@
                 var currentProblem;
                 var userActionList = [];
                 var appletLockStatus = false;
+    		var Xcoord;
+                var Ycoord;
+		var anglevalue = 0;
                 
                 // log("test",{"source":__SOURCE__});
 
@@ -114,6 +118,15 @@
                     if(!web2py_websocket('ws://{{=ip}}:{{=port}}/realtime/{{=group_name}}', function(e) {
                         console.dir("incoming packet : " + e.data);
                         incoming = JSON.parse(unescape(e.data));
+			//Added to get the value of X and Y coordinates
+			if(incoming.solution !== undefined && incoming.id != "540"){
+			var solutionPointsArray = incoming.solution.points;
+                        for(var i = 0 ; i < solutionPointsArray.length ; i++) {
+                           var point = solutionPointsArray[i];                                       
+                           Xcoord = point.x;
+                           Ycoord = point.y;
+			 } 	
+			}
                         // TODO improve detection. Encapsulate the object and include a type property
                         // TODO need to incorporate message types/profiles, probaby in an external js file.
                         if(incoming instanceof Array) {
@@ -234,8 +247,8 @@
                                         var correctY = point.y;
                 			    		
                                         // Added by Abha to show prompts for incorrect solution
-                     					orgX = correctX;
-                    					orgY = correctY;
+                     			orgX = correctX;
+                    			orgY = correctY;
                                        
                                        var upperX = (correctX + threshhold_limit);
                                         var lowerX = (correctX - threshhold_limit);
@@ -307,13 +320,14 @@
                                     //!!! Careful, you'll need to change this when lines are incoporated in the solution.
                                     // if(correctSolutionsCounter == solutionPointsArray.length) {
                                     if(correctSolutionsCounter == numberOfSolutions) {
-				                        messageBackToMobile = "Correct";
+				        messageBackToMobile = correct(orgX,orgY);
                                         isSolutionCorrect = true;
                                     }
 				                    //Changed By Abha to show prompts for incorrect solution
 				                    else {
                                         console.log("Calling incorrectcheck.....");
                                         var message = incorrectcheck(orgX, orgY, plotX, plotY);
+                                        console.log(message);
                                         messageBackToMobile = message;
                                     }
                                 }
@@ -344,7 +358,12 @@
                             if(incoming.label !== undefined) {
                                 console.dir("Execute action");
                                 olddata = incoming;
-                                
+				var move = incoming.op;
+				if(incoming.name == "turnAngle")
+				{ var value = parseInt(move.angle);
+				anglevalue = anglevalue + value; console.log("Angle" + typeof(value));}
+				var error = checkmove(incoming.name, move.distance, Xcoord, Ycoord, anglevalue);
+				send(error);
                                 //Displaying user actions as and when they happen
                                 userActionList.push(incoming.label);
                                 var userActionsString = "User Actions:\n";
@@ -355,7 +374,8 @@
                                 $("#action-list").text(userActionsString);
                                 
                                 // Execute action
-                                executeAction();    
+                                executeAction();  
+
                             }
                             else if(incoming.id !== undefined) {
                                 console.dir("Update problem info");
@@ -387,6 +407,7 @@
                         alert("html5 websocket not supported by your browser, try Google Chrome");
                     }
                 });
+
 
                 function updateProblem(){
                     console.dir("Updating plane to problem ID #" + currentProblem.id +"...");

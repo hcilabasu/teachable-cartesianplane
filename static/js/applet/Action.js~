@@ -1,3 +1,7 @@
+var error;
+function send(err){ error = err;}
+
+
 /***********************************************************************
 *
 * Predefined robot actions methods
@@ -132,7 +136,7 @@ primitiveActions.actions.moveDistance = {
 
       // Check to see if it's time to display a cognitive prompt
       //callCheckForCognitivePrompt();
-      ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541");
+      ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541" + "&error=" + "Move");
 
       if(primitiveActions.movingPointBase){
         var point = controller.getPoint(primitiveActions.movingPointBase);
@@ -791,7 +795,7 @@ function postSolutionCheck(solutionStatus, mobileMessage, problemNumber) {
   //ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + String(solutionStatus), [], "");
   ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
   console.log(ADR.MAKE_COGNITIVE_PROMPT);
-  ajax(ADR.MAKE_ATTRIBUTION + "?out=" + (solutionStatus === true ? "success" : "failure") + "&number=" + problemNumber + "&error=" + mobileMessage);
+  ajax(ADR.MAKE_ATTRIBUTION + "?out=" + (solutionStatus === true ? "success" : "failure") + "&number=" + problemNumber);
   //check to see if prompts should be called
   ajax(ADR.RANDOMLY_ORDER_PROMPT + "?trigger=" + (solutionStatus === true ? "hit" : "missed") + "&state=" + "end" + "&number=" + problemNumber);
 }
@@ -802,7 +806,7 @@ function setProblemNumber(probNum) {
 }
 
 function callCheckForCognitivePrompt() {
-  ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541");
+  //ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541");
 }
 
 controller.initialize();

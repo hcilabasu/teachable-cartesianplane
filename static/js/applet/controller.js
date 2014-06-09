@@ -1,6 +1,8 @@
 var controller = (function() {
   console.log("Controller...");
 
+function send(){ return r1.location.x;}
+
   /*******************************************************************************/
 
   //var primitiveActions;
