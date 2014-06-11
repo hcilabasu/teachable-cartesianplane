@@ -21,7 +21,7 @@ class Robot:
             self.leftc = False
             self.rightc = False
             self.speed = 60
-            self.turnSpeed = 40
+            self.turnSpeed = 30
             self.turnSpeedLow = 35
             self.backTurnSpeed = 75
             print ("Connected to Robot")

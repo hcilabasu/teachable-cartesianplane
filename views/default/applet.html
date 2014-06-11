@@ -108,9 +108,11 @@
                 var currentProblem;
                 var userActionList = [];
                 var appletLockStatus = false;
-    		var Xcoord;
+    		    var Xcoord;
                 var Ycoord;
-		var anglevalue = 0;
+		        var anglevalue = 0;
+                var newproblem = false;
+                var problemnumber = 0;
                 
                 // log("test",{"source":__SOURCE__});
 
@@ -118,15 +120,17 @@
                     if(!web2py_websocket('ws://{{=ip}}:{{=port}}/realtime/{{=group_name}}', function(e) {
                         console.dir("incoming packet : " + e.data);
                         incoming = JSON.parse(unescape(e.data));
-			//Added to get the value of X and Y coordinates
-			if(incoming.solution !== undefined && incoming.id != "540"){
-			var solutionPointsArray = incoming.solution.points;
-                        for(var i = 0 ; i < solutionPointsArray.length ; i++) {
+			             //Added to get the value of X and Y coordinates
+			             if(incoming.solution !== undefined && incoming.id != "540" && incoming.type == "Default"){
+			             var solutionPointsArray = incoming.solution.points;
+                         for(var i = 0 ; i < solutionPointsArray.length ; i++) {
                            var point = solutionPointsArray[i];                                       
                            Xcoord = point.x;
                            Ycoord = point.y;
-			 } 	
-			}
+                           newproblem = true;
+                           problemnumber = problemnumber + 1;
+			               } 	
+			             }
                         // TODO improve detection. Encapsulate the object and include a type property
                         // TODO need to incorporate message types/profiles, probaby in an external js file.
                         if(incoming instanceof Array) {
@@ -202,11 +206,11 @@
                             var processingString = "";
                             var threshhold_limit = 0.25;
                             var messageBackToMobile = "";
-			    // Added by Abha to show prompts for incorrect solution
-			    var orgX;
-			    var orgY;
+			                 // Added by Abha to show prompts for incorrect solution
+			                 var orgX;
+			                 var orgY;
                             var plotX;
-			    var plotY;
+			                 var plotY;
                             if(incoming.solution.points) {
                                 // To enable the check for any point to be within the theshhold, and not just a specific point mentioned in the solution, we'll need to get the number of objects on screen using getObjectNumber and get the list of object names using getObjectName(int i). Then we refine this list to only show the points on screen. Then we iterate over every point and check for threshhold.
                                 var pointList = [];
@@ -320,7 +324,7 @@
                                     //!!! Careful, you'll need to change this when lines are incoporated in the solution.
                                     // if(correctSolutionsCounter == solutionPointsArray.length) {
                                     if(correctSolutionsCounter == numberOfSolutions) {
-				        messageBackToMobile = correct(orgX,orgY);
+				                        messageBackToMobile = correct(orgX,orgY);
                                         isSolutionCorrect = true;
                                     }
 				                    //Changed By Abha to show prompts for incorrect solution
@@ -358,18 +362,24 @@
                             if(incoming.label !== undefined) {
                                 console.dir("Execute action");
                                 olddata = incoming;
-				var move = incoming.op;
-				if(incoming.name == "turnAngle")
-				{ 
-				   var value = parseInt(move.angle);
-				   anglevalue = anglevalue + value;
-				   if(anglevalue == 360)
-				   { 
-				      anglevalue = 0;
-				   }				
-				}
-				var error = checkmove(incoming.name, move.distance, Xcoord, Ycoord, anglevalue);
-				send(error);
+				                var move = incoming.op;
+                                if(newproblem == true)
+                                {
+                                    anglevalue = 0;
+                                    console.log("Setting angle zero for new problem" + anglevalue);
+                                }
+				                if(incoming.name == "turnAngle")
+				                { 
+				                    var value = parseInt(move.angle);
+				                    anglevalue = anglevalue + value;
+				                    if(anglevalue == 360)
+				                    { 
+				                        anglevalue = 0;
+				                    }				
+				                }
+				                var error = checkmove(incoming.name, move.distance, Xcoord, Ycoord, anglevalue, problemnumber);
+                                newproblem = false;
+				                send(error);
                                 //Displaying user actions as and when they happen
                                 userActionList.push(incoming.label);
                                 var userActionsString = "User Actions:\n";

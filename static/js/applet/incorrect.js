@@ -1,6 +1,6 @@
 /* Function to check what kind of Mistake was made when an incorrect solution is checked
    Created by Abha */
-
+var count = 0;
 function incorrectcheck(orgx, orgy, plotx, ploty)
 {
 	var orgX,orgY,plotX,plotY;
@@ -12,22 +12,22 @@ function incorrectcheck(orgx, orgy, plotx, ploty)
 
 	if(orgX > 0 && plotX == 0)
 	{
-		return "Nomoveonx+";
+		return "Nomoveonxplus";
 		console.log("Error Type No move on X");
 	}
 	else if(orgX < 0 && plotX == 0)
 	{
-		return "Nomoveonx-";
+		return "Nomoveonxneg";
 		console.log("Error Type No move on X");
 	}
 	else if(orgY > 0 && plotY == 0)
 	{
-		return "Nomoveony+";
+		return "Nomoveonyplus";
 		console.log("Error Type No move on Y");
 	}
 	else if(orgY < 0 && plotY == 0)
 	{
-		return "Nomoveony-";
+		return "Nomoveonyneg";
 		console.log("Error Type No move on Y");
 	}
 	else if(((orgX * -1) == plotX) && ((orgY * -1) == plotY))
@@ -146,52 +146,64 @@ Function to check type of prompts to be displayed
 within interaction.
 **********************************************/
 
-function checkmove(label, distance, Xcoord, Ycoord, anglevalue)
+function checkmove(label, distance, Xcoord, Ycoord, anglevalue, problemnumber)
 {
 	console.log("Angle in incorrect" + anglevalue);
 	console.log("label" + label+ "Distance"+ distance+ "Xcoord"+ Xcoord +"Ycoord"+Ycoord);
-	if(label == "moveDistance" && anglevalue == 0)
+	count = count + 1;
+	if (count == 3 && problemnumber <=3)
 	{
-	   if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
-	   {
-	      return "xcorrect";
-	   }
-	   else if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
-	   {
-	      return "xwrong";
-	   } 
+		count = 1;
 	}
-	else if(label == "moveDistance" && anglevalue == 90)
+	else if(count == 5 && problemnumber > 3)
 	{
-	   if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
-	   {
-	      return "ycorrect";
-	   }
-	   else if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
-	   {
-	      return "ywrong";
-	   } 
+		count = 1;
 	}
-	else if(label == "moveDistance" && anglevalue == 180)
+	if (count == 1)
 	{
-	   if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
-	   {
-	      return "xcorrect";
-	   }
-	   else if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
-	   {
-	      return "xwrong";
-	   } 
-	}
-	else if(label == "moveDistance" && anglevalue == 270)
-	{
-	   if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
-	   {
-	      return "ycorrect";
-	   }
-	   else if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
-	   {
-	      return "ywrong";
-	   } 
+		if(label == "moveDistance" && anglevalue == 0)
+		{
+	   	if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
+	   	{
+	   	   return "xcorrect";
+	   	}
+	   	else if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
+	   	{
+	   	   return "xwrong";
+	   	} 
+		}
+		else if(label == "moveDistance" && anglevalue == 90)
+		{
+	   	if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
+	   	{
+	   	   return "ycorrect";
+	   	}
+	   	else if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
+	   	{
+	   	   return "ywrong";
+	   	} 
+		}
+		else if(label == "moveDistance" && anglevalue == 180)
+		{
+	   	if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
+	   	{
+	   	   return "xcorrect";
+	   	}
+	   	else if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
+	   	{
+	   	   return "xwrong";
+	   	} 
+		}
+		else if(label == "moveDistance" && anglevalue == 270)
+		{
+	   	if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
+	   	{
+	   	   return "ycorrect";
+	   	}
+	   	else if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
+	   	{
+	   	   return "ywrong";
+	   	} 
+		}
 	}
 }
