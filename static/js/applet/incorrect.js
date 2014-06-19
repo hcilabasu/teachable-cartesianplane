@@ -10,29 +10,34 @@ function incorrectcheck(orgx, orgy, plotx, ploty)
 	plotY = parseInt(ploty,10);
 	console.log("org X"+orgX+"org Y"+orgY+"plot X"+plotX+"plot Y"+plotY);
 
-	if(orgX > 0 && plotX == 0)
+	if(orgX > 0 && plotX == 0 && plotY != orgX)
 	{
 		return "Nomoveonxplus";
 		console.log("Error Type No move on X");
 	}
-	else if(orgX < 0 && plotX == 0)
+	else if(orgX < 0 && plotX == 0 && plotY != orgX)
 	{
 		return "Nomoveonxneg";
 		console.log("Error Type No move on X");
 	}
-	else if(orgY > 0 && plotY == 0)
+	else if(orgY > 0 && plotY == 0 && plotX != orgY)
 	{
 		return "Nomoveonyplus";
 		console.log("Error Type No move on Y");
 	}
-	else if(orgY < 0 && plotY == 0)
+	else if(orgY < 0 && plotY == 0 && plotX != orgY)
 	{
 		return "Nomoveonyneg";
 		console.log("Error Type No move on Y");
 	}
-	else if(((orgX * -1) == plotX) && ((orgY * -1) == plotY))
+	else if((orgX * -1) == plotX)
 	{
-	      return "Sign";
+	      return "Signx";
+	      console.log("Error Type Sign");
+	}
+	else if((orgY * -1) == plotY)
+	{
+	      return "Signy";
 	      console.log("Error Type Sign");
 	}
 	else if((orgX == plotY) && (orgY == plotX))
@@ -163,47 +168,63 @@ function checkmove(label, distance, Xcoord, Ycoord, anglevalue, problemnumber)
 	{
 		if(label == "moveDistance" && anglevalue == 0)
 		{
-	   	if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
-	   	{
-	   	   return "xcorrect";
-	   	}
-	   	else if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
-	   	{
-	   	   return "xwrong";
-	   	} 
+			if(distance == Ycoord)
+			{
+				return "flipmove";
+			}
+	   		else if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
+	   		{
+	   	   		return "xcorrect";
+	   		}	
+	   		else if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
+	   		{
+	   	   		return "xwrong";
+	   		} 
 		}
 		else if(label == "moveDistance" && anglevalue == 90)
 		{
-	   	if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
-	   	{
-	   	   return "ycorrect";
-	   	}
-	   	else if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
-	   	{
-	   	   return "ywrong";
-	   	} 
+			if(distance == Xcoord)
+			{
+				return "flipmove";
+			}
+	   		else if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
+	   		{
+	   	   		return "ycorrect";
+	   		}
+	   		else if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
+	   		{
+	   	   		return "ywrong";
+	   		} 
 		}
 		else if(label == "moveDistance" && anglevalue == 180)
 		{
-	   	if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
-	   	{
-	   	   return "xcorrect";
-	   	}
-	   	else if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
-	   	{
-	   	   return "xwrong";
-	   	} 
+			if(distance == Ycoord)
+			{
+				return "flipmove";
+			}
+	   		else if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
+	   		{
+	   	   		return "xcorrect";
+	   		}
+	   		else if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
+	   		{
+	   	   		return "xwrong";
+	   		}	 
 		}
 		else if(label == "moveDistance" && anglevalue == 270)
 		{
-	   	if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
-	   	{
-	   	   return "ycorrect";
-	   	}
-	   	else if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
-	   	{
-	   	   return "ywrong";
-	   	} 
+			if(distance == Xcoord)
+			{
+				return "flipmove";
+			}
+	   		else if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
+	   		{
+	   	   		return "ycorrect";
+	   		}
+	   		else if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
+	   		{
+	   	   		return "ywrong";
+	   		} 
 		}
 	}
 }
