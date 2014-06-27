@@ -172,13 +172,21 @@ function checkmove(label, distance, Xcoord, Ycoord, anglevalue, problemnumber)
 			{
 				return "flipmove";
 			}
-	   		else if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
+	   		else if(distance >= 0 && Xcoord >= 0)
 	   		{
-	   	   		return "xcorrect";
+	   	   		return "xcorrectpos";
 	   		}	
-	   		else if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
+	   		else if(distance < 0 && Xcoord < 0)
 	   		{
-	   	   		return "xwrong";
+	   	   		return "xcorrectneg";
+	   		}
+	   		else if(distance >= 0 && Xcoord < 0)
+	   		{
+	   	   		return "xwrongneg";
+	   		} 
+	   		else if(distance < 0 && Xcoord >= 0)
+	   		{
+	   	   		return "xwrongpos";
 	   		} 
 		}
 		else if(label == "moveDistance" && anglevalue == 90)
@@ -187,13 +195,21 @@ function checkmove(label, distance, Xcoord, Ycoord, anglevalue, problemnumber)
 			{
 				return "flipmove";
 			}
-	   		else if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
+	   		else if(distance >= 0 && Ycoord >= 0)
 	   		{
-	   	   		return "ycorrect";
+	   	   		return "ycorrectpos";
 	   		}
-	   		else if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
+	   		else if(distance >= 0 && Ycoord < 0)
 	   		{
-	   	   		return "ywrong";
+	   	   		return "ywrongneg";
+	   		} 
+	   		else if(distance < 0 && Ycoord < 0)
+	   		{
+	   	   		return "ycorrectneg";
+	   		}
+	   		else if(distance < 0 && Ycoord >= 0)
+	   		{
+	   	   		return "ywrongpos";
 	   		} 
 		}
 		else if(label == "moveDistance" && anglevalue == 180)
@@ -202,13 +218,21 @@ function checkmove(label, distance, Xcoord, Ycoord, anglevalue, problemnumber)
 			{
 				return "flipmove";
 			}
-	   		else if((distance >= 0 && Xcoord < 0) || (distance < 0 && Xcoord >= 0))
+	   		else if(distance >= 0 && Xcoord < 0)
 	   		{
-	   	   		return "xcorrect";
+	   	   		return "xcorrectneg";
 	   		}
-	   		else if((distance >= 0 && Xcoord >= 0) || (distance < 0 && Xcoord < 0))
+	   		else if(distance < 0 && Xcoord >= 0)
 	   		{
-	   	   		return "xwrong";
+	   	   		return "xcorrectpos";
+	   		}
+	   		else if(distance >= 0 && Xcoord >= 0)
+	   		{
+	   	   		return "xwrongpos";
+	   		}
+	   		else if(distance < 0 && Xcoord < 0)
+	   		{
+	   	   		return "xwrongneg";
 	   		}	 
 		}
 		else if(label == "moveDistance" && anglevalue == 270)
@@ -217,13 +241,21 @@ function checkmove(label, distance, Xcoord, Ycoord, anglevalue, problemnumber)
 			{
 				return "flipmove";
 			}
-	   		else if((distance >= 0 && Ycoord < 0) || (distance < 0 && Ycoord >= 0))
+	   		else if(distance >= 0 && Ycoord < 0)
 	   		{
-	   	   		return "ycorrect";
+	   	   		return "ycorrectneg";
 	   		}
-	   		else if((distance >= 0 && Ycoord >= 0) || (distance < 0 && Ycoord < 0))
+	   		else if(distance < 0 && Ycoord >= 0)
 	   		{
-	   	   		return "ywrong";
+	   	   		return "ycorrectpos";
+	   		}
+	   		else if(distance >= 0 && Ycoord >= 0)
+	   		{
+	   	   		return "ywrongpos";
+	   		} 
+	   		else if(distance < 0 && Ycoord < 0)
+	   		{
+	   	   		return "ywrongneg";
 	   		} 
 		}
 	}
