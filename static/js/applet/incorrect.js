@@ -1,5 +1,4 @@
-/* Function to check what kind of Mistake was made when an incorrect solution is checked
-   Created by Abha */
+/* Function to determine what Type of Mistake was made when an incorrect solution is checked */
 var count = 0;
 function incorrectcheck(orgx, orgy, plotx, ploty)
 {
@@ -122,9 +121,10 @@ function incorrectcheck(orgx, orgy, plotx, ploty)
 
 }
 
-/****************************************
-Function when the solution checked is correct
-*****************************************/
+/*********************************************************
+Function to determine what message should be displyed
+related to x and y axis when the solution checked is correct
+**********************************************************/
 
 function correct(orgX, orgY)
 {
@@ -146,10 +146,10 @@ function correct(orgX, orgY)
 	}
 }
 
-/**********************************************
-Function to check type of prompts to be displayed
+/********************************************************
+Function to determine what kind of prompts to be displayed
 within interaction.
-**********************************************/
+**********************************************************/
 
 function checkmove(label, distance, Xcoord, Ycoord, anglevalue, problemnumber)
 {

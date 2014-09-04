@@ -9,7 +9,7 @@
         <script type="text/javascript" src="../static/js/applet/RealRobot.js"></script>
         <!--  <script type="text/javascript" src="../static/js/applet/communication.js"></script> -->
         <script type="text/javascript" src="../static/js/applet/main.js"></script>
-	<!-- Added by Abha for adding prompts for incorrect solution-->
+	    <!-- Added for displaying specific prompts after correct and incorrect solution check and within interaction-->
         <script type="text/javascript" src="../static/js/applet/incorrect.js"></script>
         <script type="text/javascript" src="../static/js/applet/Action.js"></script>
 
@@ -206,10 +206,10 @@
                             var processingString = "";
                             var threshhold_limit = 0.25;
                             var messageBackToMobile = "";
-			                 // Added by Abha to show prompts for incorrect solution
+			                 // Variables to be passed on to incorrect.js
 			                 var orgX;
 			                 var orgY;
-                            var plotX;
+                             var plotX;
 			                 var plotY;
                             if(incoming.solution.points) {
                                 // To enable the check for any point to be within the theshhold, and not just a specific point mentioned in the solution, we'll need to get the number of objects on screen using getObjectNumber and get the list of object names using getObjectName(int i). Then we refine this list to only show the points on screen. Then we iterate over every point and check for threshhold.
@@ -250,11 +250,10 @@
                                         var correctX = point.x;
                                         var correctY = point.y;
                 			    		
-                                        // Added by Abha to show prompts for incorrect solution
-                     			orgX = correctX;
-                    			orgY = correctY;
+                     			        orgX = correctX;
+                    			        orgY = correctY;
                                        
-                                       var upperX = (correctX + threshhold_limit);
+                                        var upperX = (correctX + threshhold_limit);
                                         var lowerX = (correctX - threshhold_limit);
                                         var upperY = (correctY + threshhold_limit);
                                         var lowerY = (correctY - threshhold_limit);
@@ -284,7 +283,6 @@
                                                     var actualX = geoApp.getXcoord(pointName).toFixed(2);
                                                     var actualY = geoApp.getYcoord(pointName).toFixed(2);
                         						    
-                                                    // Added by Abha to show prompts for incorrect solution
                         						    plotX = actualX;
                         						    plotY = actualY;
 
@@ -327,7 +325,7 @@
 				                        messageBackToMobile = correct(orgX,orgY);
                                         isSolutionCorrect = true;
                                     }
-				                    //Changed By Abha to show prompts for incorrect solution
+				                    //Edited to display prompts for incorrect solution
 				                    else {
                                         console.log("Calling incorrectcheck.....");
                                         var message = incorrectcheck(orgX, orgY, plotX, plotY);
@@ -338,7 +336,7 @@
                                 else {
                                     //messageBackToMobile = "You have not plotted any points.";
                 				    
-                                    //Changed By Abha to show prompts for incorrect solution
+                                    //If there is no plotted point
                                     messageBackToMobile = "PlotPoint";
 
                                     // !!!This is just to make sure the check at the bottom is false
@@ -377,9 +375,11 @@
 				                        anglevalue = 0;
 				                    }				
 				                }
-				                var error = checkmove(incoming.name, move.distance, Xcoord, Ycoord, anglevalue, problemnumber);
+                                // To check what type of prompts needs to be displayed within user interaction
+				                var move_interaction = checkmove(incoming.name, move.distance, Xcoord, Ycoord, anglevalue, problemnumber);
                                 newproblem = false;
-				                send(error);
+                                // To send the type of move made to action.js
+				                send(move_interaction);
                                 //Displaying user actions as and when they happen
                                 userActionList.push(incoming.label);
                                 var userActionsString = "User Actions:\n";

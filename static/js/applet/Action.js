@@ -1,5 +1,6 @@
-var error;
-function send(err){ error = err;}
+var move_interaction;
+// To get the type of move made from applet.html and send it to cognitive prompts
+function send(move){ move_interaction = move;}
 
 
 /***********************************************************************
@@ -136,7 +137,7 @@ primitiveActions.actions.moveDistance = {
 
       // Check to see if it's time to display a cognitive prompt
       //callCheckForCognitivePrompt();
-      ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541" + "&error=" + error);
+      ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541" + "&error=" + move_interaction);
 
       if(primitiveActions.movingPointBase){
         var point = controller.getPoint(primitiveActions.movingPointBase);
