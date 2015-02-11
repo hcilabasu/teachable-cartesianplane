@@ -77,7 +77,7 @@ function send(){ return r1.location.x;}
     
     console.log("Animated... " + act.name + " " + total);
       
-    animating = true;      
+    animating = true;  
     actionsTree.executeAction();  
   }
   
@@ -153,6 +153,8 @@ function send(){ return r1.location.x;}
           // console.log(JSON.stringify(currNode));
           // console.log(currNode);
           var act = currNode.children.shift().value;
+          console.log("PAUSING!!!!!!!!!!!")
+          // sleep(1000);
           primitiveActions.executeAction(act); //controller.moving[act.name](act.op);
         }
         else if(moving[currNode.firstChild().value.name]) {// "move" || "turn" || "moveSinglePoint"
@@ -419,10 +421,21 @@ function send(){ return r1.location.x;}
     pF.deleteObject(object);
   }
 
+
+  //CHECKING THE SLEEP FUNCTION
+  function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
+
   /******************************************************************************/
 
   return {
-    //return "public" method calls
+    //return "public" method call
 
     addAction: actionsTree.addAction,
     moving: moving,
