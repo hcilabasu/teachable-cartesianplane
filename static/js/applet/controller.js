@@ -153,9 +153,24 @@ function send(){ return r1.location.x;}
           // console.log(JSON.stringify(currNode));
           // console.log(currNode);
           var act = currNode.children.shift().value;
-          console.log("PAUSING!!!!!!!!!!!")
-          // sleep(1000);
+          if(PAUSEENABLED)
+          {
+           if(act.name == "move")
+           {
+              console.log(act.name);
+              console.log("PAUSING!!!!!!!!!!!");
+              sleep(1000);
+           }
+          }
+          if(SOUND)
+          {
+            console.log("PROMPTTTT!!!!!!!!!!!");
+            var point = r1.location.x + 1;
+            console.log(point);
+            ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541" + "&error=" + point);
+          }
           primitiveActions.executeAction(act); //controller.moving[act.name](act.op);
+
         }
         else if(moving[currNode.firstChild().value.name]) {// "move" || "turn" || "moveSinglePoint"
           console.log("In execute action moving.");
@@ -329,11 +344,18 @@ function send(){ return r1.location.x;}
       geoApp.evalCommand("ShowLabel[" + point + ",false]");
     },
     adjustLoc: function() {
+
       r1.location.x = Math.round(r1.location.x * 100)/100;
       r1.location.y = Math.round(r1.location.y * 100)/100;
       r1.makeCenter();
       r1.makeEyes();
       r1.makeExtensions();
+      if(PAUSEENABLED)
+      {
+        r1.makeCrosshair();
+      }
+
+
       geoApp.evalCommand("RB = Circle[R, C1]");
 
      // console.log("Location after adjustment... " + r1.location.x + ", " + r1.location.y);
@@ -386,6 +408,10 @@ function send(){ return r1.location.x;}
       r1.makeCenter();
       r1.makeEyes();
       r1.makeExtensions();
+      if(PAUSEENABLED)
+      {
+        r1.makeCrosshair();
+      }
     },
     moveSinglePoint: function(move) {
       var point = move.point,

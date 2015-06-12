@@ -153,9 +153,8 @@ primitiveActions.actions.moveDistance = {
         // Moving real robot
         console.log("Moving real robot");
         realRobot.moveTo(newX, newY, dist < 0 ? true : false, r1.orientation);
-
       	console.log("move " + dist);
-      	controller.addAction(new Action("move", dist));
+        controller.addAction(new Action("move", dist));
 
         // Handling point move state
         if(primitiveActions.movingPoint !== undefined) {

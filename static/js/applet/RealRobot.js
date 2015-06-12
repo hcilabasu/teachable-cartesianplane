@@ -1,6 +1,7 @@
 var RealRobot = function() {
 
 	var moveRobot = false;
+	var setOrigin = false;
 
 	var URL = 'http://localhost:8000/mobileinterface/robot/'
 

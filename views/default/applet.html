@@ -12,11 +12,19 @@
 	    <!-- Added for displaying specific prompts after correct and incorrect solution check and within interaction-->
         <script type="text/javascript" src="../static/js/applet/incorrect.js"></script>
         <script type="text/javascript" src="../static/js/applet/Action.js"></script>
+        <script type="text/javascript" src="../static/js/applet/audio.js"></script>
+        <script type='text/javascript' > 
+        var PAUSEENABLED = false;
+        var SOUND = false;
+        </script>
+        <script type="text/javascript" src="../static/js/applet/controller.js"></script>
+        <script type="text/javascript" src="../static/js/applet/appObjects.js"></script>
 
 
         <script>
             var draggingEnabled = true;
             var realRobotEnabled = false;
+            var setOriginEnabled = false;
             var togglePassword = "clippyiscool";
 	
 
@@ -33,6 +41,24 @@
                 $("#realRobot").click(function(e) {
                     realRobotEnabled = realRobot.toggleRobot();
                     $(this).text("Real Robot " + (realRobotEnabled ? "ON" : "OFF"));
+                    return false;
+                });
+
+                $("#setOrigin").click(function(e) {
+                    setOriginEnabled = !setOriginEnabled;
+                    $(this).text("Set Origin " + (setOriginEnabled ? "ON" : "OFF"));
+                    return false;
+                });
+
+                $("#Pause").click(function(e) {
+                    PAUSEENABLED = !PAUSEENABLED;
+                    $(this).text("Pause and Cross Line " + (PAUSEENABLED ? "ON" : "OFF"));
+                    return false;
+                });
+
+                $("#PointAudio").click(function(e) {
+                    SOUND = !SOUND;
+                    $(this).text("Point Audio " + (SOUND ? "ON" : "OFF"));
                     return false;
                 });
 
@@ -101,7 +127,10 @@
         <a href="#" id="controlsToggle">Toggle Controls</a> <span class="toggle">|</span>
         <a href="#" class="toggle" id="problemSelector">Change Problem</a> <span class="toggle">|</span>
         <a href="#" class="toggle" id="dragToggle">Dragging OFF</a> <span class="toggle">|</span>
-        <a href="#" class="toggle" id="realRobot">Real Robot OFF</a>
+        <a href="#" class="toggle" id="realRobot">Real Robot OFF</a>|</span>
+        <a href="#" class="toggle" id="Pause">Pause and Cross Line OFF</a>|</span>
+        <a href="#" class="toggle" id="PointAudio">Point Audio OFF</a>|</span>
+        <a href="#" class="toggle" id="setOrigin">Set Origin OFF</a>
         <script>
             try {
                 var olddata = "0";
@@ -427,8 +456,12 @@
 
                 function updateProblem(){
                     console.dir("Updating plane to problem ID #" + currentProblem.id +"...");
-                    pF.appReady(currentProblem.points, currentProblem.lines);
-                    realRobot.reset();
+                    if(!setOriginEnabled)
+                    {
+                        pF.appReady(currentProblem.points, currentProblem.lines);
+                        realRobot.reset();
+                    }
+
                 }
 
                 function executeAction(){

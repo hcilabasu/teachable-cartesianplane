@@ -11,7 +11,7 @@ var createRobot = function() {
     
   //speed parameters
   console.log("Changing distance from 0.25 to 1 just to check the pause functionality");
-  var distance = 0.25;
+  var distance = 1//0.25;
   var degrees = 10;
     
   var radius = 0.5;
@@ -77,20 +77,36 @@ var createRobot = function() {
       geoApp.deleteObject("C" + pointName);
     }
   }
+
+// To Draw Crossing Lines along with the robots movement
+  var makeCrosshair = function(){
+    geoApp.evalCommand("CR1 = (" + (location.x) + "," + 150 + ")");
+    geoApp.evalCommand("CR2 = (" + 150 + "," + (location.y)+ ")");
+    geoApp.setLabelVisible("CR1", false);
+    geoApp.setLabelVisible("CR2", false);
+    geoApp.evalCommand("L1 = Line[R,CR1]");
+    geoApp.evalCommand("L2 = Line[R,CR2]");
+  }
   
   var show = function() {
+
     makeCenter();
     makeEyes();
     geoApp.evalCommand("C1 = Segment[R,E]");
     geoApp.evalCommand("RB = Circle[R, C1]");
     geoApp.registerObjectClickListener("RB", "alertWasClicked");
     makeExtensions();
+    if(PAUSEENABLED)
+    {
+      makeCrosshair();
+    }
   };
     
   var appReady = function () {
     if(geoApp != undefined) {
       console.log("geoApp: " + geoApp);
       show();
+
       stopDragMode();
     }
     else {
@@ -107,6 +123,7 @@ var createRobot = function() {
     makeExtensions : makeExtensions,
     getExtension : getExtension,
     removeExtension : removeExtension,
+    makeCrosshair : makeCrosshair,
 
     speed: function(name) {
       switch(name){
@@ -392,6 +409,9 @@ var ready = function() {
     console.log("Applet ready...");
     geoApp = document.ggbApplet;
     APPLET_READY = true;
+
+
+
     //document.onclick = appletClicked;
   }  
   else {
