@@ -117,7 +117,7 @@ var createRobot = function() {
   // Public object returned
   return {
     appReady: appReady,
-    
+    show: show,
     makeEyes: makeEyes,
     makeCenter: makeCenter,
     makeExtensions : makeExtensions,
@@ -290,13 +290,19 @@ var pF = (function() {
     setLock(!setDragEnabled);
   }
   
-  var appReady = function(points, lines) {
+  var appReady = function(points, lines, robotLocation) {
     if(geoApp) {
       if(points !== undefined) {
         plotPointsAndLines(points, lines);
       }
       else {
         loadTest();
+      }
+      if(Object.getOwnPropertyNames(robotLocation).length > 0) {
+        // Set robot's starting location
+        r1.location.x = robotLocation.x;
+        r1.location.y = robotLocation.y;
+        r1.show();
       }
       pF.lockObjects();
     }

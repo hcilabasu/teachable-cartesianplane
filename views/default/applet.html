@@ -163,6 +163,7 @@
                         // TODO improve detection. Encapsulate the object and include a type property
                         // TODO need to incorporate message types/profiles, probaby in an external js file.
                         if(incoming instanceof Array) {
+                            // Execute replay command
                             var toggleBack = false;
                             if(realRobot.isRobotEnabled() && incoming.length > 0){
                                 realRobot.toggleRobot();
@@ -423,6 +424,7 @@
 
                             }
                             else if(incoming.id !== undefined) {
+                                // Switching problem
                                 console.dir("Update problem info");
                                 // Update problem info
                                 currentProblem = incoming;
@@ -458,7 +460,7 @@
                     console.dir("Updating plane to problem ID #" + currentProblem.id +"...");
                     if(!setOriginEnabled)
                     {
-                        pF.appReady(currentProblem.points, currentProblem.lines);
+                        pF.appReady(currentProblem.points, currentProblem.lines, currentProblem.robotLocation);
                         realRobot.reset();
                     }
 

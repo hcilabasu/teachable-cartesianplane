@@ -165,7 +165,14 @@ function send(){ return r1.location.x;}
           if(SOUND)
           {
             console.log("PROMPTTTT!!!!!!!!!!!");
-            var point = r1.location.x + 1;
+            if(r1.location.x >= 0)
+            {
+              var point = r1.location.x + 1;
+            }
+            else
+            {
+              var point = r1.location.x - 1;
+            }
             console.log(point);
             ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541" + "&error=" + point);
           }
