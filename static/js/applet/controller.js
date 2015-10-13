@@ -153,28 +153,19 @@ function send(){ return r1.location.x;}
           // console.log(JSON.stringify(currNode));
           // console.log(currNode);
           var act = currNode.children.shift().value;
-          if(PAUSEENABLED)
-          {
-           if(act.name == "move")
-           {
-              console.log(act.name);
-              console.log("PAUSING!!!!!!!!!!!");
-              sleep(1000);
-           }
-          }
-          if(SOUND)
-          {
-            console.log("PROMPTTTT!!!!!!!!!!!");
-            if(r1.location.x >= 0)
-            {
-              var point = r1.location.x + 1;
+          var orientation = r1.orientation;
+          if(orientation === 90 || orientation === 270){
+            // Robot is moving top/bottom
+            if(act.name == "move" && r1.location.y % 1 == 0){
+              // Whole number. Pause
+              sleep(2000);
             }
-            else
-            {
-              var point = r1.location.x - 1;
-            }
-            console.log(point);
-            ajax(ADR.MAKE_COGNITIVE_PROMPT + "?trigger=" + "hit" + "&state=" + "end" + "&number=" + "541" + "&error=" + point);
+          } else {
+            // Robot is moveing left/right
+            if(act.name == "move" && r1.location.x % 1 == 0){
+              // Whole number. Pause
+              sleep(2000);
+            } 
           }
           primitiveActions.executeAction(act); //controller.moving[act.name](act.op);
 
