@@ -154,19 +154,22 @@ function send(){ return r1.location.x;}
           // console.log(currNode);
           var act = currNode.children.shift().value;
           var orientation = r1.orientation;
-          if(orientation === 90 || orientation === 270){
-            // Robot is moving top/bottom
-            if(act.name == "move" && r1.location.y % 1 == 0){
-              // Whole number. Pause
-              sleep(2000);
+          if(PAUSEENABLED && act.name === "move"){
+            if(orientation === 90 || orientation === 270){
+              // Robot is moving top/bottom
+              if(r1.location.y % 1 == 0){
+                // Whole number. Pause
+                sleep(2000);
+              }
+            } else {
+              // Robot is moveing left/right
+              if(r1.location.x % 1 == 0){
+                // Whole number. Pause
+                sleep(2000);
+              } 
             }
-          } else {
-            // Robot is moveing left/right
-            if(act.name == "move" && r1.location.x % 1 == 0){
-              // Whole number. Pause
-              sleep(2000);
-            } 
           }
+          
           primitiveActions.executeAction(act); //controller.moving[act.name](act.op);
 
         }
