@@ -150,28 +150,23 @@ function send(){ return r1.location.x;}
 
         if(animating) {
           console.log("In execute action animating.");
-          // console.log(JSON.stringify(currNode));
-          // console.log(currNode);
+          var delay = 2000;
           var act = currNode.children.shift().value;
           var orientation = r1.orientation;
           if(PAUSEENABLED && act.name === "move"){
-            if(orientation === 90 || orientation === 270){
-              // Robot is moving top/bottom
-              if(r1.location.y % 1 == 0){
-                // Whole number. Pause
-                sleep(2000);
-              }
-            } else {
-              // Robot is moveing left/right
-              if(r1.location.x % 1 == 0){
-                // Whole number. Pause
-                sleep(2000);
-              } 
+            var location;
+            if(orientation === 90 || orientation === 270) // Robot is moving top/bottom
+              location = r1.location.y;
+            else
+              // Robot is moving left/right
+              location = r1.location.x;
+            if(location % 1 == 0){
+                // Play whole number sound
+              ajax(ADR.SAY_NUMBER + "?state=animating&number=" + r1.location.x);
+              sleep(delay);
             }
           }
-          
-          primitiveActions.executeAction(act); //controller.moving[act.name](act.op);
-
+          primitiveActions.executeAction(act); //controller.moving[act.name](act.op);  
         }
         else if(moving[currNode.firstChild().value.name]) {// "move" || "turn" || "moveSinglePoint"
           console.log("In execute action moving.");
@@ -451,13 +446,13 @@ function send(){ return r1.location.x;}
 
   //CHECKING THE SLEEP FUNCTION
   function sleep(milliseconds) {
-  var start = new Date().getTime();
-  for (var i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds){
-      break;
+    var start = new Date().getTime();
+    while(true){
+      if ((new Date().getTime() - start) > milliseconds){
+        break;
+      }
     }
   }
-}
 
   /******************************************************************************/
 

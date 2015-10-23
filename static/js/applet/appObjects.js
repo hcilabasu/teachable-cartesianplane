@@ -10,7 +10,6 @@ var createRobot = function() {
   var pen = false;
     
   //speed parameters
-  console.log("Changing distance from 0.25 to 1 just to check the pause functionality");
   var distance = 0.25;
   var degrees = 10;
     

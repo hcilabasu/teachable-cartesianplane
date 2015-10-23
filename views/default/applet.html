@@ -97,8 +97,9 @@
             ADR.MAKE_COGNITIVE_PROMPT = "{{=URL('mobileinterface','robot','make_cognitive_prompt')}}";
             ADR.RANDOMLY_ORDER_PROMPT = "{{=URL('mobileinterface','robot','randomly_order_prompts')}}";
             ADR.INCREMENT_PROMPT_COUNT = "{{=URL('mobileinterface','default','increment_prompt_count')}}";
-            ADR.LOG = "{{=URL('log')}}"
-            ADR.SEND_DATA_TO_MOBILE = "{{=URL('send_data_to_mobile')}}"
+            ADR.LOG = "{{=URL('log')}}";
+            ADR.SEND_DATA_TO_MOBILE = "{{=URL('send_data_to_mobile')}}";
+            ADR.SAY_NUMBER = "{{=URL('mobileinterface', 'robot', 'say_number')}}" ;
 
         </script>
 
@@ -129,7 +130,7 @@
         <a href="#" class="toggle" id="dragToggle">Dragging OFF</a> <span class="toggle">|</span>
         <a href="#" class="toggle" id="realRobot">Real Robot OFF</a>|</span>
         <a href="#" class="toggle" id="Pause">Pause and Cross Line OFF</a>|</span>
-        <a href="#" class="toggle" id="PointAudio">Point Audio OFF</a>|</span>
+        <!-- <a href="#" class="toggle" id="PointAudio">Point Audio OFF</a>|</span> -->
         <!-- <a href="#" class="toggle" id="setOrigin">Set Origin OFF</a> -->
         <script>
             try {
