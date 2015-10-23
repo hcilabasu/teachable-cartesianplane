@@ -1,0 +1,21 @@
+<!doctype>
+<html>
+	<head>
+		<script src="{{=URL('static','js/jquery.js')}}"></script>
+		<script src="../static/js/applet/communications.js"></script>
+		<script>
+			var ADR = {};
+			ADR.COMMUNICATION = "{{=URL('comm', 'send_message')}}"
+			$(function(){
+				$("#submitEchoRobot").click(function(){
+					COMM.sendMessage(ADR.COMMUNICATION, "robot","echo","Hello world");
+				});
+			});
+		</script>
+	</head>
+	<body>
+		
+		Echo to robot <button id="submitEchoRobot">Submit 'Hello world' message</button>
+
+	</body>
+<html>
