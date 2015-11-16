@@ -10,6 +10,13 @@ function send(){ return r1.location.x;}
   /*******************************************************************************/
 
   var animating = false;
+
+  /* 
+    This variable is used when the pausing functionality is on.
+    It's used to prevent the robot from uttering it's initial position.
+  */
+  var firstStep = true;
+
   var animate = function(act) {
     var stepSize, temp, action;
     
@@ -146,35 +153,50 @@ function send(){ return r1.location.x;}
           pF.unlockObjects();
         }
         
-        console.log("currNode children length " + currNode.children.length);
+
 
         if(animating) {
           console.log("In execute action animating.");
           var delay = 2000;
           var act = currNode.children.shift().value;
           var orientation = r1.orientation;
-          if(PAUSEENABLED && act.name === "move"){
-            var location;
-            if(orientation === 90 || orientation === 270) // Robot is moving top/bottom
-              location = r1.location.y;
-            else // Robot is moving left/right
-              location = r1.location.x;
-            if(location % 1 == 0){
-                // Play whole number sound
-              ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + location, undefined, undefined, function(){
-                sleep(delay);  
-              });
-            }
+          if(firstStep === true){
+            firstStep = false;
+          } else {
+            if(PAUSEENABLED && act.name === "move"){
+              var location;
+              if(orientation === 90 || orientation === 270) // Robot is moving top/bottom
+                location = r1.location.y;
+              else // Robot is moving left/right
+                location = r1.location.x;
+              if(location % 1 == 0){
+                  // Play whole number sound
+                ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + location, undefined, undefined, function(){
+                  sleep(delay);  
+                });
+              }
+            }  
           }
+
+          console.log("currNode children length " + currNode.children.length);
+          if(firstStep === false && currNode.children.length === 0){
+            // This is the last step in the animation. Set firstStep variable back to true, 
+            // and have Quinn say the verbose current position message.
+            alert("last");
+            firstStep = true;
+          }
+          
           primitiveActions.executeAction(act); //controller.moving[act.name](act.op);  
         }
         else if(moving[currNode.firstChild().value.name]) {// "move" || "turn" || "moveSinglePoint"
+          
           console.log("In execute action moving.");
           currNode = currNode.firstChild();
           //if(Math.abs(currNode.value.op) > 0) //why did I put this here? // Don't ask me!
           animate(currNode.value);
         }
         else {
+          alert("B");
           console.log("In execute action else.");
           currNode = currNode.firstChild();
 
