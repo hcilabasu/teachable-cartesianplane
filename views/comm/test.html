@@ -2,12 +2,17 @@
 <html>
 	<head>
 		<script src="{{=URL('static','js/jquery.js')}}"></script>
-		<script src="../static/js/applet/communications.js"></script>
+		<!-- Step 1: include comm script -->
+		<script src="{{=URL('static','js/applet/communications.js')}}"></script>
 		<script>
 			var ADR = {};
+
+			// Step 2: set the address of the comm controller
 			ADR.COMMUNICATION = "{{=URL('comm', 'send_message')}}"
 			$(function(){
 				$("#submitEchoRobot").click(function(){
+
+					// Step 3: when in need of sending a message, use the method below
 					COMM.sendMessage(ADR.COMMUNICATION, "robot","echo","Hello world");
 				});
 			});

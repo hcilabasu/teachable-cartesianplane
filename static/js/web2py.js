@@ -21,6 +21,22 @@ function ajax(u,s,t,c) {
     jQuery.ajax({type: "POST", url: u, data: query, complete: function(){if(c) c()}, success: function(msg) { if(t) { if(t==':eval') eval(msg); else if(typeof t=='string') jQuery("#"+t).html(msg); else t(msg); } } });
 }
 
+function ajaxSync(u,s,t,c) {
+    query = '';
+    if (typeof s == "string") {
+        d = jQuery(s).serialize();
+        if(d){ query = d; }
+    } else {
+        pcs = [];
+        if (s != null && s != undefined) for(i=0; i<s.length; i++) {
+            q = jQuery("[name="+s[i]+"]").serialize();
+            if(q){pcs.push(q);}
+        }
+        if (pcs.length>0){query = pcs.join("&");}
+    }
+    jQuery.ajax({async: false, type: "POST", url: u, data: query, complete: function(){if(c) c()}, success: function(msg) { if(t) { if(t==':eval') eval(msg); else if(typeof t=='string') jQuery("#"+t).html(msg); else t(msg); } } });
+}
+
 function ajaxCB(u,c){
   jQuery.ajax({
     type: "POST", 

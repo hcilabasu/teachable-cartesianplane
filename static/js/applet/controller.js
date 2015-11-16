@@ -157,13 +157,13 @@ function send(){ return r1.location.x;}
             var location;
             if(orientation === 90 || orientation === 270) // Robot is moving top/bottom
               location = r1.location.y;
-            else
-              // Robot is moving left/right
+            else // Robot is moving left/right
               location = r1.location.x;
             if(location % 1 == 0){
                 // Play whole number sound
-              ajax(ADR.SAY_NUMBER + "?state=animating&number=" + r1.location.x);
-              sleep(delay);
+              ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + location, undefined, undefined, function(){
+                sleep(delay);  
+              });
             }
           }
           primitiveActions.executeAction(act); //controller.moving[act.name](act.op);  

@@ -7,7 +7,7 @@
         <script src="{{=URL('static','js/jquery.js')}}"></script>
         <script src="{{=URL('static','js/web2py.js')}}"></script>
         <script type="text/javascript" src="../static/js/applet/RealRobot.js"></script>
-        <!--  <script type="text/javascript" src="../static/js/applet/communication.js"></script> -->
+        <script src="{{=URL('static','js/applet/communications.js')}}"></script>
         <script type="text/javascript" src="../static/js/applet/main.js"></script>
 	    <!-- Added for displaying specific prompts after correct and incorrect solution check and within interaction-->
         <script type="text/javascript" src="../static/js/applet/incorrect.js"></script>
@@ -100,7 +100,7 @@
             ADR.LOG = "{{=URL('log')}}";
             ADR.SEND_DATA_TO_MOBILE = "{{=URL('send_data_to_mobile')}}";
             ADR.SAY_NUMBER = "{{=URL('mobileinterface', 'robot', 'say_number')}}" ;
-            ADR.COMMUNICATION = "{{=URL('comm')}}"
+            ADR.COMMUNICATION = "{{=URL('comm', 'send_message')}}"
 
         </script>
 
