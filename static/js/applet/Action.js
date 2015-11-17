@@ -789,9 +789,10 @@ primitiveActions.getSteps = function(name) {
 };
 
 
-function postSolutionCheck(solutionStatus, mobileMessage, problemNumber) {
+function postSolutionCheck(solutionStatus, mobileMessage, problemNumber, incorrectattempt, elapsedtime, incorrectPoints, incorrectMessage) {
   console.log(problemNumber);
-  var msg = {"type" : "check", "status" : solutionStatus, "message" : mobileMessage};
+  console.log("CHECKING IN ACTION.JS" + stime + "ENDTIME" + etime);
+  var msg = {"type" : "check", "status" : solutionStatus, "message" : mobileMessage, "incorrectattempt" : incorrectattempt, "elapsedtime" : elapsedtime, "incorrectPoints" : incorrectPoints, "incorrectMessage" : incorrectMessage};
   //ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + String(solutionStatus), [], "");
   ajax(ADR.POST_SOLUTION_CHECK + "?index=" + 0 + "&data=" + escape(JSON.stringify(msg)), [], "");
   console.log(ADR.MAKE_COGNITIVE_PROMPT);

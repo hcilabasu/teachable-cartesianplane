@@ -26,6 +26,17 @@
             var realRobotEnabled = false;
             var setOriginEnabled = false;
             var togglePassword = "clippyiscool";
+            // Variables to be passed on to incorrect.js
+            var orgX = 0;
+            var orgY = 0;
+            var plotX = 0;
+            var plotY = 0;
+
+            var incorrectattempt = 0;
+            var stime = new Date();
+            var etime;
+            var incorrectPoints = [];
+            var incorrectMessage = [];
 	
 
             $(function() {
@@ -235,11 +246,7 @@
                             var processingString = "";
                             var threshhold_limit = 0.25;
                             var messageBackToMobile = "";
-			                 // Variables to be passed on to incorrect.js
-			                 var orgX;
-			                 var orgY;
-                             var plotX;
-			                 var plotY;
+
                             if(incoming.solution.points) {
                                 // To enable the check for any point to be within the theshhold, and not just a specific point mentioned in the solution, we'll need to get the number of objects on screen using getObjectNumber and get the list of object names using getObjectName(int i). Then we refine this list to only show the points on screen. Then we iterate over every point and check for threshhold.
                                 var pointList = [];
@@ -353,13 +360,24 @@
                                     if(correctSolutionsCounter == numberOfSolutions) {
 				                        messageBackToMobile = correct(orgX,orgY);
                                         isSolutionCorrect = true;
+                                        etime = new Date();
                                     }
+
 				                    //Edited to display prompts for incorrect solution
 				                    else {
                                         console.log("Calling incorrectcheck.....");
+                                        incorrectPoints[incorrectattempt] = "(" + parseInt(plotX,10) + "," + parseInt(plotY,10) + ")";
+                                        incorrectattempt = incorrectattempt + 1;
+                                        console.log("incorrectattempt" + incorrectattempt);
                                         var message = incorrectcheck(orgX, orgY, plotX, plotY);
+                                        incorrectMessage[incorrectattempt - 1] = message; 
                                         console.log(message);
                                         messageBackToMobile = message;
+
+                                        for (i = 0; i < incorrectattempt; i++) { 
+                                            console.log("CHECKING INCORRECT POINTS" + incorrectPoints[i] + "MESSAGE" + " " + incorrectMessage[i]);
+                                        }
+                                        
                                     }
                                 }
                                 else {
@@ -367,6 +385,9 @@
                 				    
                                     //If there is no plotted point
                                     messageBackToMobile = "PlotPoint";
+                                    incorrectattempt = incorrectattempt + 1;
+                                    incorrectPoints[incorrectattempt] = "(" + parseInt(plotX,10) + "," + parseInt(plotY,10) + ")";
+                                    incorrectMessage[incorrectattempt - 1] = message; 
 
                                     // !!!This is just to make sure the check at the bottom is false
                                     numberOfSolutions = -1;
@@ -378,7 +399,9 @@
                                 }
 
                                 console.dir("Your solution is " + (isSolutionCorrect ? "correct" : "wrong") + "!");
-                                postSolutionCheck(isSolutionCorrect, messageBackToMobile, currentProblemIndex);
+                                var elapsedtime = checktime(stime, etime);
+                                console.log("ELAPSEDTIME!!!!!" + elapsedtime);
+                                postSolutionCheck(isSolutionCorrect, messageBackToMobile, currentProblemIndex, incorrectattempt, elapsedtime, incorrectPoints, incorrectMessage);
                             }
                         }
                         else if(incoming.type == "geogebrastatus") {
@@ -424,6 +447,9 @@
                             }
                             else if(incoming.id !== undefined) {
                                 console.dir("Update problem info");
+                                incorrectattempt = 0;
+                                plotX = 0;
+                                plotY = 0;
                                 // Update problem info
                                 currentProblem = incoming;
                                 updateProblem();
@@ -453,6 +479,30 @@
                     }
                 });
 
+
+
+                function checktime(stime, etime){
+
+                    var difference= etime-stime;
+                    var hours = Math.floor(difference / 36e5),
+                    minutes = Math.floor(difference % 36e5 / 60000),
+                    seconds = Math.floor(difference % 60000 / 1000);
+                    if(hours > 0)
+                    {
+                        time = hours + "Hour" + minutes + "Minute" + seconds + "second";  
+                    }
+                    else if(minutes > 0)
+                    {
+                        time = minutes + " " + "Minute" + " " + seconds + " " + "Seconds";
+                    }
+                    else
+                    {
+                        time = seconds + " " + "Seconds";
+                    }
+
+                    return time;
+
+                }
 
                 function updateProblem(){
                     console.dir("Updating plane to problem ID #" + currentProblem.id +"...");

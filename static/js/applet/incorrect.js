@@ -146,6 +146,7 @@ function correct(orgX, orgY)
 	}
 }
 
+
 /********************************************************
 Function to determine what kind of prompts to be displayed
 within interaction.
