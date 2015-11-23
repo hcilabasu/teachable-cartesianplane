@@ -402,6 +402,7 @@
                                 var elapsedtime = checktime(stime, etime);
                                 console.log("ELAPSEDTIME!!!!!" + elapsedtime);
                                 postSolutionCheck(isSolutionCorrect, messageBackToMobile, currentProblemIndex, incorrectattempt, elapsedtime, incorrectPoints, incorrectMessage);
+                                stime = new Date();
                             }
                         }
                         else if(incoming.type == "geogebrastatus") {
