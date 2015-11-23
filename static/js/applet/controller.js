@@ -160,15 +160,22 @@ function send(){ return r1.location.x;}
           var delay = 2000;
           var act = currNode.children.shift().value;
           var orientation = r1.orientation;
+          // get the location depending on the way the robot is moving
+          var getLocation = function(){
+            var robotLocation;
+            if(orientation === 90 || orientation === 270) // Robot is moving top/bottom
+                robotLocation = r1.location.y;
+              else // Robot is moving left/right
+                robotLocation = r1.location.x;
+            return robotLocation;
+          };
+
           if(firstStep === true){
             firstStep = false;
           } else {
             if(PAUSEENABLED && act.name === "move"){
-              var location;
-              if(orientation === 90 || orientation === 270) // Robot is moving top/bottom
-                location = r1.location.y;
-              else // Robot is moving left/right
-                location = r1.location.x;
+              var location = getLocation();
+              
               if(location % 1 == 0){
                   // Play whole number sound
                 ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + location, undefined, undefined, function(){
@@ -179,11 +186,13 @@ function send(){ return r1.location.x;}
           }
 
           console.log("currNode children length " + currNode.children.length);
-          if(firstStep === false && currNode.children.length === 0){
+          if(firstStep === false && currNode.children.length === 0 && act.name === "move"){
             // This is the last step in the animation. Set firstStep variable back to true, 
             // and have Quinn say the verbose current position message.
-            alert("last");
             firstStep = true;
+            var speed = getLocation() > 0 ? r1.speed(act.name) : r1.speed(act.name) * -1;
+            var location = getLocation() + speed;
+            ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + location);
           }
           
           primitiveActions.executeAction(act); //controller.moving[act.name](act.op);  
