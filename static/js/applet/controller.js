@@ -157,7 +157,7 @@ function send(){ return r1.location.x;}
 
         if(animating) {
           console.log("In execute action animating.");
-          var delay = 2000;
+          var delay = 2500;
           var act = currNode.children.shift().value;
           var orientation = r1.orientation;
           // get the location depending on the way the robot is moving
@@ -170,20 +170,23 @@ function send(){ return r1.location.x;}
             return robotLocation;
           };
 
-          if(firstStep === true){
-            firstStep = false;
-          } else {
-            if(PAUSEENABLED && act.name === "move"){
-              var location = getLocation();
-              
-              if(location % 1 == 0){
-                  // Play whole number sound
-                ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + location, undefined, undefined, function(){
-                  sleep(delay);  
-                });
-              }
-            }  
+          if(act.name === "move"){
+            if(firstStep === true){
+              firstStep = false;
+            } else {
+              if(PAUSEENABLED){
+                var location = getLocation();
+                
+                if(location % 1 == 0){
+                    // Play whole number sound
+                  ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + location, undefined, undefined, function(){
+                    sleep(delay);  
+                  });
+                }
+              }  
+            }
           }
+          
 
           console.log("currNode children length " + currNode.children.length);
           if(firstStep === false && currNode.children.length === 0 && act.name === "move"){
@@ -192,7 +195,8 @@ function send(){ return r1.location.x;}
             firstStep = true;
             var speed = getLocation() > 0 ? r1.speed(act.name) : r1.speed(act.name) * -1;
             var location = getLocation() + speed;
-            ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + location);
+            ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + location + 
+                                      "&coordinate=" + JSON.stringify({x:Math.round(r1.location.x), y:Math.round(r1.location.y)}));
           }
           
           primitiveActions.executeAction(act); //controller.moving[act.name](act.op);  
