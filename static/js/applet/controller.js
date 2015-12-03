@@ -179,7 +179,7 @@ function send(){ return r1.location.x;}
                 
                 if(location % 1 == 0){
                     // Play whole number sound
-                  ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + location, undefined, undefined, function(){
+                  ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + Math.round(location-0.001), undefined, undefined, function(){
                     sleep(delay);  
                   });
                 }
@@ -195,7 +195,7 @@ function send(){ return r1.location.x;}
             firstStep = true;
             var speed = getLocation() > 0 ? r1.speed(act.name) : r1.speed(act.name) * -1;
             var location = getLocation() + speed;
-            ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + location + 
+            ajaxSync(ADR.SAY_NUMBER + "?state=completed&number=" + Math.round(location-0.001) + 
                                       "&coordinate=" + JSON.stringify({x:Math.round(r1.location.x), y:Math.round(r1.location.y)}));
           }
           
