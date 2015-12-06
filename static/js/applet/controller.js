@@ -81,6 +81,8 @@ function send(){ return r1.location.x;}
       console.log("Adding action: " + action.name + " " + action.op);        
       actionsTree.addAction(action);
     }
+
+
     
     console.log("Animated... " + act.name + " " + total);
       
@@ -157,48 +159,8 @@ function send(){ return r1.location.x;}
 
         if(animating) {
           console.log("In execute action animating.");
-          var delay = 2500;
           var act = currNode.children.shift().value;
           var orientation = r1.orientation;
-          // get the location depending on the way the robot is moving
-          var getLocation = function(){
-            var robotLocation;
-            if(orientation === 90 || orientation === 270) // Robot is moving top/bottom
-                robotLocation = r1.location.y;
-              else // Robot is moving left/right
-                robotLocation = r1.location.x;
-            return robotLocation;
-          };
-
-          if(act.name === "move"){
-            if(firstStep === true){
-              firstStep = false;
-            } else {
-              if(PAUSEENABLED){
-                var location = getLocation();
-                
-                if(location % 1 == 0){
-                    // Play whole number sound
-                  ajaxSync(ADR.SAY_NUMBER + "?state=animating&number=" + Math.round(location-0.001), undefined, undefined, function(){
-                    sleep(delay);  
-                  });
-                }
-              }  
-            }
-          }
-          
-
-          console.log("currNode children length " + currNode.children.length);
-          if(firstStep === false && currNode.children.length === 0 && act.name === "move"){
-            // This is the last step in the animation. Set firstStep variable back to true, 
-            // and have Quinn say the verbose current position message.
-            firstStep = true;
-            var speed = getLocation() > 0 ? r1.speed(act.name) : r1.speed(act.name) * -1;
-            var location = getLocation() + speed;
-            ajaxSync(ADR.SAY_NUMBER + "?state=completed&number=" + Math.round(location-0.001) + 
-                                      "&coordinate=" + JSON.stringify({x:Math.round(r1.location.x), y:Math.round(r1.location.y)}));
-          }
-          
           primitiveActions.executeAction(act); //controller.moving[act.name](act.op);  
         }
         else if(moving[currNode.firstChild().value.name]) {// "move" || "turn" || "moveSinglePoint"
@@ -209,7 +171,6 @@ function send(){ return r1.location.x;}
           animate(currNode.value);
         }
         else {
-          alert("B");
           console.log("In execute action else.");
           currNode = currNode.firstChild();
 
@@ -237,8 +198,13 @@ function send(){ return r1.location.x;}
             console.log("prevPlottedPointCoords : " + JSON.stringify(prevPlottedPointCoords));
             currNode.value.op = {"pointName" : prevPlottedPointCoords};
           }
-          else if(currentActionName == "finishedPlot") {
+          else if(currentActionName === "finishedPlot") {
             isPlotPointAction = false;
+          }
+          else if(currentActionName === "pauseRobotMoving"){
+            if(realRobotMoving){
+              actionsTree.addAction(new Action("pauseRobotMoving"));
+            }
           }
 
           primitiveActions.executeAction(currNode.value);
@@ -418,6 +384,29 @@ function send(){ return r1.location.x;}
       pF.deleteObject(pointName);
     }
   };
+
+  var other = {
+    sleep: function(milliseconds){
+      // Just chill...
+    },
+    pauseRobotMoving: function(){
+
+    }
+  };
+
+  var speaking = {
+    sayNumber: function(number){
+      ajaxSync(
+        ADR.SAY_NUMBER + "?type=number&number=" + number
+      );
+    },
+    sayPosition: function(){
+      ajaxSync(
+        ADR.SAY_NUMBER + "?type=coordinate&coordinate=" + 
+        JSON.stringify({x:r1.location.x, y:r1.location.y})
+      );
+    }
+  };
   
   var moving = {    
     turn: function(deg) {
@@ -497,6 +486,8 @@ function send(){ return r1.location.x;}
     addAction: actionsTree.addAction,
     moving: moving,
     drawing: drawing,
+    speaking: speaking,
+    other: other,
     check: check,
     initialize: initialize,
     getPoint: getPoint,

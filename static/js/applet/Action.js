@@ -44,8 +44,28 @@ primitiveActions.setVars = function() {
     };
     
     primitiveActions.actions.plot = {
-      label: "Plot Point2",
+      label: "Plot Point",
       ex: controller.drawing.plot
+    };
+
+    primitiveActions.actions.sleep = {
+      label: "Sleep",
+      ex: controller.other.sleep
+    };
+
+    primitiveActions.actions.pauseRobotMoving = {
+      label: "Pause robot while RR is Moving",
+      ex: controller.other.pauseRobotMoving
+    }
+
+    primitiveActions.actions.sayNumber = {
+      label: "Say Number",
+      ex: controller.speaking.sayNumber
+    };
+
+    primitiveActions.actions.sayPosition = {
+      label: "Say Position",
+      ex: controller.speaking.sayPosition
     };
 
     //Adrin added this
@@ -116,6 +136,23 @@ var stopDragMode = function() {
   primitiveActions.fromDistance = undefined;
 }
 
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  while(true){
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
+
+function generateSleepActions(milliseconds){
+  var clock = 50; // This needs to match the controller.check clock
+  var actions = [];
+  for(var i = 0; i < milliseconds / clock; i++){
+    actions.push(new Action("sleep"));
+  }
+  return actions;
+}
 
 
 /********************************************************************
@@ -154,7 +191,30 @@ primitiveActions.actions.moveDistance = {
         console.log("Moving real robot");
         realRobot.moveTo(newX, newY, dist < 0 ? true : false, r1.orientation);
       	console.log("move " + dist);
-        controller.addAction(new Action("move", dist));
+
+        for (var i = 0; i < Math.abs(dist); i++) {
+          controller.addAction(new Action("move", dist / Math.abs(dist)));
+
+          // This part adds actions for pausing and speaking if the flag is on
+          if(PAUSEENABLED){
+            // Wait for real robot
+            controller.addAction(new Action("pauseRobotMoving"));
+            // Add say number actions
+            controller.addAction(new Action("sayNumber", i+1));
+            // Generate sleep actions and add them
+            var sleepActions = generateSleepActions(2000);
+            // if(i < Math.abs(dist) - 1){ // Don't add pause at the last move
+              for (var j = 0; j < sleepActions.length; j++){
+                controller.addAction(sleepActions[j]);
+              }
+            // }
+
+          }
+        };
+
+        if(PAUSEENABLED){ // Say final coordinate message
+          controller.addAction(new Action("sayPosition"));
+        }
 
         // Handling point move state
         if(primitiveActions.movingPoint !== undefined) {

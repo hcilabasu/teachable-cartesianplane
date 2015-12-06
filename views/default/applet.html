@@ -14,20 +14,18 @@
         <script type="text/javascript" src="../static/js/applet/Action.js"></script>
         <script type="text/javascript" src="../static/js/applet/audio.js"></script>
         <script type='text/javascript' > 
-        var PAUSEENABLED = false;
-        var SOUND = false;
+            var draggingEnabled = true;
+            var realRobotEnabled = false;
+            var realRobotMoving = false;
+            var setOriginEnabled = false;
+            var togglePassword = "clippyiscool";
+            var PAUSEENABLED = false;
+            var SOUND = false;
         </script>
         <script type="text/javascript" src="../static/js/applet/controller.js"></script>
         <script type="text/javascript" src="../static/js/applet/appObjects.js"></script>
 
-
         <script>
-            var draggingEnabled = true;
-            var realRobotEnabled = false;
-            var setOriginEnabled = false;
-            var togglePassword = "clippyiscool";
-	
-
             $(function() {
                 var setLock = function(e) {
                     draggingEnabled = !draggingEnabled;
@@ -424,6 +422,9 @@
                                 // Execute action
                                 executeAction();  
 
+                            }
+                            else if(incoming.type === "moving") {
+                                realRobotMoving = incoming.value;
                             }
                             else if(incoming.id !== undefined) {
                                 // Switching problem
