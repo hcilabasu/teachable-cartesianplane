@@ -8,7 +8,7 @@ var RealRobot = function() {
 	/*
 	 * Moves the robot to a specific x, y and angle. Can move either backward or forward
 	 */
-	var moveTo = function(x_p, y_p, backwards_p, angle_p) {
+	var moveTo = function(x_p, y_p, backwards_p, angle_p, nopause) {
 		console.dir("Moving robot to (" + x_p + "," + y_p + "), BACKWARDS: " + backwards_p + ", ANGLE: " + angle_p);
 		var params = {
 			x: x_p,
@@ -22,6 +22,11 @@ var RealRobot = function() {
 		if(angle_p !== undefined) {
 			params.angle = angle_p;
 		}
+
+		if(PAUSEENABLED === true && (!nopause)){
+			params.pausing = true;
+		}
+
 		makeCall('move_to', params);
 	}
 
@@ -50,7 +55,7 @@ var RealRobot = function() {
 	 */
 	var reset = function() {
 		console.dir("Resetting robot");
-		moveTo(0,0,false,0);
+		moveTo(0,0,false,0, true);
 	}
 
 	/*

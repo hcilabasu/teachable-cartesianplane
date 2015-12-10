@@ -201,10 +201,8 @@ function send(){ return r1.location.x;}
           else if(currentActionName === "finishedPlot") {
             isPlotPointAction = false;
           }
-          else if(currentActionName === "pauseRobotMoving"){
-            if(realRobotMoving){
+          else if(currentActionName === "pauseRobotMoving" && realRobotMoving){
               actionsTree.addAction(new Action("pauseRobotMoving"));
-            }
           }
 
           primitiveActions.executeAction(currNode.value);
