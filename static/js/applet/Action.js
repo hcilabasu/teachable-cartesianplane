@@ -53,6 +53,11 @@ primitiveActions.setVars = function() {
       ex: controller.other.sleep
     };
 
+    primitiveActions.actions.moveRealRobot = {
+      label: "Move Real Robot",
+      ex: controller.other.moveRealRobot
+    };
+
     primitiveActions.actions.pauseRobotMoving = {
       label: "Pause robot while RR is Moving",
       ex: controller.other.pauseRobotMoving
@@ -182,32 +187,38 @@ primitiveActions.actions.moveDistance = {
         var point = r1.location;
       }
 
-      var newX = Math.round((point.x + xDist(dist, r1.orientation))*100000)/100000;
-      var newY = Math.round((point.y + yDist(dist, r1.orientation))*100000)/100000;
+      var newX = point.x;
+      var newY = point.y;
 
       if(Math.abs(newX) <= 5 && Math.abs(newY) <= 5) {
 
-        // Moving real robot
-        console.log("Moving real robot");
-        realRobot.moveTo(newX, newY, dist < 0 ? true : false, r1.orientation);
-      	console.log("move " + dist);
-
         for (var i = 0; i < Math.abs(dist); i++) {
-          controller.addAction(new Action("move", dist / Math.abs(dist)));
 
+          var step = dist / Math.abs(dist);
+
+          newX = Math.round((newX + xDist(step, r1.orientation))*100000)/100000;
+          newY = Math.round((newY + yDist(step, r1.orientation))*100000)/100000;
+
+          controller.addAction(new Action("move", step));
+          // Move real Robot
+          controller.addAction(new Action("moveRealRobot", {
+            x: newX, 
+            y: newY, 
+            orientation: r1.orientation,
+            backwards: step < 0 ? true : false
+          }));
+          // Generate sleep actions and add them
+          var sleepActions = generateSleepActions(500);
+          for (var j = 0; j < sleepActions.length; j++){
+            controller.addAction(sleepActions[j]);
+          }
           // This part adds actions for pausing and speaking if the flag is on
           if(PAUSEENABLED){
             // Wait for real robot
             controller.addAction(new Action("pauseRobotMoving"));
             // Add say number actions
             controller.addAction(new Action("sayNumber", i+1));
-            // Generate sleep actions and add them
-            var sleepActions = generateSleepActions(2000);
-            // if(i < Math.abs(dist) - 1){ // Don't add pause at the last move
-              for (var j = 0; j < sleepActions.length; j++){
-                controller.addAction(sleepActions[j]);
-              }
-            // }
+            
 
           }
         };

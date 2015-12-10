@@ -10,6 +10,7 @@ function send(){ return r1.location.x;}
   /*******************************************************************************/
 
   var animating = false;
+  var waitingForTalking = false;
 
   /* 
     This variable is used when the pausing functionality is on.
@@ -291,36 +292,37 @@ function send(){ return r1.location.x;}
   var check = function() {
     //console.log("check");
     // console.log("actionsTree length " + actionsTree.empty());
-    
-    //if actionsTree is not empty, execute actions in it
-    if(actionsTree.empty()) {
-      actionsTree.executeAction();
-    }
-    else if(actionsTree.getRootNode().children.length == 0 && actionsTree.getTempActionListWhileAnimating().length > 0) {//Adrin added this; checking for actions added while animating, and if actionsTree is empty
-      var tempActionListWhileAnimating = actionsTree.getTempActionListWhileAnimating();
-      console.log("In check(), tempActionListWhileAnimating.length > 0");
-      
-      // for(var i = 0 ; i < tempActionListWhileAnimating.length ; i++) {
-      while(tempActionListWhileAnimating.length != 0) {
-        console.log("Dumping actions from tempActionListWhileAnimating.....");
-        var tempAction = tempActionListWhileAnimating.shift();
-        console.log("tempAction : " + JSON.stringify(tempAction));
-        actionsTree.addAction(tempAction);
+    if(!waitingForTalking){
+      //if actionsTree is not empty, execute actions in it
+      if(actionsTree.empty()) {
+        actionsTree.executeAction();
       }
+      else if(actionsTree.getRootNode().children.length == 0 && actionsTree.getTempActionListWhileAnimating().length > 0) {//Adrin added this; checking for actions added while animating, and if actionsTree is empty
+        var tempActionListWhileAnimating = actionsTree.getTempActionListWhileAnimating();
+        console.log("In check(), tempActionListWhileAnimating.length > 0");
+        
+        // for(var i = 0 ; i < tempActionListWhileAnimating.length ; i++) {
+        while(tempActionListWhileAnimating.length != 0) {
+          console.log("Dumping actions from tempActionListWhileAnimating.....");
+          var tempAction = tempActionListWhileAnimating.shift();
+          console.log("tempAction : " + JSON.stringify(tempAction));
+          actionsTree.addAction(tempAction);
+        }
 
-      // actionsTree.clearTempActionListWhileAnimating();
+        // actionsTree.clearTempActionListWhileAnimating();
 
-      actionsTree.executeAction();
-    }
-    else {
-      // console.log("check last else");
-      //Adrin added this, need to make sure this is only called after the actionsTree is empty and no more actions are to be performed
-      //The robot current coordinates stored in the actionsTree object needs to be reset when the problem is refreshed from the mobile side.
-      //This takes care of that.
-      actionsTree.resetRobotCoordinates();
+        actionsTree.executeAction();
+      }
+      else {
+        // console.log("check last else");
+        //Adrin added this, need to make sure this is only called after the actionsTree is empty and no more actions are to be performed
+        //The robot current coordinates stored in the actionsTree object needs to be reset when the problem is refreshed from the mobile side.
+        //This takes care of that.
+        actionsTree.resetRobotCoordinates();
 
-      if(!pF.isLocked()) {
-        pF.lockObjects();
+        if(!pF.isLocked()) {
+          pF.lockObjects();
+        }
       }
     }
 
@@ -388,7 +390,12 @@ function send(){ return r1.location.x;}
       // Just chill...
     },
     pauseRobotMoving: function(){
-
+      // Relaaaax...
+    },
+    moveRealRobot: function(data){
+      // Moving real robot
+      console.dir("Moving real robot");
+      realRobot.moveTo(data.x, data.y, data.backwards, data.orientation);
     }
   };
 
@@ -397,6 +404,7 @@ function send(){ return r1.location.x;}
       ajaxSync(
         ADR.SAY_NUMBER + "?type=number&number=" + number
       );
+      waitingForTalking = true;
     },
     sayPosition: function(){
       ajaxSync(
@@ -465,6 +473,10 @@ function send(){ return r1.location.x;}
     pF.deleteObject(object);
   }
 
+  var doneTalking = function(){
+    waitingForTalking = false;
+  }
+
 
   //CHECKING THE SLEEP FUNCTION
   function sleep(milliseconds) {
@@ -489,6 +501,7 @@ function send(){ return r1.location.x;}
     check: check,
     initialize: initialize,
     getPoint: getPoint,
-    deleteObject: deleteObject
+    deleteObject: deleteObject,
+    doneTalking: doneTalking
   }
 }());

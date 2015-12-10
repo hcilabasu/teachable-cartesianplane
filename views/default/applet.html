@@ -426,6 +426,9 @@
                             else if(incoming.type === "moving") {
                                 realRobotMoving = incoming.value;
                             }
+                            else if(incoming.type === "doneTalking") {
+                                controller.doneTalking();
+                            }
                             else if(incoming.id !== undefined) {
                                 // Switching problem
                                 console.dir("Update problem info");
